@@ -21,6 +21,12 @@ export const handlers = [
   http.get(`${API}/categories`, () => HttpResponse.json({ categories: [] })),
 
   http.get(`${API}/cart`, () => HttpResponse.json({ items: [], total: 0 })),
+  http.post(`${API}/cart`, () => HttpResponse.json({ message: 'Producto agregado al carrito' })),
+  http.put(`${API}/cart/:productId`, () => HttpResponse.json({ message: 'Carrito actualizado' })),
+  http.delete(`${API}/cart/:productId`, () =>
+    HttpResponse.json({ message: 'Producto eliminado del carrito' })
+  ),
+  http.delete(`${API}/cart`, () => HttpResponse.json({ message: 'Carrito vaciado' })),
   http.post(`${API}/cart/sync`, () => HttpResponse.json({ items: [], total: 0 })),
 ]
 

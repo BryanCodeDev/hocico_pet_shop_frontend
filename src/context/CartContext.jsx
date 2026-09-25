@@ -92,6 +92,13 @@ export function CartProvider({ children }) {
       setStoredCart(updated)
       return updated
     })
+
+    // Se propaga al backend. Sin esto el carrito vive solo en el navegador y
+    // el servidor nunca sabe qué hay: al siguiente sync, lo que el usuario
+    // quitó reaparece porque el servidor todavía lo tiene.
+    api.post('/cart', { productId: product.id, quantity }).catch(error => {
+      console.error('Error al agregar al carrito:', error)
+    })
   }, [])
 
   const removeItem = useCallback(async (productId) => {
@@ -121,6 +128,12 @@ export function CartProvider({ children }) {
       )
       setStoredCart(updated)
       return updated
+    })
+
+    // Mismo motivo que en addItem: si el cambio de cantidad no llega al
+    // servidor, la próxima carga lo revierte al valor guardado allí.
+    api.put(`/cart/${productId}`, { quantity }).catch(error => {
+      console.error('Error al actualizar cantidad:', error)
     })
   }, [removeItem])
 
