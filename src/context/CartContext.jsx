@@ -94,12 +94,20 @@ export function CartProvider({ children }) {
     })
   }, [])
 
-  const removeItem = useCallback((productId) => {
+  const removeItem = useCallback(async (productId) => {
     setItems(prev => {
       const updated = prev.filter(item => item.productId !== productId)
       setStoredCart(updated)
       return updated
     })
+
+    // Se propaga al backend para que la baja no se revierta en el siguiente
+    // syncWithBackend (que vuelve a cargar los items guardados en el servidor).
+    try {
+      await api.delete(`/cart/${productId}`)
+    } catch (error) {
+      console.error('Error al eliminar del carrito:', error)
+    }
   }, [])
 
   const updateQuantity = useCallback((productId, quantity) => {
@@ -116,9 +124,15 @@ export function CartProvider({ children }) {
     })
   }, [removeItem])
 
-  const clearCart = useCallback(() => {
+  const clearCart = useCallback(async () => {
     setItems([])
     setStoredCart([])
+
+    try {
+      await api.delete('/cart')
+    } catch (error) {
+      console.error('Error al vaciar el carrito:', error)
+    }
   }, [])
 
   const getItem = useCallback((productId) => {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingCart, Receipt, Package, BarChart3, LogOut, User
@@ -35,8 +36,17 @@ export default function POS() {
   const [receiptData, setReceiptData] = useState(null)
   const [showReports, setShowReports] = useState(false)
 
+  const location = useLocation()
+  const navigate = useNavigate()
+
   useEffect(() => {
     loadCurrentCashRegister()
+    const params = new URLSearchParams(location.search)
+    const paymentSuccessOrder = params.get('paymentSuccess')
+    if (paymentSuccessOrder) {
+      navigate('/admin/caja', { replace: true })
+      fetchReceiptForSuccess(paymentSuccessOrder)
+    }
   }, [])
 
   useEffect(() => {
@@ -176,6 +186,12 @@ export default function POS() {
       }
 
       const data = await posService.createSale(saleData)
+
+      if (paymentData.method === 'wompi') {
+        window.location.href = data.wompi.redirectUrl
+        return
+      }
+
       const receipt = await posService.getReceipt(data.order.id)
       setReceiptData(receipt)
       setShowReceipt(true)
@@ -188,6 +204,18 @@ export default function POS() {
       } else {
         toast.error('Error al procesar la venta')
       }
+    }
+  }
+
+  const fetchReceiptForSuccess = async (orderId) => {
+    try {
+      const receipt = await posService.getReceipt(orderId)
+      setReceiptData(receipt)
+      setShowReceipt(true)
+      toast.success('Pago procesado correctamente')
+    } catch (error) {
+      console.error('Fetch receipt error:', error)
+      toast.error('No se pudo cargar el recibo')
     }
   }
 

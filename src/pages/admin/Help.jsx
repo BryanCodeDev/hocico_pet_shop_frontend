@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import {
   BookOpen, BarChart3, Package, Tag, ShoppingCart,
   Users, Globe, Settings, HelpCircle, DollarSign, Store, Search
@@ -237,8 +237,8 @@ Cuando una orden se paga (<code>payment_status='approved'</code>), el sistema ll
 4. Si hay error, registra <code>invoices.status='error'</code> con el mensaje — la venta no se cancela
 
 ### POS
-- **Efectivo**: el cajero ingresa el monto recibido; el cambio se calcula y guarda en <code>notes</code>
-- **Tarjeta POS**: la venta se registra como <code>payment_method='card_pos'</code> y el cobro físico se hace en el terminal`,
+- **Efectivo (contra entrega)**: el cajero ingresa el monto recibido; el cambio se calcula y guarda en <code>notes</code>
+- **Tarjeta (Wompi)**: la venta se registra como <code>payment_method='wompi'</code> y el cobro se procesa vía API de Wompi; el estado inicial es <code>pending</code> y pasa a <code>approved</code> al confirmarse el pago vía webhook`,
   },
   {
     id: 'settings',
@@ -303,7 +303,7 @@ const parseInlineBold = (text) => {
       }
       return <strong key={i} className="font-semibold text-primary-900">{inner}</strong>
     }
-    return <React.Fragment key={i}>{part}</React.Fragment>
+    return <Fragment key={i}>{part}</Fragment>
   })
 }
 

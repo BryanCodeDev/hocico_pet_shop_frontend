@@ -1,13 +1,28 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react'
+import toast from 'react-hot-toast'
 import { useCart } from '../../context/CartContext'
-import { formatPrice } from '../../utils/helpers'
+import { formatPrice, getWhatsAppUrlForCart } from '../../utils/helpers'
+import RemoveItemDialog from './RemoveItemDialog'
 import { Link, useNavigate } from 'react-router-dom'
 
 export default function CartDrawer() {
   const { items, total, itemCount, removeItem, updateQuantity, clearCart, loading, cartOpen, toggleCart } = useCart()
+  const [itemToRemove, setItemToRemove] = useState(null)
   const navigate = useNavigate()
+
+  const handleConfirmRemove = async () => {
+    if (!itemToRemove) return
+    await removeItem(itemToRemove.productId)
+    toast.success(`"${itemToRemove.name}" se eliminó del carrito`)
+    setItemToRemove(null)
+  }
+
+  const handleClearCart = async () => {
+    await clearCart()
+    toast.success('Carrito vaciado')
+  }
 
   useEffect(() => {
     if (cartOpen) {
@@ -122,7 +137,7 @@ export default function CartDrawer() {
                             {item.name}
                           </Link>
                           <button
-                            onClick={() => removeItem(item.productId)}
+                            onClick={() => setItemToRemove(item)}
                             className="p-1 text-primary-400 hover:text-red-500 transition-colors flex-shrink-0"
                             aria-label={`Eliminar ${item.name}`}
                           >
@@ -191,7 +206,7 @@ export default function CartDrawer() {
                 <button onClick={handleCheckout} className="btn-primary w-full py-3.5 text-base">
                   Ir al checkout
                 </button>
-                <button onClick={clearCart} className="w-full py-2 text-sm text-primary-500 hover:text-charcoal-600 transition-colors">
+                <button onClick={handleClearCart} className="w-full py-2 text-sm text-primary-500 hover:text-charcoal-600 transition-colors">
                   Vaciar carrito
                 </button>
                 <a
@@ -208,15 +223,12 @@ export default function CartDrawer() {
           </motion.aside>
         )}
       </AnimatePresence>
+
+      <RemoveItemDialog
+        item={itemToRemove}
+        onCancel={() => setItemToRemove(null)}
+        onConfirm={handleConfirmRemove}
+      />
     </>
   )
-}
-
-function getWhatsAppUrlForCart(items, total) {
-  const productsText = items.map(item =>
-    `- ${item.name} x${item.quantity} = $${((item.discountPrice || item.price) * item.quantity).toLocaleString('es-CO')}`
-  ).join('\n')
-  const text = `Hola, quiero realizar el siguiente pedido:\n\n${productsText}\n\nTotal: $${total.toLocaleString('es-CO')}\n\n¿Me pueden brindar información para finalizar la compra?`
-  const number = import.meta.env.VITE_WHATSAPP_NUMBER
-  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`
 }

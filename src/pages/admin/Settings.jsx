@@ -10,7 +10,7 @@ const defaultSettings = {
   site_url: 'https://hocico.com.co',
   whatsapp_number: import.meta.env.VITE_WHATSAPP_NUMBER || '',
   free_shipping_threshold: 100000,
-  default_currency: 'ARS',
+  default_currency: 'COP',
   tax_rate: 0.21,
   mercadopago_enabled: true,
   maintenance_mode: false,
@@ -146,21 +146,20 @@ export default function AdminSettings() {
                        className="input"
                      />
                   </div>
-                  <div>
-                    <label htmlFor="default_currency" className="label">Moneda por defecto</label>
-                    <select
-                      id="default_currency"
-                      name="default_currency"
-                      value={settings.default_currency}
-                      onChange={handleChange}
-                      className="input"
-                    >
-                      <option value="ARS">ARS - Peso Argentino</option>
-                      <option value="USD">USD - Dólar Estadounidense</option>
-                      <option value="EUR">EUR - Euro</option>
-                      <option value="BRL">BRL - Real Brasileño</option>
-                    </select>
-                  </div>
+                   <div>
+                     <label htmlFor="default_currency" className="label">Moneda</label>
+                     <select
+                       id="default_currency"
+                       name="default_currency"
+                       value={settings.default_currency}
+                       onChange={handleChange}
+                       className="input"
+                       disabled
+                     >
+                       <option value="COP">COP - Peso Colombiano</option>
+                     </select>
+                     <p className="text-xs text-primary-900/50 mt-1">Moneda estandarizada a COP para toda la tienda</p>
+                   </div>
                   <div>
                     <label htmlFor="tax_rate" className="label">Tasa de impuesto</label>
                     <input

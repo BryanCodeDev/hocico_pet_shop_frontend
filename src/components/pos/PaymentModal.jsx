@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { X, Banknote, CreditCard } from 'lucide-react'
+import { X, Banknote, Wallet } from 'lucide-react'
 import { formatPrice } from '../../utils/helpers'
 
 export default function PaymentModal({ isOpen, onClose, onSubmit, cartTotal, cartDiscount }) {
@@ -94,15 +94,15 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, cartTotal, car
             </button>
             <button
               type="button"
-              onClick={() => setPaymentMethod('card_pos')}
+              onClick={() => setPaymentMethod('wompi')}
               className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all ${
-                paymentMethod === 'card_pos'
+                paymentMethod === 'wompi'
                   ? 'border-primary-600 bg-primary-50 text-primary-600'
                   : 'border-charcoal-200 text-primary-900 hover:border-charcoal-400'
               }`}
             >
-              <CreditCard className="w-5 h-5 mx-auto mb-1" />
-              <span className="text-sm font-medium">Tarjeta POS</span>
+              <Wallet className="w-5 h-5 mx-auto mb-1" />
+              <span className="text-sm font-medium">Tarjeta (Wompi)</span>
             </button>
           </div>
 
@@ -121,7 +121,7 @@ export default function PaymentModal({ isOpen, onClose, onSubmit, cartTotal, car
                   type="number"
                   value={cashReceived}
                   onChange={(e) => setCashReceived(e.target.value)}
-                  placeholder={total.toLocaleString()}
+                   placeholder={formatPrice(total)}
                   min={total}
                   step="500"
                   className="w-full pl-8 pr-4 py-3 border border-charcoal-200 rounded-xl focus:border-primary-600 focus:outline-none text-lg text-primary-900"

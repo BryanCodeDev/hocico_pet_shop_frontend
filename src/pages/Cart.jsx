@@ -1,15 +1,29 @@
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Plus, Minus, Trash2, ArrowLeft, Zap, MessageSquare } from 'lucide-react'
+import { Plus, Minus, Trash2, ArrowLeft, MessageSquare } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { formatPrice, getWhatsAppUrlForCart } from '../utils/helpers'
 import SEO from '../components/seo/SEO'
+import RemoveItemDialog from '../components/cart/RemoveItemDialog'
 import toast from 'react-hot-toast'
 
 export default function Cart() {
   const { items, total, subtotal, discount, itemCount, updateQuantity, removeItem, clearCart, loading } = useCart()
+  const [itemToRemove, setItemToRemove] = useState(null)
   const navigate = useNavigate()
+
+  const handleConfirmRemove = async () => {
+    if (!itemToRemove) return
+    await removeItem(itemToRemove.productId)
+    toast.success(`"${itemToRemove.name}" se eliminó del carrito`)
+    setItemToRemove(null)
+  }
+
+  const handleClearCart = async () => {
+    await clearCart()
+    toast.success('Carrito vaciado')
+  }
 
   const handleCheckout = () => {
     if (items.length === 0) return
@@ -147,8 +161,8 @@ export default function Cart() {
                               </td>
                               <td className="px-4 py-3 text-center">
                                 <button
-                                  onClick={() => removeItem(item.productId)}
-                                  className="p-2 text-primary-900 hover:text-charcoal-600 hover:bg-charcoal-600/10 rounded-lg transition-colors"
+                                  onClick={() => setItemToRemove(item)}
+                                  className="p-2 text-primary-900 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                   aria-label={`Eliminar ${item.name}`}
                                 >
                                   <Trash2 className="w-5 h-5" />
@@ -163,7 +177,7 @@ export default function Cart() {
                     {items.length > 0 && (
                       <div className="p-6 border-t border-charcoal-100 flex justify-end">
                         <button
-                          onClick={clearCart}
+                          onClick={handleClearCart}
                           className="text-primary-900 hover:text-charcoal-600 text-sm font-medium transition-colors"
                         >
                           Vaciar carrito
@@ -248,6 +262,12 @@ export default function Cart() {
           )}
         </div>
       </div>
+
+      <RemoveItemDialog
+        item={itemToRemove}
+        onCancel={() => setItemToRemove(null)}
+        onConfirm={handleConfirmRemove}
+      />
     </>
   )
 }

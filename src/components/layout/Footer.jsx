@@ -9,7 +9,7 @@ const footerLinks = {
     { label: 'Ofertas', href: '/tienda?category=ofertas' },
     { label: 'Novedades', href: '/tienda?sort=newest' },
     { label: 'Más vendidos', href: '/tienda?sort=best-sellers' },
-    { label: 'Marcas', href: '/categoria/marcas' },
+    { label: 'Marcas', href: '/tienda#marcas' },
   ],
   ayuda: [
     { label: 'Preguntas frecuentes', href: '/contacto#faq' },

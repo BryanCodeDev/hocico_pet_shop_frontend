@@ -57,7 +57,7 @@ export default function Category() {
       }
       const data = await categoryService.getWithProducts(slug, params)
       setProducts(data.products || [])
-      setTotalProducts(data.total || 0)
+      setTotalProducts(data.pagination?.total ?? 0)
     } catch (error) {
       console.error('Fetch products error:', error)
       setProducts([])

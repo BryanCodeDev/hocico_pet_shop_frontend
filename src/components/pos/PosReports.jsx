@@ -67,7 +67,7 @@ export default function PosReports() {
   ] : []
 
   const paymentData = summary?.byPaymentMethod?.map((p, i) => ({
-    name: p.method === 'cash' ? 'Efectivo' : p.method === 'card_pos' ? 'Tarjeta POS' : p.method,
+    name: p.method === 'cash' ? 'Efectivo' : p.method === 'wompi' ? 'Tarjeta (Wompi)' : p.method,
     value: p.total,
     count: p.count,
     color: PAYMENT_COLORS[i % PAYMENT_COLORS.length],

@@ -9,9 +9,8 @@ export default function ReceiptView({ receipt, onNewSale, onPrint }) {
 
   const getPaymentLabel = (method) => {
     switch (method) {
-      case 'cash': return 'Efectivo'
-      case 'card_pos': return 'Tarjeta POS'
-      case 'wompi': return 'Wompi'
+    case 'cash': return 'Efectivo (contra entrega)'
+    case 'wompi': return 'Tarjeta (Wompi)'
       case 'mercadopago': return 'Mercado Pago'
       default: return method
     }
