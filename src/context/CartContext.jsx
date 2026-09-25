@@ -24,6 +24,7 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [synced, setSynced] = useState(false)
+  const [cartOpen, setCartOpen] = useState(false)
 
   useEffect(() => {
     const stored = getStoredCart()
@@ -60,6 +61,10 @@ export function CartProvider({ children }) {
   useEffect(() => {
     setSynced(false)
   }, [isAuthenticated])
+
+  const toggleCart = useCallback(() => setCartOpen(prev => !prev), [])
+  const openCart = useCallback(() => setCartOpen(true), [])
+  const closeCart = useCallback(() => setCartOpen(false), [])
 
   const addItem = useCallback((product, quantity = 1) => {
     setItems(prev => {
@@ -139,6 +144,10 @@ export function CartProvider({ children }) {
     <CartContext.Provider value={{
       items,
       loading,
+      cartOpen,
+      toggleCart,
+      openCart,
+      closeCart,
       addItem,
       removeItem,
       updateQuantity,

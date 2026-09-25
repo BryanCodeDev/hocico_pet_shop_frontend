@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
@@ -6,25 +6,17 @@ import { formatPrice } from '../../utils/helpers'
 import { Link, useNavigate } from 'react-router-dom'
 
 export default function CartDrawer() {
-  const { items, total, itemCount, removeItem, updateQuantity, clearCart, loading } = useCart()
-  const [open, setOpen] = useState(false)
+  const { items, total, itemCount, removeItem, updateQuantity, clearCart, loading, cartOpen, toggleCart } = useCart()
   const navigate = useNavigate()
 
   useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'techstore_cart_open') {
-        setOpen(e.newValue === 'true')
-      }
+    if (cartOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
     }
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [])
-
-  const toggleCart = () => {
-    const newState = !open
-    setOpen(newState)
-    localStorage.setItem('techstore_cart_open', newState.toString())
-  }
+    return () => { document.body.style.overflow = '' }
+  }, [cartOpen])
 
   const handleCheckout = () => {
     toggleCart()
@@ -55,7 +47,7 @@ export default function CartDrawer() {
       </button>
 
       <AnimatePresence>
-        {open && (
+        {cartOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -68,7 +60,7 @@ export default function CartDrawer() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {open && (
+        {cartOpen && (
           <motion.aside
             initial={{ x: '100%' }}
             animate={{ x: 0 }}

@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Truck, ShieldCheck, Headphones, RotateCcw, Lock } from 'lucide-react'
+import { categoryService } from '../../services/products'
 
 const footerLinks = {
   tienda: [
@@ -8,12 +10,6 @@ const footerLinks = {
     { label: 'Novedades', href: '/tienda?sort=newest' },
     { label: 'Más vendidos', href: '/tienda?sort=best-sellers' },
     { label: 'Marcas', href: '/categoria/marcas' },
-  ],
-  categorias: [
-    { label: 'Alimentos', href: '/categoria/alimentos' },
-    { label: 'Snacks', href: '/categoria/snacks' },
-    { label: 'Accesorios', href: '/categoria/accesorios' },
-    { label: 'Higiene y cuidado', href: '/categoria/higiene-cuidado' },
   ],
   ayuda: [
     { label: 'Preguntas frecuentes', href: '/contacto#faq' },
@@ -77,6 +73,22 @@ function FooterColumn({ title, links }) {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryService.getAll({ active: true, root: true })
+        setCategories(data.categories || [])
+      } catch (err) {
+        console.error('Error fetching categories for footer:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCategories()
+  }, [])
 
   return (
     <footer className="bg-primary-950" role="contentinfo">
@@ -126,7 +138,24 @@ export default function Footer() {
           </div>
 
           <FooterColumn title="Tienda" links={footerLinks.tienda} />
-          <FooterColumn title="Categorías" links={footerLinks.categorias} />
+          {loading ? (
+            <div className="space-y-2.5">
+              <h4 className="font-display font-semibold text-white text-sm tracking-wide mb-4">Categorías</h4>
+              {[...Array(4)].map((_, i) => (
+                <li key={i}>
+                  <div className="h-4 bg-white/10 rounded w-24 animate-pulse" />
+                </li>
+              ))}
+            </div>
+          ) : (
+            <FooterColumn
+              title="Categorías"
+              links={categories.map(cat => ({
+                label: cat.name,
+                href: `/categoria/${cat.slug}`
+              }))}
+            />
+          )}
           <FooterColumn title="Ayuda" links={footerLinks.ayuda} />
           <FooterColumn title="Empresa" links={footerLinks.empresa} />
         </div>
