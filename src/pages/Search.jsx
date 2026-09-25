@@ -66,7 +66,7 @@ export default function Search() {
         noindex
       />
 
-      <div className="min-h-screen bg-white pt-20">
+      <div className="min-h-screen bg-cream pt-20">
         <div className="container-custom py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -112,9 +112,11 @@ export default function Search() {
               animate={{ opacity: 1 }}
               className="flex flex-col items-center justify-center py-20 px-4 text-center"
             >
-              <SearchIcon className="w-20 h-20 text-primary-800 mb-4" />
+              <div className="w-20 h-20 rounded-full bg-white border border-dark-border flex items-center justify-center mb-4">
+                <SearchIcon className="w-9 h-9 text-charcoal-400" />
+              </div>
               <h2 className="font-display font-bold text-2xl text-primary-900 mb-2">No se encontraron resultados</h2>
-              <p className="text-primary-900 mb-6 max-w-md">Intenta con otros términos de búsqueda o revisa la ortografía</p>
+              <p className="text-primary-800 mb-6 max-w-md">Intenta con otros términos de búsqueda o revisa la ortografía</p>
               <div className="flex flex-wrap justify-center gap-2">
                 {['alimento', 'snack', 'cama', 'juguete', 'correa', 'comedero'].map(term => (
                   <button

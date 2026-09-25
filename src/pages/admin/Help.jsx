@@ -164,7 +164,7 @@ function AccordionItem({ title, children, defaultOpen = false, number }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: number * 0.03 }}
-      className="bg-primary-50 border border-dark-border rounded-2xl overflow-hidden"
+      className="bg-white border border-dark-border rounded-2xl overflow-hidden"
     >
       <button
         type="button"
@@ -173,9 +173,9 @@ function AccordionItem({ title, children, defaultOpen = false, number }) {
       >
         <span className="font-display font-semibold text-primary-900 text-lg">{title}</span>
         {open ? (
-          <ChevronUp className="w-5 h-5 text-primary-900 flex-shrink-0" />
+          <ChevronUp className="w-5 h-5 text-charcoal-600 flex-shrink-0" />
         ) : (
-          <ChevronDown className="w-5 h-5 text-primary-900 flex-shrink-0" />
+          <ChevronDown className="w-5 h-5 text-charcoal-600 flex-shrink-0" />
         )}
       </button>
       {open && (
@@ -230,7 +230,7 @@ export default function AdminHelp() {
             <BookOpen className="w-7 h-7 text-charcoal-600" />
             <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Ayuda y documentación</h1>
           </div>
-          <p className="text-primary-900 mt-2 max-w-3xl">
+          <p className="text-primary-700 mt-2 max-w-3xl">
             Documentación completa de Hocico Pet Shop: stack, arquitectura, modelo de datos,
             catálogo de endpoints de la API, reglas de negocio y estado del frontend.
             Usa el índice para navegar a la sección que necesites.
@@ -239,7 +239,7 @@ export default function AdminHelp() {
 
         <div className="flex flex-col lg:flex-row gap-6 min-w-0">
           <nav className="lg:w-64 lg:flex-shrink-0 min-w-0" aria-label="Índice de documentación">
-            <div className="lg:sticky lg:top-20 bg-primary-50 border border-dark-border rounded-2xl p-4 space-y-1">
+            <div className="lg:sticky lg:top-20 bg-white border border-dark-border rounded-2xl p-4 space-y-1">
               {DOC_SECTIONS.map((s) => (
                 <a
                   key={s.id}
@@ -248,7 +248,7 @@ export default function AdminHelp() {
                   className={`block text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200 ${
                     active === s.id
                       ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20'
-                      : 'text-primary-900 hover:bg-primary-100 hover:text-charcoal-600'
+                      : 'text-primary-700 border border-transparent hover:bg-primary-100 hover:text-charcoal-600'
                   }`}
                 >
                   {s.label}
@@ -357,34 +357,34 @@ export default function AdminHelp() {
                   Todas las rutas usan <code>/api</code> con body JSON y la cookie HttpOnly
                   (o header <code>Authorization</code>). Tabla completa de endpoints:
                 </p>
-                <table className="endpoint-table">
+                <table className="w-full text-xs sm:text-sm border-collapse">
                   <thead>
-                    <tr>
-                      <th>Método</th>
-                      <th>Ruta</th>
-                      <th>Auth</th>
-                      <th>Descripción</th>
+                    <tr className="border-b border-dark-border text-left text-primary-700">
+                      <th className="py-2 pr-4 font-medium">Método</th>
+                      <th className="py-2 pr-4 font-medium">Ruta</th>
+                      <th className="py-2 pr-4 font-medium">Auth</th>
+                      <th className="py-2 pr-4 font-medium">Descripción</th>
                     </tr>
                   </thead>
                   <tbody>
                     {ENDPOINTS.map((e, i) => (
-                      <tr key={i} className={i % 2 === 0 ? 'bg-primary-100/40' : ''}>
-                        <td>
-                          <span className={`inline-block w-16 text-center font-mono text-xs font-bold rounded ${
-                            e.method === 'GET' ? 'text-blue-500'
-                            : e.method === 'POST' ? 'text-green-600'
-                            : e.method === 'PUT' ? 'text-amber-600'
-                            : 'text-red-600'
+                      <tr key={i} className={`border-b border-dark-border/50 ${i % 2 === 0 ? 'bg-cream-100/60' : ''}`}>
+                        <td className="py-2 pr-4">
+                          <span className={`inline-flex w-16 justify-center font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${
+                            e.method === 'GET' ? 'bg-charcoal-600/10 text-charcoal-700'
+                            : e.method === 'POST' ? 'bg-mustard-100 text-mustard-800'
+                            : e.method === 'PUT' ? 'bg-primary-100 text-primary-800'
+                            : 'bg-red-600/10 text-red-700'
                           }`}>{e.method}</span>
                         </td>
-                        <td className="font-mono text-xs">{e.path}</td>
-                        <td>{e.auth}</td>
-                        <td>{e.desc}</td>
+                        <td className="py-2 pr-4 font-mono text-xs text-primary-900">{e.path}</td>
+                        <td className="py-2 pr-4 text-primary-700">{e.auth}</td>
+                        <td className="py-2 pr-4 text-primary-800">{e.desc}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                <p className="text-xs text-primary-900/70">
+                <p className="text-xs text-primary-700">
                   Nota: <code>POST /api/payments/webhook</code> es llamado por Mercado Pago
                   (valida firma HMAC) y <code>GET /api/health</code> es el health check.
                 </p>

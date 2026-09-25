@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Truck, Shield, Headphones, RotateCcw, Lock } from 'lucide-react'
+import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Truck, ShieldCheck, Headphones, RotateCcw, Lock } from 'lucide-react'
 
 const footerLinks = {
   tienda: [
@@ -46,11 +46,10 @@ const socialLinks = [
 
 const trustItems = [
   { icon: Lock, title: 'Pago seguro', desc: 'Protección SSL y Mercado Pago' },
-  { icon: Shield, title: 'Productos seleccionados', desc: 'Calidad verificada' },
+  { icon: ShieldCheck, title: 'Productos seleccionados', desc: 'Calidad verificada' },
   { icon: Headphones, title: 'Atención personalizada', desc: 'Soporte experto' },
   { icon: Truck, title: 'Envíos a tu puerta', desc: 'Mosquera, Madrid y Funza' },
   { icon: RotateCcw, title: 'Cambios y devoluciones', desc: '30 días sin complicaciones' },
-  { icon: Shield, title: 'Garantía de satisfacción', desc: 'Productos para mascotas' },
 ]
 
 const contactInfo = [
@@ -59,159 +58,122 @@ const contactInfo = [
   { icon: Mail, text: 'hola@hocico.com.co' },
 ]
 
+function FooterColumn({ title, links }) {
+  return (
+    <div>
+      <h4 className="font-display font-semibold text-white text-sm tracking-wide mb-4">{title}</h4>
+      <ul className="space-y-2.5">
+        {links.map(link => (
+          <li key={link.href}>
+            <Link to={link.href} className="text-primary-300 hover:text-white transition-colors text-sm">
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-primary-950 border-t border-dark-border" role="contentinfo">
-      <div className="container-custom py-16 lg:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
-          <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-6" aria-label="Hocico Pet Shop - Inicio">
-              <img src="/assets/images/Logo.webp" alt="Hocico Pet Shop" className="w-12 h-12" />
-              <span className="font-display font-bold text-2xl text-white">Hocico Pet Shop</span>
+    <footer className="bg-primary-950" role="contentinfo">
+      {/* Franja de confianza — resume las garantías del negocio de un vistazo */}
+      <div className="border-b border-white/10">
+        <div className="container-custom py-8">
+          <ul className="grid grid-cols-2 md:grid-cols-5 gap-6" role="list">
+            {trustItems.map((item) => (
+              <li key={item.title} className="flex flex-col items-center text-center gap-2 md:items-start md:text-left md:flex-row md:gap-3">
+                <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <item.icon className="w-4 h-4 text-mustard-400" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="font-medium text-white text-xs sm:text-sm">{item.title}</p>
+                  <p className="text-primary-400 text-xs hidden md:block">{item.desc}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div className="container-custom py-14 lg:py-20">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-10 lg:gap-x-8">
+          <div className="col-span-2 md:col-span-2">
+            <Link to="/" className="flex items-center gap-2.5 mb-4" aria-label="Hocico Pet Shop - Inicio">
+              <img src="/assets/images/Logo.webp" alt="Hocico Pet Shop" className="w-10 h-10" />
+              <span className="font-display font-bold text-xl text-white">Hocico Pet Shop</span>
             </Link>
-            <p className="text-primary-300 text-base leading-relaxed mb-6 max-w-xs">
-              Tu tienda online de alimentos, snacks y accesorios para perros y gatas. Envíos a Mosquera, Madrid y Funza.
+            <p className="text-primary-300 text-sm leading-relaxed mb-6 max-w-xs">
+              Tu tienda de alimentos, snacks y accesorios para perros y gatos. Envíos a Mosquera, Madrid y Funza.
             </p>
-            <div className="flex gap-4">
-              {socialLinks.map((social, index) => (
+            <div className="flex gap-2.5">
+              {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl bg-primary-200 border border-dark-border flex items-center justify-center text-primary-900 hover:border-charcoal-400 hover:text-charcoal-700 transition-all duration-300"
+                  className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center text-white hover:bg-charcoal-600 transition-colors duration-200"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-5 h-5" aria-hidden="true" />
+                  <social.icon className="w-4 h-4" aria-hidden="true" />
                 </a>
               ))}
             </div>
           </div>
 
-          <div>
-            <h4 className="font-display font-semibold text-white mb-4">Tienda</h4>
-            <nav aria-label="Enlaces de tienda">
-              <ul className="space-y-3">
-                {footerLinks.tienda.map(link => (
-                  <li key={link.href}>
-                    <Link to={link.href} className="text-primary-300 hover:text-white transition-colors text-sm">{link.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          <div>
-            <h4 className="font-display font-semibold text-white mb-4">Categorías</h4>
-            <nav aria-label="Enlaces de categorías">
-              <ul className="space-y-3">
-                {footerLinks.categorias.map(link => (
-                  <li key={link.href}>
-                    <Link to={link.href} className="text-primary-300 hover:text-white transition-colors text-sm">{link.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          <div>
-            <h4 className="font-display font-semibold text-white mb-4">Ayuda</h4>
-            <nav aria-label="Enlaces de ayuda">
-              <ul className="space-y-3">
-                {footerLinks.ayuda.map(link => (
-                  <li key={link.href}>
-                    <Link to={link.href} className="text-primary-300 hover:text-white transition-colors text-sm">{link.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          <div>
-            <h4 className="font-display font-semibold text-white mb-4">Empresa</h4>
-            <nav aria-label="Enlaces de empresa">
-              <ul className="space-y-3">
-                {footerLinks.empresa.map(link => (
-                  <li key={link.href}>
-                    <Link to={link.href} className="text-primary-300 hover:text-white transition-colors text-sm">{link.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
+          <FooterColumn title="Tienda" links={footerLinks.tienda} />
+          <FooterColumn title="Categorías" links={footerLinks.categorias} />
+          <FooterColumn title="Ayuda" links={footerLinks.ayuda} />
+          <FooterColumn title="Empresa" links={footerLinks.empresa} />
         </div>
 
-        <div className="mt-16 pt-12 border-t border-dark-border">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div>
-              <h4 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <Truck className="w-6 h-6 text-charcoal-400" aria-hidden="true" />
-                Compra con confianza
-              </h4>
-              <ul className="space-y-3">
-                {trustItems.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary-200 border border-dark-border flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 text-charcoal-600" aria-hidden="true" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-white text-sm">{item.title}</p>
-                      <p className="text-primary-300 text-sm">{item.desc}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="md:col-span-2">
-              <h4 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <Mail className="w-6 h-6 text-charcoal-400" aria-hidden="true" />
-                Contacto
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary-200 border border-dark-border flex items-center justify-center flex-shrink-0">
-                      <info.icon className="w-5 h-5 text-primary-900" aria-hidden="true" />
-                    </div>
-                    <p className="text-primary-300 text-sm">{info.text}</p>
-                  </div>
-                ))}
+        <div className="mt-12 pt-10 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            {contactInfo.map((info, index) => (
+              <div key={index} className="flex items-start gap-3 mb-3 last:mb-0">
+                <info.icon className="w-4 h-4 text-mustard-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                <p className="text-primary-300 text-sm">{info.text}</p>
               </div>
+            ))}
+          </div>
 
-              <form className="space-y-4 max-w-md" action="/contacto" method="POST">
-                <h5 className="font-medium text-white">Suscríbete a nuestro newsletter</h5>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="email"
-                    placeholder="Tu correo electrónico"
-                    className="flex-1 input"
-                    required
-                    aria-label="Correo electrónico"
-                  />
-                  <button type="submit" className="btn-primary whitespace-nowrap">
-                    Suscribirse
-                  </button>
-                </div>
-                <p className="text-primary-300 text-xs">Al suscribirte aceptas nuestra <Link to="/politica-privacidad" className="underline hover:text-white">Política de privacidad</Link>.</p>
-              </form>
+          <form className="w-full md:max-w-sm md:justify-self-end" action="/contacto" method="POST">
+            <h5 className="font-medium text-white text-sm mb-3">Suscríbete a nuestro newsletter</h5>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="Tu correo electrónico"
+                className="flex-1 min-w-0 px-3.5 py-2.5 rounded-lg bg-white/10 border border-white/15 text-white placeholder:text-primary-400 text-sm focus:outline-none focus:ring-2 focus:ring-mustard-400/50"
+                required
+                aria-label="Correo electrónico"
+              />
+              <button type="submit" className="px-4 py-2.5 rounded-lg bg-mustard-500 text-primary-950 text-sm font-semibold hover:bg-mustard-400 transition-colors whitespace-nowrap">
+                Suscribirse
+              </button>
             </div>
-          </div>
-
-          <div className="pt-8 border-t border-dark-border flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-primary-400 text-sm">
-              © {currentYear} Hocico Pet Shop. Todos los derechos reservados.
+            <p className="text-primary-400 text-xs mt-2.5">
+              Al suscribirte aceptas nuestra <Link to="/politica-privacidad" className="underline hover:text-white">Política de privacidad</Link>.
             </p>
-            <nav aria-label="Enlaces legales" className="flex flex-wrap items-center gap-4 md:gap-6">
-              {footerLinks.legal.map(link => (
-                <Link key={link.href} to={link.href} className="text-primary-400 hover:text-white transition-colors text-sm">
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
+          </form>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10">
+        <div className="container-custom py-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p className="text-primary-500 text-xs">
+            © {currentYear} Hocico Pet Shop. Todos los derechos reservados.
+          </p>
+          <nav aria-label="Enlaces legales" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            {footerLinks.legal.map(link => (
+              <Link key={link.href} to={link.href} className="text-primary-500 hover:text-white transition-colors text-xs">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

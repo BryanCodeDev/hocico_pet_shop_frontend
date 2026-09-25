@@ -17,7 +17,7 @@ export default function CheckoutSuccess() {
         noindex
       />
 
-      <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
+      <div className="min-h-screen bg-cream bg-paw-pattern pt-20 flex items-center justify-center">
         <div className="container-custom py-20 px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

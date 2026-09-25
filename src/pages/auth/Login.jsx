@@ -68,13 +68,13 @@ export default function Login() {
             Volver al inicio
           </Link>
 
-          <div className="bg-primary-50 border border-dark-border rounded-2xl p-6 sm:p-8 shadow-card">
+          <div className="bg-primary-50 border border-charcoal-100 rounded-2xl p-6 sm:p-8 shadow-card">
             <div className="text-center mb-6">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-charcoal-600 to-charcoal-700 flex items-center justify-center mx-auto mb-5">
                 <LockKeyhole className="w-7 h-7 text-white" />
               </div>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900 mb-2">Bienvenido de nuevo</h1>
-              <p className="text-primary-900">Inicia sesión para continuar comprando</p>
+              <p className="text-primary-900/60">Inicia sesión para continuar comprando</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
@@ -126,7 +126,7 @@ export default function Login() {
 
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <label className="flex items-center gap-2 text-sm text-primary-900 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded" />
+                  <input type="checkbox" className="w-4 h-4 text-charcoal-600 border-charcoal-200 bg-charcoal-50 focus:ring-charcoal-500 rounded" />
                   Recordarme
                 </label>
                 <Link to="/recuperar-password" className="text-sm text-charcoal-600 hover:text-charcoal-500 transition-colors">
@@ -150,10 +150,10 @@ export default function Login() {
               </button>
             </form>
 
-            <div className="my-5 border-t border-dark-border" />
+            <div className="my-5 border-t border-charcoal-100" />
 
             <div className="text-center">
-              <p className="text-primary-900 text-sm">
+              <p className="text-primary-900/70 text-sm">
                 ¿No tienes cuenta?{' '}
                 <Link to="/registro" className="text-charcoal-600 hover:text-charcoal-500 font-medium transition-colors">
                   Regístrate aquí
@@ -162,7 +162,7 @@ export default function Login() {
             </div>
           </div>
 
-          <div className="mt-5 text-center text-primary-900 text-xs">
+          <div className="mt-5 text-center text-primary-900/50 text-xs">
             <p>Al iniciar sesión aceptas nuestros <Link to="/terminos" className="underline hover:text-charcoal-600">Términos y condiciones</Link>.</p>
           </div>
         </motion.div>

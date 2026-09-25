@@ -24,7 +24,7 @@ export default function About() {
         description="Conoce a Hocico Pet Shop: tu tienda online de alimentos, snacks y accesorios para perros y gatas. Selección curada, garantía oficial, envíos a Mosquera, Madrid y Funza."
       />
 
-      <div className="min-h-screen bg-white pt-20">
+      <div className="min-h-screen bg-cream pt-20">
         <section className="py-20 lg:py-28" aria-labelledby="about-hero">
           <div className="container-custom">
             <motion.div
@@ -33,13 +33,14 @@ export default function About() {
               transition={{ duration: 0.6 }}
               className="max-w-4xl mx-auto text-center"
             >
-              <h1 id="about-hero" className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-primary-900 mb-6">
+              <span className="badge-gold mb-5">Desde 2020 en Cundinamarca</span>
+              <h1 id="about-hero" className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-primary-900 mb-6 mt-4">
                 MÁS QUE UNA TIENDA,<br />
-                <span className="bg-gradient-to-r from-charcoal-500 via-charcoal-600 to-charcoal-700 bg-clip-text text-transparent">
+                <span className="text-gradient-luxury">
                   TU COMPAÑERO FELIZ
                 </span>
               </h1>
-              <p className="text-lg sm:text-xl text-primary-900 leading-relaxed">
+              <p className="text-lg sm:text-xl text-primary-800 leading-relaxed max-w-2xl mx-auto">
                 Hocico Pet Shop nace de la pasión por las mascotas y el compromiso de ofrecer solo lo mejor para tu mejor amigo.
                 No somos un marketplace más: somos amantes de las mascotas que curamos cada producto con cariño.
               </p>
@@ -47,7 +48,7 @@ export default function About() {
           </div>
         </section>
 
-        <section className="py-20 lg:py-28 bg-primary-50/50" aria-labelledby="values-title">
+        <section className="py-20 lg:py-28 bg-charcoal-50/40" aria-labelledby="values-title">
           <div className="container-custom">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -57,26 +58,33 @@ export default function About() {
               className="text-center mb-16"
             >
               <h2 id="values-title" className="section-title mx-auto mb-4">NUESTROS VALORES</h2>
-              <p className="text-primary-900 max-w-2xl mx-auto">Lo que nos diferencia y nos impulsa cada día a cuidar de tus mascotas</p>
+              <p className="text-primary-900/60 max-w-2xl mx-auto">Lo que nos diferencia y nos impulsa cada día a cuidar de tus mascotas</p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {features.map((feature, index) => (
-                <motion.article
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-100px' }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group p-6 lg:p-8 bg-primary-50 border border-dark-border rounded-2xl hover:border-charcoal-300 hover:shadow-card-hover transition-all duration-500"
-                >
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-charcoal-600/10 to-charcoal-500/5 border border-charcoal-600/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <feature.icon className="w-7 h-7 text-charcoal-600" aria-hidden="true" />
-                  </div>
-                  <h3 className="font-display font-semibold text-xl text-primary-900 mb-3">{feature.title}</h3>
-                  <p className="text-primary-900 leading-relaxed">{feature.desc}</p>
-                </motion.article>
-              ))}
+              {features.map((feature, index) => {
+                const accent = index % 3 === 1
+                return (
+                  <motion.article
+                    key={feature.title}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-100px' }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="group p-6 lg:p-8 bg-white border border-charcoal-100 rounded-2xl hover:border-charcoal-300 hover:shadow-card-hover transition-all duration-500"
+                  >
+                    <div className={`w-14 h-14 rounded-xl border flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 ${
+                      accent
+                        ? 'bg-mustard-500/10 border-mustard-500/30'
+                        : 'bg-charcoal-600/10 border-charcoal-600/20'
+                    }`}>
+                      <feature.icon className={`w-7 h-7 ${accent ? 'text-mustard-700' : 'text-charcoal-600'}`} aria-hidden="true" />
+                    </div>
+                    <h3 className="font-display font-semibold text-xl text-primary-900 mb-3">{feature.title}</h3>
+                    <p className="text-primary-800 leading-relaxed">{feature.desc}</p>
+                  </motion.article>
+                )
+              })}
             </div>
           </div>
         </section>
@@ -91,7 +99,7 @@ export default function About() {
               className="max-w-4xl mx-auto"
             >
               <h2 id="story-title" className="section-title mb-8 text-center">NUESTRA HISTORIA</h2>
-              <div className="prose prose max-w-none text-primary-900 space-y-6">
+              <div className="prose max-w-none text-primary-900 space-y-6">
                 <p>
                   Hocico Pet Shop nació en 2020 con una misión clara: mejorar la calidad de vida de las mascotas en Colombia.
                   Cansados de productos genéricos y poco efectivos, decidimos crear un espacio donde cada artículo tuviera un
@@ -117,7 +125,7 @@ export default function About() {
           </div>
         </section>
 
-        <section className="py-20 lg:py-28 bg-primary-50/50" aria-labelledby="team-title">
+        <section className="py-20 lg:py-28 bg-charcoal-50/40" aria-labelledby="team-title">
           <div className="container-custom">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -127,7 +135,7 @@ export default function About() {
               className="text-center mb-16"
             >
               <h2 id="team-title" className="section-title mx-auto mb-4">EL EQUIPO</h2>
-              <p className="text-primary-900 max-w-2xl mx-auto">Personas reales detrás de cada pedido, con pasión por las mascotas</p>
+              <p className="text-primary-900/60 max-w-2xl mx-auto">Personas reales detrás de cada pedido, con pasión por las mascotas</p>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -138,14 +146,14 @@ export default function About() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-100px' }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="p-6 bg-primary-50 border border-dark-border rounded-2xl text-center"
+                  className="p-6 bg-white shadow-card border border-charcoal-100 rounded-2xl text-center"
                 >
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-charcoal-600/10 to-charcoal-500/5 border border-charcoal-600/20 flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="w-12 h-12 text-charcoal-600" />
                   </div>
                   <h3 className="font-display font-semibold text-xl text-primary-900">{member.name}</h3>
                   <p className="text-charcoal-600 text-sm mb-2">{member.role}</p>
-                  <p className="text-primary-900">{member.desc}</p>
+                  <p className="text-primary-900/60 text-sm">{member.desc}</p>
                 </motion.article>
               ))}
             </div>
@@ -159,12 +167,12 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="max-w-2xl mx-auto text-center p-8 lg:p-12 bg-primary-50 backdrop-blur-sm border border-dark-border rounded-3xl"
+              className="max-w-2xl mx-auto text-center p-8 lg:p-12 bg-white shadow-card border border-charcoal-100 rounded-3xl"
             >
               <h2 id="cta-title" className="font-display font-bold text-3xl sm:text-4xl text-primary-900 mb-4">
                 ¿Listo para mimar a tu compañero?
               </h2>
-              <p className="text-primary-900 mb-8">
+              <p className="text-primary-900/70 mb-8">
                 Explora nuestro catálogo curado y descubre por qué miles de dueños de mascotas confían en Hocico.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

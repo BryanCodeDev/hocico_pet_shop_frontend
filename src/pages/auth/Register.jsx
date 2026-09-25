@@ -80,13 +80,13 @@ export default function Register() {
             Volver al inicio
           </Link>
 
-          <div className="bg-primary-50 border border-dark-border rounded-2xl p-6 sm:p-8 shadow-card">
+          <div className="bg-primary-50 border border-charcoal-100 rounded-2xl p-6 sm:p-8 shadow-card">
             <div className="text-center mb-6">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-charcoal-600 to-charcoal-700 flex items-center justify-center mx-auto mb-5">
                 <UserPlus className="w-7 h-7 text-white" />
               </div>
               <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900 mb-2">Crea tu cuenta</h1>
-              <p className="text-primary-900">Únete a Hocico Pet Shop y empieza a disfrutar</p>
+              <p className="text-primary-900/60">Únete a Hocico Pet Shop y empieza a disfrutar</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -215,10 +215,10 @@ export default function Register() {
               </button>
             </form>
 
-            <div className="my-5 border-t border-dark-border" />
+            <div className="my-5 border-t border-charcoal-100" />
 
             <div className="text-center">
-              <p className="text-primary-900 text-sm">
+              <p className="text-primary-900/70 text-sm">
                 ¿Ya tienes cuenta?{' '}
                 <Link to="/login" className="text-charcoal-600 hover:text-charcoal-500 font-medium transition-colors">
                   Inicia sesión aquí
@@ -227,7 +227,7 @@ export default function Register() {
             </div>
           </div>
 
-          <div className="mt-5 text-center text-primary-900 text-xs">
+          <div className="mt-5 text-center text-primary-900/50 text-xs">
             <p>Al crear una cuenta aceptas nuestros <Link to="/terminos" className="underline hover:text-charcoal-600">Términos y condiciones</Link> y la <Link to="/politica-privacidad" className="underline hover:text-charcoal-600">Política de privacidad</Link>.</p>
           </div>
         </motion.div>

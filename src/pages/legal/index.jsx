@@ -83,7 +83,7 @@ export default function LegalPage({ pageKey }) {
               <h1 className="font-display font-bold text-2xl sm:text-3xl lg:text-4xl text-primary-900 mb-6 text-center">
                 {pageTitle}
               </h1>
-              <p className="text-primary-900 text-center mb-10">
+              <p className="text-primary-900/60 text-center mb-10">
                 Última actualización: {new Date().toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
 
@@ -110,9 +110,9 @@ export default function LegalPage({ pageKey }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="mt-10 p-5 bg-primary-50 border border-dark-border rounded-xl text-center"
+                className="mt-10 p-5 bg-charcoal-50/50 border border-charcoal-100 rounded-xl text-center"
               >
-                <p className="text-primary-900 text-sm">
+                <p className="text-primary-900/70 text-sm">
                   ¿Dudas sobre esta política? <a href="/contacto" className="text-charcoal-600 hover:underline">Contactanos</a>
                 </p>
               </motion.div>

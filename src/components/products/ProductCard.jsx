@@ -51,7 +51,7 @@ export default function ProductCard({ product, variant = 'default' }) {
   if (product.featured) badges.push({ label: 'DESTACADO', class: 'badge-gold' })
   if (product.stock > 0 && product.stock <= 5) badges.push({ label: `Últimos ${product.stock}`, class: 'badge-stock' })
 
-  const commonImageOverlay = "absolute inset-0 bg-gradient-to-t from-primary-900/10 via-transparent to-transparent"
+  const commonImageOverlay = "absolute inset-0 bg-gradient-to-t from-charcoal-900/15 via-transparent to-transparent pointer-events-none"
 
   if (variant === 'featured') {
     return (
@@ -73,26 +73,25 @@ export default function ProductCard({ product, variant = 'default' }) {
           <div className={commonImageOverlay} />
 
           {badges.length > 0 && (
-            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            <motion.div
+              className="absolute top-3 left-3 flex flex-col gap-1.5 z-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
               {badges.map((badge, idx) => (
-                <motion.span
-                  key={idx}
-                  className={badge.class}
-                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                >
+                <span key={idx} className={badge.class}>
                   {badge.label}
-                </motion.span>
+                </span>
               ))}
-            </div>
+            </motion.div>
           )}
 
           <div className="absolute bottom-3 left-3 right-3 flex flex-col sm:flex-row gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
             <button
               onClick={handleAddToCart}
               disabled={adding || product.stock <= 0}
-              className="flex-1 btn-primary py-2 text-sm group-hover:scale-105 transition-transform disabled:opacity-50"
+              className="flex-1 btn-primary py-2 text-sm disabled:opacity-50"
               aria-label={`Agregar ${product.name} al carrito`}
             >
               {adding ? (
@@ -107,14 +106,14 @@ export default function ProductCard({ product, variant = 'default' }) {
             <button
               onClick={handleBuyNow}
               disabled={product.stock <= 0}
-              className="btn-secondary py-2 px-4 text-sm group-hover:scale-105 transition-transform disabled:opacity-50"
+              className="btn-secondary py-2 px-4 text-sm disabled:opacity-50"
               aria-label={`Comprar ${product.name} ahora`}
             >
               <Zap className="w-4 h-4" aria-hidden="true" />
             </button>
             <button
               onClick={handleWhatsApp}
-              className="btn-whatsapp py-2 px-4 text-sm group-hover:scale-105 transition-transform"
+              className="btn-whatsapp py-2 px-4 text-sm"
               aria-label={`Comprar ${product.name} por WhatsApp`}
             >
               <MessageSquare className="w-4 h-4" aria-hidden="true" />
@@ -142,7 +141,7 @@ export default function ProductCard({ product, variant = 'default' }) {
 
         <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
           <div className="flex items-center gap-2 text-xs text-primary-600">
-            <span className="px-2 py-0.5 bg-primary-100 rounded-full">{product.category}</span>
+            <span className="px-2 py-0.5 bg-charcoal-50 text-charcoal-700 rounded-full font-medium">{product.category}</span>
             {product.brand && <span>· {product.brand}</span>}
           </div>
 
@@ -154,7 +153,7 @@ export default function ProductCard({ product, variant = 'default' }) {
 
           {product.rating && (
             <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+              <Star className="w-4 h-4 fill-mustard-500 text-mustard-500" aria-hidden="true" />
               <span className="text-sm font-medium text-primary-900">{product.rating.toFixed(1)}</span>
               <span className="text-primary-600 text-sm">({product.reviewCount || 0})</span>
             </div>
@@ -171,7 +170,7 @@ export default function ProductCard({ product, variant = 'default' }) {
             <span className={`${stockStatus.class} text-xs font-medium`}>{stockStatus.label}</span>
           </div>
 
-          <div className="flex gap-2 pt-2 border-t border-dark-border">
+          <div className="flex gap-2 pt-3 border-t border-charcoal-100">
             <Link
               to={`/producto/${product.slug}`}
               className="flex-1 btn-secondary text-center text-sm py-2"
@@ -218,26 +217,25 @@ export default function ProductCard({ product, variant = 'default' }) {
         <div className={commonImageOverlay} />
 
         {badges.length > 0 && (
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+          <motion.div
+            className="absolute top-3 left-3 flex flex-col gap-1.5 z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
             {badges.map((badge, idx) => (
-              <motion.span
-                key={idx}
-                className={badge.class}
-                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-              >
+              <span key={idx} className={badge.class}>
                 {badge.label}
-              </motion.span>
+              </span>
             ))}
-          </div>
+          </motion.div>
         )}
 
         <div className="absolute bottom-3 left-3 right-3 flex flex-col sm:flex-row gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
           <button
             onClick={handleAddToCart}
             disabled={adding || product.stock <= 0}
-            className="flex-1 btn-primary py-2 text-sm group-hover:scale-105 transition-transform disabled:opacity-50"
+            className="flex-1 btn-primary py-2 text-sm disabled:opacity-50"
             aria-label={`Agregar ${product.name} al carrito`}
           >
             {adding ? (
@@ -252,14 +250,14 @@ export default function ProductCard({ product, variant = 'default' }) {
           <button
             onClick={handleBuyNow}
             disabled={product.stock <= 0}
-            className="btn-secondary py-2 px-4 text-sm group-hover:scale-105 transition-transform disabled:opacity-50"
+            className="btn-secondary py-2 px-4 text-sm disabled:opacity-50"
             aria-label={`Comprar ${product.name} ahora`}
           >
             <Zap className="w-4 h-4" aria-hidden="true" />
           </button>
           <button
             onClick={handleWhatsApp}
-            className="btn-whatsapp py-2 px-4 text-sm group-hover:scale-105 transition-transform"
+            className="btn-whatsapp py-2 px-4 text-sm"
             aria-label={`Comprar ${product.name} por WhatsApp`}
           >
             <MessageSquare className="w-4 h-4" aria-hidden="true" />
@@ -287,7 +285,7 @@ export default function ProductCard({ product, variant = 'default' }) {
 
       <div className="p-4 space-y-2">
         <div className="flex items-center gap-2 text-xs text-primary-600">
-          <span className="px-2 py-0.5 bg-primary-100 rounded-full">{product.category}</span>
+          <span className="px-2 py-0.5 bg-charcoal-50 text-charcoal-700 rounded-full font-medium">{product.category}</span>
           {product.brand && <span>· {product.brand}</span>}
         </div>
 
@@ -299,7 +297,7 @@ export default function ProductCard({ product, variant = 'default' }) {
 
         {product.rating && (
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" aria-hidden="true" />
+            <Star className="w-4 h-4 fill-mustard-500 text-mustard-500" aria-hidden="true" />
             <span className="text-sm font-medium text-primary-900">{product.rating.toFixed(1)}</span>
             <span className="text-primary-600 text-sm">({product.reviewCount || 0})</span>
           </div>

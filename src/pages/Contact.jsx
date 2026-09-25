@@ -66,7 +66,7 @@ export default function Contact() {
          description="Hocico Pet Shop atiende 24/7 por WhatsApp al +57 313 3245600. Alimentos, snacks y accesorios para perros y gatas. Envíos a Mosquera, Madrid y Funza."
       />
 
-      <div className="min-h-screen bg-white pt-20">
+      <div className="min-h-screen bg-cream pt-20">
         <section className="py-20 lg:py-28" aria-labelledby="contact-hero">
           <div className="container-custom">
             <motion.div

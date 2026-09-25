@@ -15,9 +15,9 @@ export default {
             400: '#E0E0E0',
             500: '#BDBDBD',
             600: '#9E9E9E',
-            700: '#616151',
-            800: '#424242',
-            900: '#111827',
+            700: '#6B6862',
+            800: '#3A3733',
+            900: '#1A1815',
             950: '#0D1A16',
           },
          red: {
@@ -44,11 +44,19 @@ export default {
              800: '#D16C0A',
              900: '#B85C00',
            },
+           // Primary decorative accent — warm, muted gold used sparingly
+           // for badges, underlines and small brand marks (never as a base color).
            mustard: {
+             50: '#FBF6EA',
+             100: '#F5EAD0',
+             200: '#E9D4A0',
+             300: '#DCBE79',
              400: '#C9A860',
              500: '#B89747',
              600: '#A68735',
              700: '#8E7325',
+             800: '#6E591D',
+             900: '#523F15',
            },
           silver: {
             50: '#FFFFFF',
@@ -135,19 +143,20 @@ export default {
         'gradient-gold': 'linear-gradient(135deg, #264C41 0%, #2F5D50 50%, #409083 100%)',
         'gradient-gold-shine': 'linear-gradient(135deg, #1E3C34 0%, #2F5D50 40%, #264C41 70%, #1E3C34 100%)',
         'gradient-silver': 'linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 50%, #E0E0E0 100%)',
-        'gradient-luxury': 'linear-gradient(135deg, #F28C38 0%, #2F5D50 40%, #264C41 70%, #F28C38 100%)',
+        // Brand two-tone: verde menta -> dorado/mostaza, for the one hero moment that earns it
+        'gradient-luxury': 'linear-gradient(135deg, #2F5D50 0%, #3F8A85 45%, #C9A860 100%)',
         'gradient-dark': 'linear-gradient(180deg, #FFFFFF 0%, #FAF9F6 100%)',
         'gradient-card': 'linear-gradient(145deg, #FFFFFF 0%, #FAF9F6 100%)',
         'shimmer': 'linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent)',
       },
       boxShadow: {
-        'gold': '0 4px 20px rgba(47, 93, 80, 0.25)',
-        'gold-sm': '0 1px 4px rgba(47, 93, 80, 0.30)',
-        'gold-lg': '0 8px 32px rgba(47, 93, 80, 0.25)',
-        'inner-gold': 'inset 0 1px 0 rgba(47, 93, 80, 0.2)',
+        'gold': '0 4px 20px rgba(201, 168, 96, 0.25)',
+        'gold-sm': '0 1px 4px rgba(47, 93, 80, 0.20)',
+        'gold-lg': '0 8px 32px rgba(201, 168, 96, 0.22)',
+        'inner-gold': 'inset 0 1px 0 rgba(201, 168, 96, 0.2)',
         'silver': '0 4px 16px rgba(158, 158, 158, 0.08)',
-        'card': '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)',
-        'card-hover': '0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)',
+        'card': '0 1px 3px rgba(26, 24, 21, 0.05), 0 1px 2px rgba(26, 24, 21, 0.03)',
+        'card-hover': '0 8px 20px rgba(26, 24, 21, 0.08), 0 2px 6px rgba(26, 24, 21, 0.05)',
       },
       borderWidth: {
         '1': '1px',
@@ -167,8 +176,10 @@ export default {
           'silver-400': '#BDBDBD',
           'silver-500': '#9E9E9E',
           'silver-600': '#616151',
-          'dark-border': '#2F5D50',
-            'dark-border-light': '#2F5D50',
+          // Neutral, warm hairline border — brand green is reserved for
+          // hover/active states and CTAs, not for outlining every element.
+          'dark-border': '#E5E2D9',
+          'dark-border-light': '#EFEDE5',
         },
       transitionDuration: {
         '400': '400ms',

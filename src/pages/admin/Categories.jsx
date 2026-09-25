@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Plus, Edit, Trash2, Eye, EyeOff, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, EyeOff, Image as ImageIcon, Loader2, Sparkles, X } from 'lucide-react'
 import SEO from '../../components/seo/SEO'
 import { adminCategoryService } from '../../services/admin'
 import toast from 'react-hot-toast'
@@ -149,7 +149,7 @@ export default function AdminCategories() {
         >
           <div>
             <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Categorías</h1>
-            <p className="text-primary-900 mt-2">{categories.length} categorías en el catálogo</p>
+            <p className="text-primary-700 mt-2">{categories.length} categorías en el catálogo</p>
           </div>
           <button onClick={() => openForm()} className="btn-primary w-full sm:w-auto justify-center">
             <Plus className="w-5 h-5" />
@@ -163,14 +163,14 @@ export default function AdminCategories() {
             animate={{ opacity: 1, y: 0 }}
             className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-6 min-w-0 pb-6 border-b border-dark-border">
               <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 min-w-0">{editingId ? 'Editar categoría' : 'Nueva categoría'}</h2>
-              <button onClick={closeForm} className="min-h-10 min-w-10 p-2 text-primary-900 hover:text-charcoal-600 transition-colors flex-shrink-0" aria-label="Cerrar formulario">
-                <Trash2 className="w-5 h-5" />
+              <button onClick={closeForm} className="min-h-10 min-w-10 p-2 text-primary-700 hover:text-charcoal-600 hover:bg-primary-100 rounded-lg transition-colors flex-shrink-0" aria-label="Cerrar formulario">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6 min-w-0">
+            <form onSubmit={handleSubmit} className="space-y-6 min-w-0 pt-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 min-w-0">
                 <div>
                   <label htmlFor="name" className="label">Nombre *</label>
@@ -290,7 +290,7 @@ export default function AdminCategories() {
             <div className="overflow-x-auto min-w-0">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-dark-border bg-primary-50/50 text-left text-primary-900">
+                  <tr className="border-b border-dark-border bg-primary-50/50 text-left text-primary-700">
                     <th className="py-4 px-6 font-medium">Categoría</th>
                     <th className="py-4 px-6 font-medium">Slug</th>
                     <th className="py-4 px-6 font-medium">Productos</th>
@@ -318,14 +318,14 @@ export default function AdminCategories() {
                           )}
                           <div className="min-w-0">
                             <p className="font-medium text-primary-900 truncate">{category.name}</p>
-                            <p className="text-primary-900 text-xs truncate">{category.description || 'Sin descripción'}</p>
+                            <p className="text-primary-700 text-xs truncate">{category.description || 'Sin descripción'}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-primary-900">{category.slug}</td>
+                      <td className="py-4 px-6 text-primary-700 font-mono text-xs">{category.slug}</td>
                       <td className="py-4 px-6 text-primary-900">{category.product_count || 0}</td>
                       <td className="py-4 px-6">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${category.is_active ? 'bg-green-600/20 text-green-400 border border-green-600/30' : 'bg-red-600/20 text-red-500 border border-red-600/30'}`}>
+                        <span className={category.is_active ? 'badge-stock' : 'badge-red'}>
                           {category.is_active ? 'Activa' : 'Inactiva'}
                         </span>
                       </td>

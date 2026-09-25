@@ -30,6 +30,17 @@ const emptyForm = {
   metaDescription: '',
 }
 
+function SectionHeader({ icon: Icon, children }) {
+  return (
+    <h2 className="font-display font-semibold text-lg text-primary-900 mb-6 flex items-center gap-3">
+      <span className="w-9 h-9 rounded-lg bg-charcoal-50 flex items-center justify-center flex-shrink-0">
+        <Icon className="w-4.5 h-4.5 text-charcoal-700" aria-hidden="true" />
+      </span>
+      {children}
+    </h2>
+  )
+}
+
 export default function AdminProductForm() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -225,7 +236,10 @@ export default function AdminProductForm() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-charcoal-600 border-t-transparent" />
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 rounded-full border-4 border-charcoal-100" />
+          <div className="absolute inset-0 rounded-full border-4 border-charcoal-600 border-t-transparent animate-spin" />
+        </div>
       </div>
     )
   }
@@ -238,17 +252,17 @@ export default function AdminProductForm() {
         noindex
       />
 
-      <div className="space-y-8 min-w-0">
+      <div className="space-y-6 min-w-0">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.4 }}
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div>
-            <div className="flex items-center gap-2 text-primary-900 mb-2">
-              <Link to="/admin/productos" className="min-h-10 min-w-10 inline-flex items-center justify-center hover:text-charcoal-600 transition-colors" aria-label="Volver a productos">
-                <ArrowLeft className="w-5 h-5" />
+            <div className="flex items-center gap-1.5 text-sm text-primary-500 mb-2">
+              <Link to="/admin/productos" className="min-h-8 min-w-8 inline-flex items-center justify-center hover:text-charcoal-700 transition-colors -ml-1.5" aria-label="Volver a productos">
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
               </Link>
               <span>Productos</span>
             </div>
@@ -261,33 +275,30 @@ export default function AdminProductForm() {
           >
             {saving ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                 <span>Guardando...</span>
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" aria-hidden="true" />
                 <span>{isEditing ? 'Guardar cambios' : 'Crear producto'}</span>
               </>
             )}
           </button>
         </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-8 min-w-0">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 min-w-0">
-            <div className="lg:col-span-2 space-y-8 min-w-0">
+        <form onSubmit={handleSubmit} className="space-y-6 min-w-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6 min-w-0">
+            <div className="lg:col-span-2 space-y-5 lg:space-y-6 min-w-0">
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                transition={{ duration: 0.4 }}
+                className="min-w-0 bg-white border border-dark-border rounded-2xl p-4 sm:p-6"
               >
-                <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6 flex flex-wrap items-center gap-2">
-                  <Sparkles className="w-6 h-6 text-charcoal-500" />
-                  Información básica
-                </h2>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 min-w-0">
+                <SectionHeader icon={Sparkles}>Información básica</SectionHeader>
+                <div className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 min-w-0">
                     <div>
                       <label htmlFor="name" className="label">Nombre del producto *</label>
                       <input
@@ -298,7 +309,7 @@ export default function AdminProductForm() {
                         onChange={handleChange}
                         className="input"
                         required
-                        placeholder="Ej: AirPods Pro 2da Generación"
+                        placeholder="Ej: Alimento seco Adulto Raza Pequeña 3kg"
                       />
                     </div>
                     <div>
@@ -312,16 +323,16 @@ export default function AdminProductForm() {
                           onChange={handleChange}
                           className="input min-w-0 flex-1"
                           required
-                          placeholder="AUD-APP-001"
+                          placeholder="ALI-ADU-001"
                         />
-                        <button type="button" onClick={generateSKU} className="btn-secondary px-4 flex-shrink-0" aria-label="Generar SKU">
-                          <Sparkles className="w-5 h-5" />
+                        <button type="button" onClick={generateSKU} className="btn-secondary px-3.5 flex-shrink-0" aria-label="Generar SKU">
+                          <Sparkles className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 min-w-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 min-w-0">
                     <div>
                       <label htmlFor="slug" className="label">Slug (URL amigable) *</label>
                       <div className="flex flex-wrap gap-2 min-w-0">
@@ -333,10 +344,10 @@ export default function AdminProductForm() {
                           onChange={handleChange}
                           className="input min-w-0 flex-1"
                           required
-                          placeholder="airpods-pro-2"
+                          placeholder="alimento-adulto-raza-pequena-3kg"
                         />
-                        <button type="button" onClick={generateSlug} className="btn-secondary px-4 flex-shrink-0" aria-label="Generar slug">
-                          <LinkIcon className="w-5 h-5" />
+                        <button type="button" onClick={generateSlug} className="btn-secondary px-3.5 flex-shrink-0" aria-label="Generar slug">
+                          <LinkIcon className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </div>
                     </div>
@@ -349,7 +360,7 @@ export default function AdminProductForm() {
                         value={form.brand}
                         onChange={handleChange}
                         className="input"
-                        placeholder="Ej: Apple"
+                        placeholder="Ej: Pedigree"
                       />
                     </div>
                   </div>
@@ -373,29 +384,26 @@ export default function AdminProductForm() {
                       name="description"
                       value={form.description}
                       onChange={handleChange}
-                      className="input min-h-[180px] resize-y font-mono text-sm"
+                      className="input min-h-[160px] resize-y font-mono text-sm"
                       placeholder="Descripción HTML o texto completo del producto"
                     />
-                    <p className="text-primary-900 text-xs mt-1">Puedes usar HTML básico (&lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;)</p>
+                    <p className="text-primary-500 text-xs mt-1.5">Puedes usar HTML básico (&lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;)</p>
                   </div>
                 </div>
               </motion.section>
 
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                transition={{ duration: 0.4, delay: 0.05 }}
+                className="min-w-0 bg-white border border-dark-border rounded-2xl p-4 sm:p-6"
               >
-                <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6 flex flex-wrap items-center gap-2">
-                  <Tag className="w-6 h-6 text-charcoal-500" />
-                  Precio e inventario
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 min-w-0">
+                <SectionHeader icon={DollarSign}>Precio e inventario</SectionHeader>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 min-w-0">
                   <div>
                     <label htmlFor="price" className="label">Precio actual *</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-900">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 text-sm">$</span>
                       <input
                         id="price"
                         name="price"
@@ -406,14 +414,14 @@ export default function AdminProductForm() {
                         onChange={handleNumberChange}
                         className="input pl-8"
                         required
-                        placeholder="89900"
+                        placeholder="45900"
                       />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="originalPrice" className="label">Precio anterior</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-900">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-500 text-sm">$</span>
                       <input
                         id="originalPrice"
                         name="originalPrice"
@@ -423,7 +431,7 @@ export default function AdminProductForm() {
                         value={form.originalPrice}
                         onChange={handleNumberChange}
                         className="input pl-8"
-                        placeholder="119900"
+                        placeholder="59900"
                       />
                     </div>
                   </div>
@@ -438,7 +446,7 @@ export default function AdminProductForm() {
                       onChange={handleNumberChange}
                       className="input"
                       required
-                      placeholder="15"
+                      placeholder="25"
                     />
                   </div>
                   <div>
@@ -454,32 +462,29 @@ export default function AdminProductForm() {
                       placeholder="5"
                     />
                   </div>
-                  <div className="flex flex-col gap-3 min-w-0">
+                  <div className="sm:col-span-2 flex flex-col gap-3 min-w-0 pt-1">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         name="isOnSale"
                         checked={form.isOnSale}
                         onChange={handleChange}
-                        className="w-5 h-5 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4.5 h-4.5 text-charcoal-600 border-dark-border bg-white focus:ring-charcoal-400 rounded"
                       />
-                      <span className="text-primary-900 font-medium">Producto en oferta</span>
+                      <span className="text-primary-900 text-sm font-medium">Producto en oferta</span>
                     </label>
                   </div>
                 </div>
               </motion.section>
 
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="min-w-0 bg-white border border-dark-border rounded-2xl p-4 sm:p-6"
               >
-                <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6 flex flex-wrap items-center gap-2">
-                  <Layers className="w-6 h-6 text-charcoal-500" />
-                  Características y especificaciones
-                </h2>
-                  <div className="space-y-8 min-w-0">
+                <SectionHeader icon={Layers}>Características y especificaciones</SectionHeader>
+                <div className="space-y-6 min-w-0">
                   <div>
                     <label htmlFor="warranty" className="label">Garantía</label>
                     <input
@@ -489,12 +494,12 @@ export default function AdminProductForm() {
                       value={form.warranty}
                       onChange={handleChange}
                       className="input"
-                      placeholder="Ej: 12 meses de garantía oficial"
+                      placeholder="Ej: Garantía de satisfacción del fabricante"
                     />
                   </div>
 
                   <div>
-                    <h3 className="label mb-3">Características destacadas</h3>
+                    <h3 className="label mb-2.5">Características destacadas</h3>
                     <div className="flex flex-wrap gap-2 min-w-0 mb-3">
                       <input
                         type="text"
@@ -502,18 +507,18 @@ export default function AdminProductForm() {
                         onChange={(e) => setFeatureInput(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addFeature() } }}
                         className="input min-w-0 flex-1"
-                        placeholder="Ej: Cancelación de ruido activa"
+                        placeholder="Ej: Fórmula con Omega 3 y 6"
                       />
-                      <button type="button" onClick={addFeature} className="btn-secondary px-4 flex-shrink-0" aria-label="Agregar característica">
-                        <Plus className="w-5 h-5" />
+                      <button type="button" onClick={addFeature} className="btn-secondary px-3.5 flex-shrink-0" aria-label="Agregar característica">
+                        <Plus className="w-4 h-4" aria-hidden="true" />
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-2 min-w-0">
                       {form.features.map((feature, index) => (
-                        <span key={index} className="inline-flex min-w-0 max-w-full items-center gap-2 px-3 py-2 bg-primary-100 border border-dark-border rounded-full text-sm text-primary-900">
+                        <span key={index} className="inline-flex min-w-0 max-w-full items-center gap-2 pl-3 pr-1.5 py-1.5 bg-charcoal-50 border border-charcoal-200 rounded-full text-sm text-charcoal-800">
                           <span className="truncate">{feature}</span>
-                          <button type="button" onClick={() => removeFeature(index)} className="min-h-8 min-w-8 text-primary-900 hover:text-charcoal-600 transition-colors flex-shrink-0" aria-label={`Eliminar ${feature}`}>
-                            <X className="w-4 h-4" />
+                          <button type="button" onClick={() => removeFeature(index)} className="min-h-6 min-w-6 flex items-center justify-center text-charcoal-500 hover:text-charcoal-800 transition-colors flex-shrink-0" aria-label={`Eliminar ${feature}`}>
+                            <X className="w-3.5 h-3.5" aria-hidden="true" />
                           </button>
                         </span>
                       ))}
@@ -521,13 +526,13 @@ export default function AdminProductForm() {
                   </div>
 
                   <div>
-                    <h3 className="label mb-3">Especificaciones técnicas</h3>
+                    <h3 className="label mb-2.5">Especificaciones técnicas</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3 min-w-0">
                       <input
                         type="text"
                         value={specKey}
                         onChange={(e) => setSpecKey(e.target.value)}
-                        placeholder="Clave (Ej: Batería)"
+                        placeholder="Clave (Ej: Peso neto)"
                         className="input"
                       />
                       <div className="flex flex-wrap gap-2 min-w-0">
@@ -536,23 +541,23 @@ export default function AdminProductForm() {
                           value={specValue}
                           onChange={(e) => setSpecValue(e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSpecification() } }}
-                          placeholder="Valor (Ej: 30 horas)"
+                          placeholder="Valor (Ej: 3 kg)"
                           className="input min-w-0 flex-1"
                         />
-                        <button type="button" onClick={addSpecification} className="btn-secondary px-4 flex-shrink-0" aria-label="Agregar especificación">
-                          <Plus className="w-5 h-5" />
+                        <button type="button" onClick={addSpecification} className="btn-secondary px-3.5 flex-shrink-0" aria-label="Agregar especificación">
+                          <Plus className="w-4 h-4" aria-hidden="true" />
                         </button>
                       </div>
                     </div>
                     <div className="space-y-2">
                       {Object.entries(form.specifications).map(([key, value]) => (
-                        <div className="flex min-w-0 flex-wrap items-center justify-between gap-2 p-3 bg-primary-100 border border-dark-border rounded-xl">
+                        <div key={key} className="flex min-w-0 flex-wrap items-center justify-between gap-2 p-3 bg-primary-50 border border-dark-border rounded-xl">
                           <div className="min-w-0">
-                            <p className="font-medium text-primary-900 truncate">{key}</p>
-                            <p className="text-primary-900 text-sm truncate">{value}</p>
+                            <p className="font-medium text-primary-900 text-sm truncate">{key}</p>
+                            <p className="text-primary-600 text-sm truncate">{value}</p>
                           </div>
-                          <button type="button" onClick={() => removeSpecification(key)} className="min-h-10 min-w-10 p-2 text-primary-900 hover:text-charcoal-600 transition-colors flex-shrink-0" aria-label={`Eliminar ${key}`}>
-                            <X className="w-5 h-5" />
+                          <button type="button" onClick={() => removeSpecification(key)} className="min-h-9 min-w-9 flex items-center justify-center text-primary-500 hover:text-charcoal-700 transition-colors flex-shrink-0" aria-label={`Eliminar ${key}`}>
+                            <X className="w-4 h-4" aria-hidden="true" />
                           </button>
                         </div>
                       ))}
@@ -562,16 +567,13 @@ export default function AdminProductForm() {
               </motion.section>
 
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                transition={{ duration: 0.4, delay: 0.15 }}
+                className="min-w-0 bg-white border border-dark-border rounded-2xl p-4 sm:p-6"
               >
-                <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6 flex flex-wrap items-center gap-2">
-                  <Tag className="w-6 h-6 text-charcoal-500" />
-                  SEO
-                </h2>
-                <div className="space-y-6">
+                <SectionHeader icon={Tag}>SEO</SectionHeader>
+                <div className="space-y-5">
                   <div>
                     <label htmlFor="metaTitle" className="label">Meta title</label>
                     <input
@@ -584,7 +586,7 @@ export default function AdminProductForm() {
                       maxLength={200}
                       placeholder={`${form.name || 'Nombre del producto'} | Hocico Pet Shop`}
                     />
-                    <p className="text-primary-900 text-xs mt-1">Recomendado: menos de 60 caracteres</p>
+                    <p className="text-primary-500 text-xs mt-1.5">Recomendado: menos de 60 caracteres</p>
                   </div>
                   <div>
                     <label htmlFor="metaDescription" className="label">Meta description</label>
@@ -597,24 +599,21 @@ export default function AdminProductForm() {
                       maxLength={300}
                       placeholder="Descripción para motores de búsqueda"
                     />
-                    <p className="text-primary-900 text-xs mt-1">Recomendado: 150-160 caracteres</p>
+                    <p className="text-primary-500 text-xs mt-1.5">Recomendado: 150-160 caracteres</p>
                   </div>
                 </div>
               </motion.section>
             </div>
 
-            <div className="space-y-8 min-w-0">
+            <div className="space-y-5 lg:space-y-6 min-w-0">
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                transition={{ duration: 0.4, delay: 0.2 }}
+                className="min-w-0 bg-white border border-dark-border rounded-2xl p-4 sm:p-6"
               >
-                <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6 flex flex-wrap items-center gap-2">
-                  <Tag className="w-6 h-6 text-charcoal-500" />
-                  Categoría y estado
-                </h2>
-                <div className="space-y-6">
+                <SectionHeader icon={Tag}>Categoría y estado</SectionHeader>
+                <div className="space-y-5">
                   <div>
                     <label htmlFor="categoryId" className="label">Categoría *</label>
                     <select
@@ -632,16 +631,16 @@ export default function AdminProductForm() {
                     </select>
                   </div>
 
-                  <div className="flex flex-col gap-3 min-w-0">
+                  <div className="flex flex-col gap-3 min-w-0 pt-1">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         name="isActive"
                         checked={form.isActive}
                         onChange={handleChange}
-                        className="w-5 h-5 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4.5 h-4.5 text-charcoal-600 border-dark-border bg-white focus:ring-charcoal-400 rounded"
                       />
-                      <span className="text-primary-900 font-medium">Producto activo</span>
+                      <span className="text-primary-900 text-sm font-medium">Producto activo</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -649,9 +648,9 @@ export default function AdminProductForm() {
                         name="isFeatured"
                         checked={form.isFeatured}
                         onChange={handleChange}
-                        className="w-5 h-5 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4.5 h-4.5 text-charcoal-600 border-dark-border bg-white focus:ring-charcoal-400 rounded"
                       />
-                      <span className="text-primary-900 font-medium">Destacado en home</span>
+                      <span className="text-primary-900 text-sm font-medium">Destacado en home</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -659,9 +658,9 @@ export default function AdminProductForm() {
                         name="isNew"
                         checked={form.isNew}
                         onChange={handleChange}
-                        className="w-5 h-5 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4.5 h-4.5 text-charcoal-600 border-dark-border bg-white focus:ring-charcoal-400 rounded"
                       />
-                      <span className="text-primary-900 font-medium">Nuevo ingreso</span>
+                      <span className="text-primary-900 text-sm font-medium">Nuevo ingreso</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
@@ -669,45 +668,42 @@ export default function AdminProductForm() {
                         name="isOnSale"
                         checked={form.isOnSale}
                         onChange={handleChange}
-                        className="w-5 h-5 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4.5 h-4.5 text-charcoal-600 border-dark-border bg-white focus:ring-charcoal-400 rounded"
                       />
-                      <span className="text-primary-900 font-medium">En oferta</span>
+                      <span className="text-primary-900 text-sm font-medium">En oferta</span>
                     </label>
                   </div>
                 </div>
               </motion.section>
 
               <motion.section
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="min-w-0 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                transition={{ duration: 0.4, delay: 0.25 }}
+                className="min-w-0 bg-white border border-dark-border rounded-2xl p-4 sm:p-6"
               >
-                <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6 flex flex-wrap items-center gap-2">
-                  <ImageIcon className="w-6 h-6 text-charcoal-500" />
-                  Imágenes
-                </h2>
+                <SectionHeader icon={ImageIcon}>Imágenes</SectionHeader>
                 <div className="space-y-4">
-                  <label className="block w-full border-2 border-dashed border-dark-border hover:border-charcoal-300 rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-colors">
-                    <Upload className="w-8 h-8 text-primary-700 mx-auto mb-3" />
-                    <p className="text-primary-900 font-medium mb-1">Subir imágenes</p>
-                    <p className="text-primary-900 text-sm">PNG, JPG, WebP · Máx 10MB cada una</p>
+                  <label className="block w-full border-2 border-dashed border-dark-border hover:border-charcoal-300 rounded-xl p-6 sm:p-8 text-center cursor-pointer transition-colors bg-primary-50/40">
+                    <Upload className="w-7 h-7 text-primary-500 mx-auto mb-3" aria-hidden="true" />
+                    <p className="text-primary-900 font-medium text-sm mb-1">Subir imágenes</p>
+                    <p className="text-primary-500 text-xs">PNG, JPG, WebP · Máx 10MB cada una</p>
                     <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
                   </label>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
+                  <div className="grid grid-cols-2 gap-3 min-w-0">
                     {previews.map((preview, index) => (
-                      <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-primary-100 border border-dark-border group">
+                      <div key={index} className="relative aspect-square rounded-xl overflow-hidden bg-primary-50 border border-dark-border group">
                         <img src={preview} alt={`Vista previa ${index + 1}`} className="w-full h-full object-cover" />
                         {index === 0 && (
-                          <span className="absolute top-2 left-2 px-2 py-1 bg-charcoal-600 text-white text-xs font-bold rounded-full">Principal</span>
+                          <span className="absolute top-2 left-2 px-2 py-0.5 bg-charcoal-600 text-white text-[10px] font-bold rounded-full uppercase tracking-wide">Principal</span>
                         )}
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <button type="button" onClick={() => setMainImage(index)} className="min-h-10 min-w-10 p-2 bg-primary-50 hover:bg-charcoal-600 rounded-lg transition-colors" aria-label="Establecer como principal">
-                            <Sparkles className="w-5 h-5 text-white" />
+                        <div className="absolute inset-0 bg-primary-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <button type="button" onClick={() => setMainImage(index)} className="min-h-9 min-w-9 p-2 bg-white/90 hover:bg-white rounded-lg transition-colors" aria-label="Establecer como principal">
+                            <Sparkles className="w-4 h-4 text-charcoal-700" aria-hidden="true" />
                           </button>
-                          <button type="button" onClick={() => removeImage(index)} className="min-h-10 min-w-10 p-2 bg-primary-50 hover:bg-charcoal-600 rounded-lg transition-colors" aria-label={`Eliminar imagen ${index + 1}`}>
-                            <Trash2 className="w-5 h-5 text-white" />
+                          <button type="button" onClick={() => removeImage(index)} className="min-h-9 min-w-9 p-2 bg-white/90 hover:bg-white rounded-lg transition-colors" aria-label={`Eliminar imagen ${index + 1}`}>
+                            <Trash2 className="w-4 h-4 text-red-600" aria-hidden="true" />
                           </button>
                         </div>
                       </div>
@@ -715,7 +711,7 @@ export default function AdminProductForm() {
                   </div>
 
                   {previews.length === 0 && (
-                    <p className="text-primary-900 text-sm text-center">La primera imagen será la principal</p>
+                    <p className="text-primary-500 text-xs text-center">La primera imagen será la principal</p>
                   )}
                 </div>
               </motion.section>

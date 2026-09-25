@@ -12,7 +12,7 @@ export default function NotFound() {
         noindex
       />
 
-      <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
+      <div className="min-h-screen bg-cream bg-paw-pattern pt-20 flex items-center justify-center">
         <div className="container-custom py-20 px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -24,9 +24,9 @@ export default function NotFound() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.2 }}
-              className="w-32 h-32 rounded-full bg-primary-50 border border-dark-border flex items-center justify-center mx-auto mb-8"
+              className="w-32 h-32 rounded-full bg-white border-2 border-mustard-300 flex items-center justify-center mx-auto mb-8 shadow-gold"
             >
-              <SearchX className="w-16 h-16 text-charcoal-500" />
+              <SearchX className="w-16 h-16 text-charcoal-600" />
             </motion.div>
 
             <motion.p

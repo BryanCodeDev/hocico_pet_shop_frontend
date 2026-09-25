@@ -54,14 +54,14 @@ export default function AdminDashboard() {
   }
 
   const statCards = [
-    { label: 'Ventas totales', value: stats.totalSales, icon: DollarSign, color: 'gold', format: 'money' },
-    { label: 'Ventas de hoy', value: stats.todaySales, icon: TrendingUp, color: 'gold', format: 'money' },
-    { label: 'Ventas del mes', value: stats.monthSales, icon: ShoppingCart, color: 'gold', format: 'money' },
-    { label: 'Pedidos totales', value: stats.totalOrders, icon: Package, color: 'gold', format: 'number' },
-    { label: 'Pedidos pendientes', value: stats.pendingOrders, icon: Clock, color: 'gold', format: 'number' },
-    { label: 'Productos', value: stats.totalProducts, icon: Package, color: 'gold', format: 'number' },
-    { label: 'Usuarios', value: stats.totalUsers, icon: Users, color: 'gold', format: 'number' },
-    { label: 'Stock bajo', value: stats.lowStockCount, icon: AlertTriangle, color: 'gold', format: 'number' },
+    { label: 'Ventas totales', value: stats.totalSales, icon: DollarSign, color: 'mint', format: 'money' },
+    { label: 'Ventas de hoy', value: stats.todaySales, icon: TrendingUp, color: 'mint', format: 'money' },
+    { label: 'Ventas del mes', value: stats.monthSales, icon: ShoppingCart, color: 'mint', format: 'money' },
+    { label: 'Pedidos totales', value: stats.totalOrders, icon: Package, color: 'mint', format: 'number' },
+    { label: 'Pedidos pendientes', value: stats.pendingOrders, icon: Clock, color: 'mustard', format: 'number' },
+    { label: 'Productos', value: stats.totalProducts, icon: Package, color: 'mint', format: 'number' },
+    { label: 'Usuarios', value: stats.totalUsers, icon: Users, color: 'mint', format: 'number' },
+    { label: 'Stock bajo', value: stats.lowStockCount, icon: AlertTriangle, color: stats.lowStockCount > 0 ? 'alert' : 'mint', format: 'number' },
   ]
 
   const salesData = salesChart?.labels?.map((label, index) => ({
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
           transition={{ duration: 0.5 }}
         >
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Dashboard</h1>
-          <p className="text-primary-900 mt-2">Bienvenido al panel de administración de Hocico Pet Shop</p>
+          <p className="text-primary-700 mt-2">Bienvenido al panel de administración de Hocico Pet Shop</p>
         </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -106,26 +106,29 @@ export default function AdminDashboard() {
             const Icon = card.icon
             const value = card.format === 'money' ? formatPrice(card.value) : card.value
             const colorClasses = {
-              gold: 'bg-charcoal-600/10 text-charcoal-600 border-charcoal-600/20',
+              mint: 'bg-charcoal-600/10 text-charcoal-600 border-charcoal-600/20',
+              mustard: 'bg-mustard-100 text-mustard-800 border-mustard-300',
+              alert: 'bg-red-600/10 text-red-600 border-red-600/20',
             }
+            const tone = colorClasses[card.color]
             return (
               <motion.div
                 key={card.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
-                className="min-w-0 p-4 sm:p-6 bg-primary-50 border border-dark-border rounded-2xl hover:border-charcoal-300 hover:shadow-card-hover transition-all duration-300"
+                className="min-w-0 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl hover:border-charcoal-300 hover:shadow-card-hover transition-all duration-300"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${colorClasses.gold}`}>
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center ${tone}`}>
                     <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <span className={`min-w-0 text-xs font-medium px-2 py-1 rounded-full ${colorClasses.gold}`}>
-                    {card.label}
-                  </span>
+                  {card.color === 'alert' && (
+                    <span className="badge-red">Revisar</span>
+                  )}
                 </div>
                 <p className="min-w-0 font-display font-bold text-xl sm:text-2xl text-primary-900 mb-1 break-words">{value}</p>
-                <p className="text-primary-900 text-sm">{card.label}</p>
+                <p className="text-primary-700 text-sm">{card.label}</p>
               </motion.div>
             )
           })}
@@ -136,19 +139,19 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="min-w-0 lg:col-span-2 p-4 sm:p-6 bg-primary-50 border border-dark-border rounded-2xl overflow-hidden"
+            className="min-w-0 lg:col-span-2 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl overflow-hidden"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <h2 className="font-display font-semibold text-xl text-primary-900">Ventas de los últimos 30 días</h2>
-              <span className="text-primary-900 text-sm">Últimos 30 días</span>
+              <span className="text-primary-700 text-sm">Últimos 30 días</span>
             </div>
             <ResponsiveContainer width="100%" height={320}>
               <BarChart data={salesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis dataKey="name" stroke="#808080" fontSize={12} />
-                <YAxis stroke="#808080" fontSize={12} tickFormatter={(value) => `$${value / 1000}k`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E2D9" />
+                <XAxis dataKey="name" stroke="#6B6862" fontSize={12} />
+                <YAxis stroke="#6B6862" fontSize={12} tickFormatter={(value) => `$${value / 1000}k`} />
                 <Tooltip
-                  contentStyle={{ background: '#111', border: '1px solid #333', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E2D9', borderRadius: '12px', color: '#1A1815', boxShadow: '0 8px 20px rgba(26,24,21,0.08)' }}
                   formatter={(value) => formatPrice(value)}
                 />
                 <Legend />
@@ -161,7 +164,7 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="min-w-0 p-4 sm:p-6 bg-primary-50 border border-dark-border rounded-2xl overflow-hidden"
+            className="min-w-0 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl overflow-hidden"
           >
             <h2 className="font-display font-semibold text-lg sm:text-xl text-primary-900 mb-6">Estado de pedidos</h2>
             <ResponsiveContainer width="100%" height={260}>
@@ -181,7 +184,7 @@ export default function AdminDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ background: '#111', border: '1px solid #333', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E2D9', borderRadius: '12px', color: '#1A1815', boxShadow: '0 8px 20px rgba(26,24,21,0.08)' }}
                   formatter={(value) => `${value} pedidos`}
                 />
               </PieChart>
@@ -190,7 +193,7 @@ export default function AdminDashboard() {
               {pieData.map((entry, index) => (
                 <div key={entry.name} className="flex items-center gap-2 text-sm">
                   <span className="w-3 h-3 rounded-full" style={{ background: COLORS[index] }} />
-                  <span className="text-primary-900">{entry.name}</span>
+                  <span className="text-primary-700">{entry.name}</span>
                   <span className="text-primary-900 font-medium">{entry.value}</span>
                 </div>
               ))}
@@ -203,19 +206,19 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="min-w-0 p-4 sm:p-6 bg-primary-50 border border-dark-border rounded-2xl overflow-hidden"
+            className="min-w-0 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl overflow-hidden"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <h2 className="font-display font-semibold text-xl text-primary-900">Pedidos por estado</h2>
-              <span className="text-primary-900 text-sm">Últimos 30 días</span>
+              <span className="text-primary-700 text-sm">Últimos 30 días</span>
             </div>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={ordersData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis dataKey="name" stroke="#808080" fontSize={12} />
-                <YAxis stroke="#808080" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E2D9" />
+                <XAxis dataKey="name" stroke="#6B6862" fontSize={12} />
+                <YAxis stroke="#6B6862" fontSize={12} />
                 <Tooltip
-                  contentStyle={{ background: '#111', border: '1px solid #333', borderRadius: '12px', color: '#fff' }}
+                  contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E2D9', borderRadius: '12px', color: '#1A1815', boxShadow: '0 8px 20px rgba(26,24,21,0.08)' }}
                 />
                 <Legend />
                 <Line type="monotone" dataKey="total" stroke="#C9A860" strokeWidth={2} dot={{ r: 3 }} />
@@ -229,7 +232,7 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="min-w-0 p-4 sm:p-6 bg-primary-50 border border-dark-border rounded-2xl overflow-hidden"
+            className="min-w-0 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl overflow-hidden"
           >
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <h2 className="font-display font-semibold text-xl text-primary-900">Productos más vendidos</h2>
@@ -237,16 +240,16 @@ export default function AdminDashboard() {
             </div>
             <div className="space-y-4">
               {topProducts.length === 0 ? (
-                <p className="text-primary-900 text-center py-8">No hay productos vendidos aún</p>
+                <p className="text-primary-700 text-center py-8">No hay productos vendidos aún</p>
               ) : topProducts.slice(0, 5).map((product, index) => (
-                <div key={product.id} className="flex flex-wrap items-center gap-3 p-3 bg-primary-100 rounded-xl border border-dark-border">
+                <div key={product.id} className="flex flex-wrap items-center gap-3 p-3 bg-cream-100 rounded-xl border border-dark-border">
 <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center text-charcoal-600 font-bold flex-shrink-0">
                       {index + 1}
                     </div>
                   <img src={product.image || '/assets/images/producto1.webp'} alt={product.name} className="w-12 h-12 rounded-lg object-cover flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-primary-900 truncate">{product.name}</p>
-                    <p className="text-primary-900 text-sm">{product.total_sold} vendidos</p>
+                    <p className="text-primary-700 text-sm">{product.total_sold} vendidos</p>
                   </div>
                   <span className="flex-shrink-0 font-display font-bold text-charcoal-600 text-sm sm:text-base">{formatPrice(product.revenue)}</span>
                 </div>
@@ -259,7 +262,7 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="min-w-0 p-4 sm:p-6 bg-primary-50 border border-dark-border rounded-2xl"
+          className="min-w-0 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl"
         >
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <h2 className="font-display font-semibold text-xl text-primary-900">Alertas de stock bajo</h2>
@@ -274,7 +277,7 @@ export default function AdminDashboard() {
             <div className="overflow-x-auto min-w-0">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-dark-border text-left text-primary-900">
+                  <tr className="border-b border-dark-border text-left text-primary-700">
                     <th className="py-3 pr-4">Producto</th>
                     <th className="py-3 pr-4">SKU</th>
                     <th className="py-3 pr-4">Stock</th>
@@ -287,12 +290,12 @@ export default function AdminDashboard() {
                   {lowStock.map((product) => (
                     <tr key={product.id} className="border-b border-dark-border/50 hover:bg-primary-50/50">
                       <td className="py-3 pr-4 font-medium text-primary-900 truncate max-w-xs">{product.name}</td>
-                      <td className="py-3 pr-4 text-primary-900">{product.sku}</td>
+                      <td className="py-3 pr-4 text-primary-700 font-mono text-xs">{product.sku}</td>
                       <td className={`py-3 pr-4 font-medium ${product.stock <= product.min_stock ? 'text-red-500' : 'text-primary-900'}`}>{product.stock}</td>
-                      <td className="py-3 pr-4 text-primary-900">{product.min_stock}</td>
+                      <td className="py-3 pr-4 text-primary-700">{product.min_stock}</td>
                       <td className="py-3 pr-4 text-charcoal-600">{formatPrice(product.price)}</td>
                       <td className="py-3 pr-4">
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20">Bajo</span>
+                        <span className="badge-red">Bajo</span>
                       </td>
                     </tr>
                   ))}

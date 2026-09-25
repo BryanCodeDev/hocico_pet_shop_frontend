@@ -31,7 +31,7 @@ export default function ProductSkeleton({ variant = 'default' }) {
           <div className="skeleton h-3 w-1/5 rounded" aria-hidden="true" />
         </div>
         <div className="skeleton h-3 w-1/3 rounded-full" aria-hidden="true" />
-        <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-dark-border">
+        <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-charcoal-100">
           <div className="skeleton h-10 flex-1 rounded-lg" aria-hidden="true" />
           <div className="skeleton h-10 w-full sm:w-24 rounded-lg" aria-hidden="true" />
         </div>

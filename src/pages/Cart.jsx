@@ -29,7 +29,7 @@ export default function Cart() {
         noindex
       />
 
-      <div className="min-h-screen bg-white pt-20">
+      <div className="min-h-screen bg-cream pt-20">
         <div className="container-custom py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -38,7 +38,7 @@ export default function Cart() {
             className="mb-8"
           >
             <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary-900">Carrito de compras</h1>
-            <p className="text-primary-900 mt-2">{itemCount} {itemCount === 1 ? 'producto' : 'productos'} en tu carrito</p>
+            <p className="text-primary-900/60 mt-2">{itemCount} {itemCount === 1 ? 'producto' : 'productos'} en tu carrito</p>
           </motion.div>
 
           {loading ? (
@@ -53,9 +53,11 @@ export default function Cart() {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-20 px-4 text-center"
             >
-              <svg className="w-24 h-24 text-primary-800 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a2 2 0 00-2-2H5a2 2 0 00-2 2v4m0 0h14m-5 5v1a2 2 0 01-2 2H7a2 2 0 01-2-2v-1m14-5l-3.5-3.5a2 2 0 00-2.828 0L8 11m7 0l-3.5 3.5a2 2 0 01-2.828 0"/></svg>
+              <div className="w-20 h-20 rounded-full bg-white border border-charcoal-100 flex items-center justify-center mb-6">
+                <svg className="w-9 h-9 text-charcoal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a2 2 0 00-2-2H5a2 2 0 00-2 2v4m0 0h14m-5 5v1a2 2 0 01-2 2H7a2 2 0 01-2-2v-1m14-5l-3.5-3.5a2 2 0 00-2.828 0L8 11m7 0l-3.5 3.5a2 2 0 01-2.828 0"/></svg>
+              </div>
               <h2 className="font-display font-bold text-2xl text-primary-900 mb-2">Tu carrito está vacío</h2>
-              <p className="text-primary-900 mb-8 max-w-md">Aún no has agregado ningún producto. ¡Empieza a explorar nuestra tienda!</p>
+              <p className="text-primary-900/60 mb-8 max-w-md">Aún no has agregado ningún producto. ¡Empieza a explorar nuestra tienda!</p>
               <Link to="/tienda" className="btn-primary inline-flex items-center gap-2">
                 <ArrowLeft className="w-5 h-5" />
                 Continuar comprando
@@ -65,15 +67,15 @@ export default function Cart() {
             <>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                  <div className="bg-primary-50 border border-dark-border rounded-2xl overflow-hidden">
+                  <div className="bg-white border border-charcoal-100 shadow-card rounded-2xl overflow-hidden">
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[600px]" role="table">
                         <thead>
-                          <tr className="border-b border-dark-border bg-primary-50/50">
-                            <th className="px-4 py-3 text-left text-sm font-medium text-primary-900">Producto</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-primary-900 hidden sm:table-cell">Precio</th>
-                            <th className="px-4 py-3 text-center text-sm font-medium text-primary-900">Cantidad</th>
-                            <th className="px-4 py-3 text-right text-sm font-medium text-primary-900">Subtotal</th>
+                          <tr className="border-b border-charcoal-100 bg-charcoal-50/40">
+                            <th className="px-4 py-3 text-left text-sm font-medium text-primary-900/70">Producto</th>
+                            <th className="px-4 py-3 text-center text-sm font-medium text-primary-900/70 hidden sm:table-cell">Precio</th>
+                            <th className="px-4 py-3 text-center text-sm font-medium text-primary-900/70">Cantidad</th>
+                            <th className="px-4 py-3 text-right text-sm font-medium text-primary-900/70">Subtotal</th>
                             <th className="px-4 py-3 text-center text-sm font-medium text-primary-900"></th>
                           </tr>
                         </thead>
@@ -84,7 +86,7 @@ export default function Cart() {
                               initial={{ opacity: 0, x: 20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ duration: 0.4, delay: index * 0.05 }}
-                              className="border-b border-dark-border/50 hover:bg-primary-50/50"
+                              className="border-b border-charcoal-100 hover:bg-charcoal-50/40"
                             >
                               <td className="px-4 py-3">
                                 <Link to={`/producto/${item.slug}`} className="flex items-center gap-3">
@@ -93,9 +95,9 @@ export default function Cart() {
                                   </div>
                                   <div className="min-w-0">
                                     <p className="font-medium text-primary-900 truncate">{item.name}</p>
-                                    <p className="text-primary-900 text-sm">{item.sku}</p>
+                                    <p className="text-primary-900/50 text-sm">{item.sku}</p>
                                     {item.discountPrice && item.price > item.discountPrice && (
-                                      <p className="text-green-600 text-sm">Ahorras {formatPrice((item.price - item.discountPrice) * item.quantity)}</p>
+                                      <p className="text-charcoal-600 text-sm font-medium">Ahorras {formatPrice((item.price - item.discountPrice) * item.quantity)}</p>
                                     )}
                                   </div>
                                 </Link>
@@ -113,7 +115,7 @@ export default function Cart() {
                                   <button
                                     onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                                     disabled={item.quantity <= 1}
-                                    className="w-9 h-9 rounded-lg bg-primary-100 border border-dark-border flex items-center justify-center text-primary-900 hover:border-charcoal-600 hover:text-charcoal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="w-9 h-9 rounded-lg bg-charcoal-50 border border-charcoal-200 flex items-center justify-center text-primary-900 hover:border-charcoal-600 hover:text-charcoal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     aria-label="Disminuir cantidad"
                                   >
                                     <Minus className="w-4 h-4" />
@@ -127,13 +129,13 @@ export default function Cart() {
                                     }}
                                     min="1"
                                     max={item.stock}
-                                    className="w-14 text-center bg-primary-100 border border-dark-border rounded-lg text-primary-900 focus:outline-none focus:border-charcoal-500"
+                                    className="w-14 text-center bg-charcoal-50 border border-charcoal-200 rounded-lg text-primary-900 focus:outline-none focus:border-charcoal-500"
                                     aria-label="Cantidad"
                                   />
                                   <button
                                     onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                                     disabled={item.quantity >= item.stock}
-                                    className="w-9 h-9 rounded-lg bg-primary-100 border border-dark-border flex items-center justify-center text-primary-900 hover:border-charcoal-600 hover:text-charcoal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="w-9 h-9 rounded-lg bg-charcoal-50 border border-charcoal-200 flex items-center justify-center text-primary-900 hover:border-charcoal-600 hover:text-charcoal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     aria-label="Aumentar cantidad"
                                   >
                                     <Plus className="w-4 h-4" />
@@ -159,7 +161,7 @@ export default function Cart() {
                     </div>
 
                     {items.length > 0 && (
-                      <div className="p-6 border-t border-dark-border flex justify-end">
+                      <div className="p-6 border-t border-charcoal-100 flex justify-end">
                         <button
                           onClick={clearCart}
                           className="text-primary-900 hover:text-charcoal-600 text-sm font-medium transition-colors"
@@ -183,28 +185,28 @@ export default function Cart() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="sticky top-24 bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6"
+                    className="sticky top-24 bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6"
                   >
                     <h2 className="font-display font-semibold text-xl text-primary-900 mb-6">Resumen del pedido</h2>
 
                     <div className="space-y-3 mb-6">
                       <div className="flex justify-between text-sm">
-                        <span className="text-primary-900">Subtotal ({itemCount} items)</span>
-                        <span className="text-primary-900">{formatPrice(subtotal)}</span>
+                        <span className="text-primary-900/60">Subtotal ({itemCount} items)</span>
+                        <span className="text-primary-900/80">{formatPrice(subtotal)}</span>
                       </div>
                       {discount > 0 && (
-                        <div className="flex justify-between text-sm text-green-600">
+                        <div className="flex justify-between text-sm text-charcoal-600 font-medium">
                           <span>Descuento</span>
                           <span>-{formatPrice(discount)}</span>
                         </div>
                       )}
-                      <div className="flex justify-between text-sm text-primary-900 border-t border-dark-border pt-3">
+                      <div className="flex justify-between text-sm text-primary-900/60 border-t border-charcoal-100 pt-3">
                         <span>Envío</span>
                         <span>Calcular en checkout</span>
                       </div>
                     </div>
 
-                    <div className="flex justify-between text-xl font-bold mb-6 border-t border-dark-border pt-4">
+                    <div className="flex justify-between text-xl font-bold mb-6 border-t border-charcoal-100 pt-4">
                       <span className="text-primary-900">Total</span>
                       <span className="text-charcoal-600">{formatPrice(total)}</span>
                     </div>
@@ -225,16 +227,16 @@ export default function Cart() {
                       <span>Comprar por WhatsApp</span>
                     </button>
 
-                    <div className="mt-6 pt-6 border-t border-dark-border space-y-3 text-sm">
-                      <div className="flex items-center gap-3 text-primary-900">
+                    <div className="mt-6 pt-6 border-t border-charcoal-100 space-y-3 text-sm">
+                      <div className="flex items-center gap-3 text-primary-900/70">
                         <svg className="w-5 h-5 text-charcoal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         <span>Pago seguro con Mercado Pago</span>
                       </div>
-                      <div className="flex items-center gap-3 text-primary-900">
+                      <div className="flex items-center gap-3 text-primary-900/70">
                         <svg className="w-5 h-5 text-charcoal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         <span>Envíos a todo el país</span>
                       </div>
-                      <div className="flex items-center gap-3 text-primary-900">
+                      <div className="flex items-center gap-3 text-primary-900/70">
                         <svg className="w-5 h-5 text-charcoal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                         <span>Garantía oficial en todos los productos</span>
                       </div>

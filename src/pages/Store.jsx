@@ -153,7 +153,7 @@ export default function Store() {
         type="website"
       />
 
-      <div className="min-h-screen bg-white pt-20">
+      <div className="min-h-screen bg-cream pt-20">
         <div className="container-custom py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

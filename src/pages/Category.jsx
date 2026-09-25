@@ -70,7 +70,7 @@ export default function Category() {
     return (
       <>
         <SEO title="Cargando..." />
-        <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
+        <div className="min-h-screen bg-cream pt-20 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-charcoal-600 border-t-transparent" />
         </div>
       </>
@@ -81,10 +81,10 @@ export default function Category() {
     return (
       <>
         <SEO title="Categoría no encontrada" noindex />
-        <div className="min-h-screen bg-white pt-20 flex items-center justify-center">
+        <div className="min-h-screen bg-cream pt-20 flex items-center justify-center">
           <div className="container-custom text-center py-20">
             <h1 className="font-display font-bold text-3xl text-primary-900 mb-2">Categoría no encontrada</h1>
-            <p className="text-primary-900 mb-6">La categoría que buscas no existe.</p>
+            <p className="text-primary-900/60 mb-6">La categoría que buscas no existe.</p>
             <Link to="/tienda" className="btn-primary inline-flex">Ver todas las categorías</Link>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function Category() {
         type="website"
       />
 
-      <div className="min-h-screen bg-white pt-20">
+      <div className="min-h-screen bg-cream pt-20">
         <div className="container-custom py-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -109,20 +109,20 @@ export default function Category() {
             transition={{ duration: 0.6 }}
             className="mb-8"
           >
-            <nav className="flex items-center gap-2 text-sm text-primary-900 mb-4" aria-label="Breadcrumb">
+            <nav className="flex items-center gap-2 text-sm text-primary-900/60 mb-4" aria-label="Breadcrumb">
               <Link to="/" className="hover:text-charcoal-600 transition-colors">Inicio</Link>
               <span>/</span>
               <Link to="/tienda" className="hover:text-charcoal-600 transition-colors">Tienda</Link>
               <span>/</span>
-              <span className="text-primary-900">{category.name}</span>
+              <span className="text-primary-900 font-medium">{category.name}</span>
             </nav>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary-900">{category.name}</h1>
-                <p className="text-primary-900 mt-2">{category.productCount || 0} {category.productCount === 1 ? 'producto' : 'productos'} disponible{category.productCount !== 1 ? 's' : ''}</p>
+                <p className="text-primary-900/60 mt-2">{category.productCount || 0} {category.productCount === 1 ? 'producto' : 'productos'} disponible{category.productCount !== 1 ? 's' : ''}</p>
               </div>
               {category.description && (
-                <p className="text-primary-900 max-w-2xl">{category.description}</p>
+                <p className="text-primary-900/70 max-w-2xl">{category.description}</p>
               )}
             </div>
             {category.imageUrl && (
@@ -134,7 +134,7 @@ export default function Category() {
 
           <div className="flex flex-col lg:flex-row gap-8">
             <aside className={`lg:w-64 flex-shrink-0 ${mobileFiltersOpen ? 'block' : 'hidden'} lg:block`} aria-label="Filtros">
-              <div className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 sticky top-24">
+              <div className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 sticky top-24">
                 <div className="flex items-center justify-between mb-4 lg:hidden">
                   <h2 className="font-display font-semibold text-lg text-primary-900">Filtros</h2>
                   <button onClick={() => setMobileFiltersOpen(false)} className="p-2 text-primary-900 hover:text-charcoal-600" aria-label="Cerrar filtros">
@@ -172,7 +172,7 @@ export default function Category() {
                           type="checkbox"
                           checked={filters.onSale}
                           onChange={(e) => setFilters({...filters, onSale: e.target.checked})}
-                          className="w-4 h-4 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                          className="w-4 h-4 text-charcoal-600 border-charcoal-200 bg-charcoal-50 focus:ring-charcoal-500 rounded"
                         />
                         <span className="text-sm text-primary-900">Solo ofertas</span>
                       </label>
@@ -181,7 +181,7 @@ export default function Category() {
                           type="checkbox"
                           checked={filters.inStock}
                           onChange={(e) => setFilters({...filters, inStock: e.target.checked})}
-                          className="w-4 h-4 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                          className="w-4 h-4 text-charcoal-600 border-charcoal-200 bg-charcoal-50 focus:ring-charcoal-500 rounded"
                         />
                         <span className="text-sm text-primary-900">Solo en stock</span>
                       </label>
@@ -200,7 +200,7 @@ export default function Category() {
             <main className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <label htmlFor="sort" className="text-sm text-primary-900 hidden sm:block">Ordenar:</label>
+                  <label htmlFor="sort" className="text-sm text-primary-900/60 hidden sm:block">Ordenar:</label>
                   <select
                     id="sort"
                     value={sort}
@@ -226,14 +226,14 @@ export default function Category() {
                   <div className="hidden sm:flex items-center gap-2 ml-auto">
                     <button
                       onClick={() => setViewMode('grid')}
-                      className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20' : 'text-primary-900 hover:text-primary-900 hover:bg-primary-100'}`}
+                      className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20' : 'text-primary-900 hover:text-primary-900 hover:bg-charcoal-50'}`}
                       aria-label="Vista en cuadrícula"
                     >
                       <Grid className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => setViewMode('list')}
-                      className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20' : 'text-primary-900 hover:text-primary-900 hover:bg-primary-100'}`}
+                      className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20' : 'text-primary-900 hover:text-primary-900 hover:bg-charcoal-50'}`}
                       aria-label="Vista en lista"
                     >
                       <List className="w-5 h-5" />
@@ -255,7 +255,7 @@ export default function Category() {
                   className="flex flex-col items-center justify-center py-20 px-4 text-center"
                 >
                   <h2 className="font-display font-bold text-xl text-primary-900 mb-2">No hay productos</h2>
-                  <p className="text-primary-900 mb-6">No se encontraron productos con los filtros actuales</p>
+                  <p className="text-primary-900/60 mb-6">No se encontraron productos con los filtros actuales</p>
                   <button onClick={() => setFilters({ minPrice: '', maxPrice: '', brand: '', onSale: false, inStock: false })} className="btn-outline">Limpiar filtros</button>
                 </motion.div>
               ) : (
@@ -303,7 +303,7 @@ export default function Category() {
                           <button
                             key={pageNum}
                             onClick={() => setCurrentPage(pageNum)}
-                            className={`w-10 h-10 rounded-xl font-medium transition-all ${currentPage === pageNum ? 'bg-charcoal-600 text-white' : 'bg-primary-50 text-primary-900 hover:bg-primary-100 hover:text-primary-900 border border-dark-border'}`}
+                            className={`w-10 h-10 rounded-xl font-medium transition-all ${currentPage === pageNum ? 'bg-charcoal-600 text-white' : 'bg-white text-primary-900 hover:bg-charcoal-50 hover:text-primary-900 border border-charcoal-100'}`}
                             aria-label={`Página ${pageNum}`}
                           >
                             {pageNum}
@@ -347,9 +347,9 @@ export default function Category() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-sm z-50 bg-primary-50 border-l border-dark-border flex flex-col lg:hidden"
+            className="fixed right-0 top-0 h-full w-full max-w-sm z-50 bg-white border-l border-charcoal-100 flex flex-col lg:hidden"
           >
-            <div className="p-4 border-b border-dark-border flex items-center justify-between">
+            <div className="p-4 border-b border-charcoal-100 flex items-center justify-between">
               <h2 className="font-display font-semibold text-lg text-primary-900">Filtros</h2>
               <button
                 onClick={() => setMobileFiltersOpen(false)}
@@ -389,7 +389,7 @@ export default function Category() {
                         type="checkbox"
                         checked={filters.onSale}
                         onChange={(e) => setFilters({...filters, onSale: e.target.checked})}
-                        className="w-4 h-4 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4 h-4 text-charcoal-600 border-charcoal-200 bg-charcoal-50 focus:ring-charcoal-500 rounded"
                       />
                       <span className="text-sm text-primary-900">Solo ofertas</span>
                     </label>
@@ -398,7 +398,7 @@ export default function Category() {
                         type="checkbox"
                         checked={filters.inStock}
                         onChange={(e) => setFilters({...filters, inStock: e.target.checked})}
-                        className="w-4 h-4 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded"
+                        className="w-4 h-4 text-charcoal-600 border-charcoal-200 bg-charcoal-50 focus:ring-charcoal-500 rounded"
                       />
                       <span className="text-sm text-primary-900">Solo en stock</span>
                     </label>

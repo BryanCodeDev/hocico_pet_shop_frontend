@@ -115,24 +115,24 @@ export default function Account() {
 
   const getStatusConfig = (status) => {
     const configs = {
-      pending: { label: 'Pendiente', color: 'blue', bg: 'bg-blue-600/20', text: 'text-blue-400', border: 'border-blue-600/30' },
-      paid: { label: 'Pagado', color: 'blue', bg: 'bg-blue-600/20', text: 'text-blue-400', border: 'border-blue-600/30' },
-      preparing: { label: 'Preparando', color: 'purple', bg: 'bg-purple-600/20', text: 'text-purple-400', border: 'border-purple-600/30' },
-      shipped: { label: 'Enviado', color: 'indigo', bg: 'bg-indigo-600/20', text: 'text-indigo-400', border: 'border-indigo-600/30' },
-      delivered: { label: 'Entregado', color: 'green', bg: 'bg-green-600/20', text: 'text-green-400', border: 'border-green-600/30' },
-      cancelled: { label: 'Cancelado', color: 'red', bg: 'bg-red-600/20', text: 'text-red-500', border: 'border-red-600/30' },
-      refunded: { label: 'Reembolsado', color: 'gray', bg: 'bg-gray-600/20', text: 'text-primary-900', border: 'border-gray-600/30' },
+      pending: { label: 'Pendiente', bg: 'bg-primary-100', text: 'text-primary-700', border: 'border-primary-200' },
+      paid: { label: 'Pagado', bg: 'bg-charcoal-50', text: 'text-charcoal-700', border: 'border-charcoal-200' },
+      preparing: { label: 'Preparando', bg: 'bg-gold-500/10', text: 'text-gold-800', border: 'border-gold-500/25' },
+      shipped: { label: 'Enviado', bg: 'bg-charcoal-100', text: 'text-charcoal-800', border: 'border-charcoal-300' },
+      delivered: { label: 'Entregado', bg: 'bg-charcoal-600', text: 'text-white', border: 'border-charcoal-600' },
+      cancelled: { label: 'Cancelado', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+      refunded: { label: 'Reembolsado', bg: 'bg-primary-100', text: 'text-primary-700', border: 'border-primary-200' },
     }
     return configs[status] || configs.pending
   }
 
   const getPaymentStatusConfig = (status) => {
     const configs = {
-      pending: { label: 'Pendiente', color: 'blue' },
-      approved: { label: 'Aprobado', color: 'green' },
-      rejected: { label: 'Rechazado', color: 'red' },
-      cancelled: { label: 'Cancelado', color: 'gray' },
-      refunded: { label: 'Reembolsado', color: 'blue' },
+      pending: { label: 'Pendiente', bg: 'bg-primary-100', text: 'text-primary-700', border: 'border-primary-200' },
+      approved: { label: 'Aprobado', bg: 'bg-charcoal-600', text: 'text-white', border: 'border-charcoal-600' },
+      rejected: { label: 'Rechazado', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200' },
+      cancelled: { label: 'Cancelado', bg: 'bg-primary-100', text: 'text-primary-700', border: 'border-primary-200' },
+      refunded: { label: 'Reembolsado', bg: 'bg-mustard-500/10', text: 'text-mustard-700', border: 'border-mustard-500/25' },
     }
     return configs[status] || configs.pending
   }
@@ -162,19 +162,19 @@ export default function Account() {
             className="mb-8"
           >
             <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary-900">Mi cuenta</h1>
-            <p className="text-primary-900 mt-2">Gestiona tu perfil, pedidos y preferencias</p>
+            <p className="text-primary-900/60 mt-2">Gestiona tu perfil, pedidos y preferencias</p>
           </motion.div>
 
           <div className="flex flex-col lg:flex-row gap-6">
             <aside className="lg:w-64 flex-shrink-0">
-              <div className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 sticky top-24">
-                <div className="flex items-center gap-3 mb-5 pb-5 border-b border-dark-border">
+              <div className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 sticky top-24">
+                <div className="flex items-center gap-3 mb-5 pb-5 border-b border-charcoal-100">
                   <div className="w-14 h-14 rounded-full bg-gradient-to-br from-charcoal-600 to-charcoal-700 flex items-center justify-center text-white font-bold text-xl">
                     {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
                   </div>
                   <div className="min-w-0">
                     <h2 className="font-display font-semibold text-lg text-primary-900 truncate">{user?.firstName} {user?.lastName}</h2>
-                    <p className="text-primary-900 text-sm truncate">{user?.email}</p>
+                    <p className="text-primary-900/60 text-sm truncate">{user?.email}</p>
                     <span className="inline-block mt-1 px-2 py-0.5 bg-charcoal-600/10 text-charcoal-600 text-xs font-medium rounded-full border border-charcoal-600/20">
                       {user?.role === 'admin' ? 'Administrador' : 'Cliente'}
                     </span>
@@ -203,7 +203,7 @@ export default function Account() {
                   })}
                 </nav>
 
-                <div className="mt-5 pt-5 border-t border-dark-border">
+                <div className="mt-5 pt-5 border-t border-charcoal-100">
                   <button
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-3 py-2.5 text-primary-900 hover:text-charcoal-600 hover:bg-charcoal-600/10 rounded-xl transition-colors"
@@ -220,7 +220,7 @@ export default function Account() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                  className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 lg:p-8"
                 >
                   <h2 className="font-display font-semibold text-xl text-primary-900 mb-5">Información personal</h2>
                   <form onSubmit={handleProfileSubmit} className="space-y-5">
@@ -321,7 +321,7 @@ export default function Account() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                  className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 lg:p-8"
                 >
                   <h2 className="font-display font-semibold text-xl text-primary-900 mb-5">Historial de pedidos</h2>
                   {ordersLoading ? (
@@ -332,9 +332,9 @@ export default function Account() {
                     </div>
                   ) : orders.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <Package className="w-14 h-14 text-primary-800 mb-4" />
+                      <Package className="w-14 h-14 text-charcoal-300 mb-4" />
                       <h3 className="font-display font-semibold text-xl text-primary-900 mb-2">No tienes pedidos aún</h3>
-                      <p className="text-primary-900 mb-5">Tu historial de compras aparecerá aquí</p>
+                      <p className="text-primary-900/60 mb-5">Tu historial de compras aparecerá aquí</p>
                       <Link to="/tienda" className="btn-primary w-full sm:w-auto">Explorar productos</Link>
                     </div>
                   ) : (
@@ -346,24 +346,24 @@ export default function Account() {
                           <Link
                             key={order.id}
                             to={`/cuenta/pedido/${order.id}`}
-                            className="block p-4 bg-primary-100 border border-dark-border rounded-xl hover:border-charcoal-300 transition-all"
+                            className="block p-4 bg-charcoal-50/50 border border-charcoal-100 rounded-xl hover:border-charcoal-300 hover:shadow-card transition-all"
                           >
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
                                   <Package className="w-5 h-5 text-charcoal-500" />
                                 </div>
                                 <div className="min-w-0">
                                   <p className="font-medium text-primary-900 truncate">Pedido #{order.order_number}</p>
-                                  <p className="text-primary-900 text-sm">{formatDate(order.created_at)}</p>
+                                  <p className="text-primary-900/60 text-sm">{formatDate(order.created_at)}</p>
                                 </div>
                               </div>
                               <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
+                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.bg} ${statusConfig.text} border ${statusConfig.border}`}>
                                   {statusConfig.label}
                                 </span>
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${paymentConfig.color === 'green' ? 'bg-green-600/20 text-green-400 border border-green-600/30' : paymentConfig.color === 'red' ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20' : 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20'}`}>
-                                  {paymentConfig.label}
+                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${paymentConfig.bg} ${paymentConfig.text} border ${paymentConfig.border}`}>
+                                  Pago: {paymentConfig.label}
                                 </span>
                                 <span className="font-display font-bold text-lg text-charcoal-600 whitespace-nowrap">{formatPrice(order.total)}</span>
                                 <ChevronRight className="w-4 h-4 text-primary-700 flex-shrink-0" />
@@ -381,24 +381,24 @@ export default function Account() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                  className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 lg:p-8"
                 >
                   <h2 className="font-display font-semibold text-xl text-primary-900 mb-5">Direcciones guardadas</h2>
-                  <p className="text-primary-900 mb-5">Gestiona tus direcciones de envío para compras más rápidas.</p>
+                  <p className="text-primary-900/60 mb-5">Gestiona tus direcciones de envío para compras más rápidas.</p>
                   <div className="space-y-3">
                     {(user?.address ? [{ ...formData, isDefault: true }] : []).map((addr, i) => (
-                      <div key={i} className="p-4 bg-primary-100 border border-dark-border rounded-xl">
+                      <div key={i} className="p-4 bg-charcoal-50/50 border border-charcoal-100 rounded-xl">
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                           <div className="flex-1">
                             <p className="font-medium text-primary-900">{addr.address}</p>
-                            <p className="text-primary-900 text-sm">{addr.city}, {addr.province}</p>
+                            <p className="text-primary-900/60 text-sm">{addr.city}, {addr.province}</p>
                           </div>
                           <span className="px-2 py-1 bg-charcoal-600/10 text-charcoal-600 text-xs font-medium rounded-full border border-charcoal-600/20">Predeterminada</span>
                         </div>
                       </div>
                     ))}
                     {(!user?.address || user?.address.length === 0) && (
-                      <p className="text-primary-900 text-center py-8">No tienes direcciones guardadas</p>
+                      <p className="text-primary-900/60 text-center py-8">No tienes direcciones guardadas</p>
                     )}
                   </div>
                   <button className="btn-outline mt-5 w-full sm:w-auto">Agregar dirección</button>
@@ -409,7 +409,7 @@ export default function Account() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                  className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 lg:p-8"
                 >
                   <h2 className="font-display font-semibold text-xl text-primary-900 mb-5">Seguridad</h2>
                   <form onSubmit={handleSecuritySubmit} className="space-y-5 max-w-md">
@@ -437,7 +437,7 @@ export default function Account() {
                         required
                         minLength={8}
                       />
-                      <p className="text-primary-900 text-xs mt-1">Mínimo 8 caracteres</p>
+                      <p className="text-primary-900/50 text-xs mt-1">Mínimo 8 caracteres</p>
                     </div>
                     <div>
                       <label htmlFor="confirmPassword" className="label">Confirmar nueva contraseña *</label>
@@ -462,18 +462,18 @@ export default function Account() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-primary-50 border border-dark-border rounded-2xl p-4 sm:p-6 lg:p-8"
+                  className="bg-white border border-charcoal-100 shadow-card rounded-2xl p-4 sm:p-6 lg:p-8"
                 >
                   <h2 className="font-display font-semibold text-xl text-primary-900 mb-5">Notificaciones</h2>
-                  <p className="text-primary-900 mb-5">Configura cómo quieres recibir actualizaciones.</p>
+                  <p className="text-primary-900/60 mb-5">Configura cómo quieres recibir actualizaciones.</p>
                   <div className="space-y-3">
                     {['Pedidos y envíos', 'Ofertas y promociones', 'Novedades y lanzamientos', 'Newsletter semanal'].map((item, i) => (
-                      <label key={i} className="flex items-center justify-between p-4 bg-primary-100 border border-dark-border rounded-xl cursor-pointer">
-                        <span className="text-primary-900 pr-3">{item}</span>
+                      <label key={i} className="flex items-center justify-between p-4 bg-charcoal-50/50 border border-charcoal-100 rounded-xl cursor-pointer hover:border-charcoal-200 transition-colors">
+                        <span className="text-primary-900/80 pr-3">{item}</span>
                         <input
                           type="checkbox"
                           defaultChecked={i < 2}
-                          className="w-5 h-5 text-charcoal-600 border-dark-border bg-primary-100 focus:ring-charcoal-500 rounded flex-shrink-0"
+                          className="w-5 h-5 text-charcoal-600 border-charcoal-100 bg-primary-100 focus:ring-charcoal-500 rounded flex-shrink-0"
                         />
                       </label>
                     ))}

@@ -17,7 +17,7 @@
   }
 
   ::selection {
-    @apply bg-charcoal-300/30 text-primary-900;
+    @apply bg-charcoal-200/60 text-charcoal-900;
   }
 
   ::-webkit-scrollbar {
@@ -78,7 +78,7 @@
   }
 
   .input {
-    @apply w-full px-4 py-3 bg-primary-50 border border-dark-border text-primary-900 placeholder:text-charcoal-500 rounded-lg transition-all duration-300 focus:outline-none focus:border-charcoal-400 focus:ring-2 focus:ring-charcoal-300/50;
+    @apply w-full px-4 py-3 bg-primary-50 border border-dark-border text-primary-900 placeholder:text-primary-600 rounded-lg transition-all duration-300 focus:outline-none focus:border-charcoal-400 focus:ring-2 focus:ring-charcoal-300/40;
   }
 
   .label {
@@ -97,16 +97,17 @@
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shadow-sm;
   }
 
+  /* Decorative accent badge — the brand's dorado/mostaza touch, used sparingly */
   .badge-gold {
-    @apply badge bg-charcoal-600/10 text-charcoal-700 border border-charcoal-500/20;
+    @apply badge bg-mustard-100 text-mustard-800 border border-mustard-300;
   }
 
   .badge-new {
-    @apply badge bg-charcoal-600 text-white border border-charcoal-600;
+    @apply badge bg-mustard-500 text-white border border-mustard-500;
   }
 
   .badge-sale {
-    @apply badge bg-charcoal-700 text-white border border-charcoal-700;
+    @apply badge bg-red-600 text-white border border-red-600;
   }
 
   .badge-stock {
@@ -114,11 +115,11 @@
   }
 
   .badge-yellow {
-    @apply badge bg-charcoal-500/10 text-charcoal-600 border border-charcoal-500/20;
+    @apply badge bg-mustard-100 text-mustard-800 border border-mustard-300;
   }
 
   .badge-green {
-    @apply badge bg-green-600/10 text-green-700 border border-green-600/20;
+    @apply badge bg-charcoal-600/10 text-charcoal-700 border border-charcoal-600/20;
   }
 
   .badge-red {
@@ -126,7 +127,7 @@
   }
 
   .badge-blue {
-    @apply badge bg-charcoal-400/10 text-charcoal-600 border border-charcoal-400/20;
+    @apply badge bg-charcoal-400/10 text-charcoal-700 border border-charcoal-400/20;
   }
 
   .link {
@@ -137,20 +138,28 @@
     @apply text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-primary-900 relative inline-block;
   }
 
+  /* Underline is the brand's decorative accent: mostaza, not verde */
   .section-title::after {
-    @apply content-[''] absolute bottom-0 left-0 w-1/2 h-0.5 bg-charcoal-400 rounded-full;
+    @apply content-[''] absolute -bottom-2 left-0 w-12 h-[3px] bg-mustard-500 rounded-full;
   }
 
   .glass {
-    @apply bg-white/80 backdrop-blur-sm border border-charcoal-200/50 shadow-card;
+    @apply bg-white/85 backdrop-blur-sm border border-cream-300 shadow-card;
   }
 
   .text-gradient-gold {
-    @apply bg-gradient-to-r from-charcoal-500 via-charcoal-600 to-charcoal-700 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-mustard-500 via-mustard-600 to-mustard-700 bg-clip-text text-transparent;
   }
 
   .text-gradient-luxury {
-    @apply bg-gradient-to-r from-charcoal-400 via-charcoal-500 to-charcoal-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-charcoal-600 via-charcoal-500 to-mustard-500 bg-clip-text text-transparent;
+  }
+
+  /* Subtle brand texture for hero/empty-state moments — a faint paw print
+     field. Use once per page at most, never behind body copy. */
+  .bg-paw-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='%232F5D50' fill-opacity='0.05'%3E%3Cellipse cx='36' cy='40' rx='9' ry='7'/%3E%3Cellipse cx='24' cy='28' rx='4' ry='5'/%3E%3Cellipse cx='34' cy='22' rx='4' ry='5'/%3E%3Cellipse cx='46' cy='24' rx='4' ry='5'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
   }
 }
 
