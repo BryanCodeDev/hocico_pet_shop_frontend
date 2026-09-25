@@ -8,8 +8,11 @@ const DOC_SECTIONS = [
   { id: 'architecture', label: 'Arquitectura' },
   { id: 'database', label: 'Base de datos' },
   { id: 'auth', label: 'Autenticación y roles' },
+  { id: 'pos', label: 'Módulo POS (caja)' },
+  { id: 'online', label: 'Ventas online' },
+  { id: 'payments', label: 'Pagos y facturación' },
+  { id: 'catalog', label: 'Catálogo y administración' },
   { id: 'api', label: 'Catálogo de API (resumen)' },
-  { id: 'business', label: 'Reglas de negocio' },
   { id: 'frontend-state', label: 'Estado del frontend' },
   { id: 'services', label: 'Servicios y utilidades' },
   { id: 'env', label: 'Variables de entorno' },
@@ -18,110 +21,105 @@ const DOC_SECTIONS = [
 
 const ENDPOINTS = [
   { method: 'POST', path: '/api/auth/register', auth: 'Ninguno', desc: 'Registro de usuario (bcrypt + JWT en cookie HttpOnly).' },
-  { method: 'POST', path: '/api/auth/login', auth: 'Ninguno', desc: 'Login. Emite JWT en cookie HttpOnly + usuario en body.' },
-  { method: 'POST', path: '/api/auth/logout', auth: 'Opcional', desc: 'Cierra sesión y borra la cookie.' },
-  { method: 'GET', path: '/api/auth/profile', auth: 'Usuario', desc: 'Devuelve el perfil del usuario autenticado.' },
-  { method: 'PUT', path: '/api/auth/profile', auth: 'Usuario', desc: 'Actualiza nombre, email, teléfono y avatar.' },
-  { method: 'PUT', path: '/api/auth/change-password', auth: 'Usuario', desc: 'Cambia la contraseña (verifica actual).' },
-  { method: 'POST', path: '/api/auth/forgot-password', auth: 'Ninguno', desc: 'Envía email de restablecimiento.' },
-  { method: 'POST', path: '/api/auth/reset-password/:token', auth: 'Ninguno', desc: 'Restablece la contraseña con token válido.' },
-  { method: 'GET', path: '/api/products', auth: 'Público', desc: 'Listado con filtros: búsqueda, categoría, marca, rango de precio, rating, orden, paginación, destacados.' },
+  { method: 'POST', path: '/api/auth/login', auth: 'Ninguno', desc: 'Login. Emite JWT en cookie HttpOnly y devuelve usuario en el cuerpo.' },
+  { method: 'POST', path: '/api/auth/logout', auth: 'Opcional', desc: 'Cierra sesión y elimina la cookie.' },
+  { method: 'GET', path: '/api/auth/me', auth: 'Usuario', desc: 'Usuario autenticado + roles y permisos.' },
+  { method: 'GET', path: '/api/products', auth: 'Público', desc: 'Listado con filtros (búsqueda, categoría, marca, precio, rating, orden, paginación, destacados).' },
   { method: 'GET', path: '/api/products/:id', auth: 'Admin', desc: 'Detalle de producto por id.' },
-  { method: 'GET', path: '/api/products/slug/:slug', auth: 'Público', desc: 'Detalle de producto por slug (frontend).' },
-  { method: 'GET', path: '/api/products/related/:id', auth: 'Público', desc: 'Productos relacionados (misma categoría).' },
-  { method: 'POST', path: '/api/products', auth: 'Admin', desc: 'Crea un producto (incluye imágenes).' },
+  { method: 'GET', path: '/api/products/slug/:slug', auth: 'Público', desc: 'Detalle de producto por slug.' },
+  { method: 'POST', path: '/api/products', auth: 'Admin', desc: 'Crea un producto (incluye imágenes vía multipart).' },
   { method: 'PUT', path: '/api/products/:id', auth: 'Admin', desc: 'Actualiza un producto.' },
-  { method: 'DELETE', path: '/api/products/:id', auth: 'Admin', desc: 'Borrado lógico (soft delete) del producto.' },
+  { method: 'DELETE', path: '/api/products/:id', auth: 'Admin', desc: 'Borrado lógico (soft delete).' },
   { method: 'GET', path: '/api/categories', auth: 'Público', desc: 'Listado de categorías activas.' },
-  { method: 'GET', path: '/api/categories/:slug', auth: 'Público', desc: 'Categoría + productos asociados.' },
-  { method: 'POST', path: '/api/categories', auth: 'Admin', desc: 'Crea una categoría.' },
-  { method: 'GET', path: '/api/categories/admin', auth: 'Admin', desc: 'Listado admin (incluye inactivas).' },
-  { method: 'PUT', path: '/api/categories/:id', auth: 'Admin', desc: 'Actualiza una categoría.' },
-  { method: 'DELETE', path: '/api/categories/:id', auth: 'Admin', desc: 'Borrado lógico (falla si hay productos activos).' },
-  { method: 'GET', path: '/api/brands', auth: 'Público', desc: 'Listado de marcas.' },
-  { method: 'POST', path: '/api/orders', auth: 'Usuario', desc: 'Crea orden (transacción: stock, orden, items, historial, vacía carrito).' },
+  { method: 'POST', path: '/api/orders', auth: 'Usuario', desc: 'Crea orden online (transacción: stock, orden, items, historial).' },
   { method: 'GET', path: '/api/orders', auth: 'Usuario', desc: 'Órdenes del usuario autenticado.' },
-  { method: 'GET', path: '/api/orders/:id', auth: 'Usuario/Admin', desc: 'Detalle de orden con items, historial y pago.' },
+  { method: 'GET', path: '/api/orders/:id', auth: 'Usuario/Admin', desc: 'Detalle de orden con items, historial y factura.' },
   { method: 'GET', path: '/api/orders/admin/all', auth: 'Admin', desc: 'Todas las órdenes (paginado, filtro por estado).' },
   { method: 'PUT', path: '/api/orders/:id/status', auth: 'Admin', desc: 'Actualiza estado y registra historial.' },
-  { method: 'DELETE', path: '/api/orders/:id', auth: 'Usuario', desc: 'Cancela una orden (solo si es cancelable).' },
-  { method: 'POST', path: '/api/orders/:id/reorder', auth: 'Usuario', desc: 'Reordena: vuelve a agregar items al carrito.' },
-  { method: 'GET', path: '/api/cart', auth: 'Usuario', desc: 'Carrito del usuario.' },
-  { method: 'POST', path: '/api/cart', auth: 'Usuario', desc: 'Agrega un item al carrito.' },
-  { method: 'PUT', path: '/api/cart/:itemId', auth: 'Usuario', desc: 'Actualiza cantidad de un item.' },
-  { method: 'DELETE', path: '/api/cart/:itemId', auth: 'Usuario', desc: 'Elimina un item del carrito.' },
-  { method: 'DELETE', path: '/api/cart', auth: 'Usuario', desc: 'Vacía el carrito.' },
-  { method: 'POST', path: '/api/cart/merge', auth: 'Usuario', desc: 'Fusiona el carrito anónimo (guest) con el del usuario.' },
   { method: 'POST', path: '/api/payments/create', auth: 'Usuario', desc: 'Crea preferencia de Mercado Pago (redirect init_point).' },
   { method: 'POST', path: '/api/payments/webhook', auth: 'IPN (MP)', desc: 'Webhook de Mercado Pago: valida firma HMAC e intenta notificación de pago.' },
   { method: 'GET', path: '/api/payments/status/:orderId', auth: 'Usuario', desc: 'Estado del pago de una orden.' },
-  { method: 'GET', path: '/api/users', auth: 'Admin', desc: 'Listado de usuarios (paginado + búsqueda + estado).' },
-  { method: 'GET', path: '/api/users/:id', auth: 'Admin', desc: 'Detalle de usuario.' },
-  { method: 'PUT', path: '/api/users/:id', auth: 'Admin', desc: 'Actualiza rol/estado de usuario.' },
-  { method: 'DELETE', path: '/api/users/:id', auth: 'Admin', desc: 'Borrado lógico de usuario.' },
-  { method: 'GET', path: '/api/admin/dashboard/stats', auth: 'Admin', desc: 'Estadísticas globales: ventas, pedidos, productos, usuarios, stock bajo.' },
-  { method: 'GET', path: '/api/admin/settings', auth: 'Admin', desc: 'Obtiene la configuración del sitio (key/value).' },
-  { method: 'PUT', path: '/api/admin/settings', auth: 'Admin', desc: 'Actualiza valores de configuración.' },
-  { method: 'POST', path: '/api/admin/settings/upload', auth: 'Admin', desc: 'Sube logo a Cloudinary y guarda la URL.' },
-  { method: 'GET', path: '/api/health', auth: 'Ninguno', desc: 'Health check: { status: "ok", timestamp }.' },
+  { method: 'GET', path: '/api/invoices/:id', auth: 'Admin', desc: 'Detalle de factura (Factus).' },
+  { method: 'GET', path: '/api/stock', auth: 'Admin', desc: 'Movimientos de stock (paginado, filtros).' },
+  { method: 'POST', path: '/api/stock/adjust', auth: 'Admin', desc: 'Ajuste manual de stock.' },
+  { method: 'GET', path: '/api/admin/dashboard/stats', auth: 'Admin', desc: 'Estadísticas globales: ventas, órdenes, productos, usuarios, stock bajo.' },
+  { method: 'GET', path: '/api/pos/cash-register/current', auth: 'Admin/Cashier', desc: 'Caja abierta del usuario autenticado.' },
+  { method: 'POST', path: '/api/pos/cash-register/open', auth: 'Admin/Cashier', desc: 'Abre la caja con monto inicial.' },
+  { method: 'POST', path: '/api/pos/cash-register/close', auth: 'Admin/Cashier', desc: 'Cierra la caja con monto de cierre y notas.' },
+  { method: 'GET', path: '/api/pos/cash-register/:id', auth: 'Admin/Cashier', desc: 'Detalle de una caja específica.' },
+  { method: 'GET', path: '/api/pos/cash-register/history', auth: 'Admin/Cashier', desc: 'Historial de cajas del usuario (últimos 30 días).' },
+  { method: 'GET', path: '/api/pos/cash-register/admin/history', auth: 'Admin', desc: 'Historial de todas las cajas.' },
+  { method: 'GET', path: '/api/pos/products/search', auth: 'Admin/Cashier', desc: 'Busca productos con stock disponible (paginado).' },
+  { method: 'GET', path: '/api/pos/products/barcode/:barcode', auth: 'Admin/Cashier', desc: 'Obtiene un producto por código de barras.' },
+  { method: 'POST', path: '/api/pos/sale', auth: 'Admin/Cashier', desc: 'Crea una venta POS (transacción + Factus en background).' },
+  { method: 'GET', path: '/api/pos/sale/:id/receipt', auth: 'Admin/Cashier', desc: 'Recibo detallado de una venta POS.' },
+  { method: 'GET', path: '/api/pos/sales', auth: 'Admin/Cashier', desc: 'Listado de ventas POS (paginado, filtros de fecha).' },
+  { method: 'GET', path: '/api/pos/reports/daily', auth: 'Admin/Cashier', desc: 'Reporte diario de caja del usuario.' },
+  { method: 'GET', path: '/api/pos/reports/admin/daily', auth: 'Admin', desc: 'Reporte diario consolidado de ventas POS.' },
+  { method: 'GET', path: '/api/pos/reports/admin/by-channel', auth: 'Admin', desc: 'Ventas segmentadas por canal (online vs POS).' },
+  { method: 'GET', path: '/api/pos/reports/admin/by-payment-method', auth: 'Admin', desc: 'Ventas segmentadas por método de pago.' },
+  { method: 'GET', path: '/api/pos/reports/summary', auth: 'Admin', desc: 'Resumen ejecutivo de POS: totales, canales, métodos de pago, cajas.' },
+  { method: 'GET', path: '/api/pos/reports/cash-registers', auth: 'Admin/Cashier', desc: 'Reporte de movimientos de caja (diferencias y cierres).' },
+  { method: 'GET', path: '/api/health', auth: 'Ninguno', desc: 'Health check: { status: "ok", timestamp }. ' },
 ]
 
 const SCHEMA_TABLES = `
 roles
-  id        TINYINT PK (1=admin, 2=user)  UNIQUE name  created_at
+  id 1=admin, 2=user, 3=manager, 4=cashier  UNIQUE name
+  permissions JSON (estructura: {module: [acciones]})
 
 users
-  id BIGINT PK AI  uuid VARCHAR(36) UNIQUE  name  email UNIQUE  password(bcrypt)
-  role_id TINYINT→roles  avatar  phone  is_active  created_at updated_at deleted_at
-
-categories
-  id PK AI  slug UNIQUE  name  description  image  is_active  created_at updated_at deleted_at
-
-brands
-  id PK AI  slug UNIQUE  name  is_active  created_at
+  id BIGINT PK AI  email UNIQUE  password (bcrypt)
+  role_id → roles  first_name  last_name  phone  address  city  province
+  is_active  created_at  updated_at  deleted_at
 
 products
-  id PK AI  sku UNIQUE  name  slug UNIQUE  description  price  compare_price  cost_price
-  category_id→categories  brand_id→brands  stock  sold  rating  reviews_count
-  is_active  is_featured  created_at updated_at deleted_at
-  INDEXES: (category_id,is_active) (brand_id) (price) (slug)
+  id PK AI  sku UNIQUE  barcode UNIQUE  name  slug UNIQUE
+  price  original_price  cost_price  stock  min_stock
+  category_id → categories  brand_id → brands
+  is_active  is_featured  images (JSON)
+  created_at  updated_at  deleted_at
 
-product_images
-  id PK AI  product_id→products CASCADE  url  alt  is_primary  sort_order  INDEX(product_id)
-
-cart_items
-  id PK AI  user_id→users CASCADE  guest_id  product_id→products CASCADE  quantity
-  INDEX(user_id) INDEX(guest_id)  (user_id XOR guest_id requerido)
-
-orders
-  id PK AI  order_number UNIQUE  user_id→users  status ENUM(pending,processing,shipped,
-  delivered,cancelled,refunded)  total  subtotal  tax  shipping_cost  discount
-  payment_method  payment_status ENUM(pending,paid,failed,refunded,... )  payment_id
-  shipping_address(JSON)  notes  created_at updated_at
-  INDEXES: (user_id,status) (status) (order_number) (created_at)
+orders  (online + POS)
+  id PK AI  order_number UNIQUE  user_id → users  channel ENUM(online,pos)
+  status ENUM(pending,paid,preparing,shipped,delivered,cancelled,refunded)
+  payment_status ENUM(pending,approved,rejected,cancelled,refunded,...)
+  payment_method ENUM(wompi,whatsapp,bank_transfer,cash,card_pos,cash_on_delivery)
+  subtotal  discount  shipping_cost  total  currency
+  customer_name  customer_email  customer_phone
+  customer_document_type  customer_document_number
+  address  city  province  notes
+  cash_register_id → cash_registers  invoice_id → invoices  paid_at
+  created_at  updated_at
 
 order_items
-  id PK AI  order_id→orders CASCADE  product_id→products  variant  quantity  price  total
-  INDEX(order_id)
+  id PK AI  order_id → orders CASCADE
+  product_id  product_name  product_sku  product_slug
+  quantity  unit_price  discount_price  subtotal  image
 
-order_status_history
-  id PK AI  order_id→orders CASCADE  status  note  created_at  INDEX(order_id)
+cash_registers
+  id PK AI  user_id → users
+  register_number  opening_amount  closing_amount  expected_amount  difference
+  status ENUM(open,closed)  opened_at  closed_at  notes
+  INDEX(user_id)  INDEX(status)
 
-payments
-  id PK AI  order_id→orders  payment_method  amount  currency  status ENUM(pending,paid,
-  failed,refunded)  transaction_id  metadata(JSON)  created_at  INDEX(order_id)
+invoices
+  id PK AI  order_id → orders
+  factus_id  invoice_number  cufe  status ENUM(pending,sent,error,voided)
+  xml_url  pdf_url  error_message  issued_at
 
-reviews
-  id PK AI  product_id→products CASCADE  user_id→users  rating(1-5)  comment  created_at
-  INDEX(product_id) INDEX(user_id) UNIQUE(product_id,user_id)
+stock_movements
+  id PK AI  product_id → products  type ENUM(in,out)  quantity
+  reason  reference_type  reference_id  created_by
+  INDEX(product_id)  INDEX(created_at)
 
 settings
-  id PK AI  \`key\` VARCHAR(100) UNIQUE  value TEXT  type ENUM(string,number,boolean,image,json)
-  created_at updated_at
+  id PK AI  key VARCHAR(100) UNIQUE  value TEXT
+  type ENUM(string,number,boolean,image,json)
 
 Convenciones: InnoDB, soft-delete (deleted_at), timestamps UTC,
-transacciones vía database.transaction (commit/rollback), FK CASCADE para
-product_images/order_items/cart_items.
+transacciones vía transaction(fn) (commit/rollback), FK CASCADE
+para order_items/cart_items, ER_DUP_FIELDNAME tolerado en migraciones.
 `
 
 const ENV_VARS = `
@@ -132,31 +130,34 @@ DB_PASSWORD=
 DB_NAME=hocico_pet_shop
 DB_PORT=3306
 
-JWT_SECRET=<requerido>        # firma y verificación de JWT
+JWT_SECRET=<requerido>
 JWT_EXPIRES_IN=7d
 
 CLOUDINARY_CLOUD_NAME=<...>
 CLOUDINARY_API_KEY=<...>
 CLOUDINARY_API_SECRET=<...>
 
-MP_ACCESS_TOKEN=<Mercado Pago>
-MP_CLIENT_ID=<...>
-MP_CLIENT_SECRET=<...>
-MP_WEBHOOK_SECRET=<firma HMAC>
-MP_SUCCESS_URL=https://...
-MP_FAILURE_URL=https://...
+WOMPI_PRIVATE_KEY=sk_test_...
+WOMPI_PUBLIC_KEY=AK_TEST_...
+WOMPI_EVENT_ID=webhook-test
 
-FRONTEND_URL=http://localhost:5173   # origen permitido en CORS
+FACTUS_CLIENT_ID=<...>
+FACTUS_CLIENT_SECRET=<...>
+FACTUS_USERNAME=<...>
+FACTUS_PASSWORD=<...>
+FACTUS_BASE_URL=https://api.factus.com.co
+
+FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
 
 # ── Frontend (.env en frontend/, prefijo VITE_) ──
 VITE_API_URL=/api
-VITE_CURRENCY=USD
+VITE_CURRENCY=COP
 VITE_SITE_NAME=Hocico Pet Shop
 VITE_SITE_DESCRIPTION=...
 `
 
-/* ---------- Piezas reutilizables ---------- */
+/* ---------- Componentes reutilizables ---------- */
 
 function Section({ id, index, title, children }) {
   return (
@@ -191,7 +192,7 @@ function CodeBlock({ code }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
-      /* clipboard no disponible: no-op */
+      /* clipboard no disponible */
     }
   }
 
@@ -221,6 +222,7 @@ const METHOD_STYLES = {
 
 function authBadgeClass(auth) {
   if (auth === 'Admin') return 'bg-red-600/10 text-red-700'
+  if (auth === 'Admin/Cashier') return 'bg-green-600/10 text-green-700'
   if (auth === 'Usuario/Admin') return 'bg-mustard-100 text-mustard-800'
   if (auth === 'Usuario') return 'bg-charcoal-600/10 text-charcoal-700'
   if (auth === 'Público' || auth === 'Ninguno') return 'bg-primary-100 text-primary-700'
@@ -299,11 +301,6 @@ function EndpointsTable({ endpoints }) {
       <p className="mt-2 text-xs text-primary-600">
         Mostrando {filtered.length} de {endpoints.length} endpoints.
       </p>
-
-      <p className="mt-3 text-xs text-primary-700 bg-primary-50 border border-dark-border rounded-lg px-3 py-2">
-        Nota: <code className="font-mono bg-charcoal-600/10 text-charcoal-800 px-1.5 py-0.5 rounded text-[0.8em]">POST /api/payments/webhook</code> es llamado por Mercado Pago
-        (valida firma HMAC) y <code className="font-mono bg-charcoal-600/10 text-charcoal-800 px-1.5 py-0.5 rounded text-[0.8em]">GET /api/health</code> es el health check.
-      </p>
     </div>
   )
 }
@@ -314,7 +311,6 @@ export default function AdminHelp() {
   const [active, setActive] = useState(DOC_SECTIONS[0].id)
   const didInitialScroll = useRef(false)
 
-  // Al montar: si hay hash en la URL, ir directo a esa sección
   useEffect(() => {
     if (didInitialScroll.current) return
     didInitialScroll.current = true
@@ -327,7 +323,6 @@ export default function AdminHelp() {
     }
   }, [])
 
-  // Scrollspy: resalta en el índice la sección visible mientras se hace scroll
   useEffect(() => {
     const sections = DOC_SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean)
     if (sections.length === 0) return
@@ -356,7 +351,7 @@ export default function AdminHelp() {
     <>
       <SEO
         title="Ayuda | Hocico Admin"
-        description="Documentación del sistema Hocico Pet Shop: arquitectura, API, base de datos y reglas de negocio."
+        description="Funcionamiento del sistema Hocico Pet Shop: módulos, roles, flujos y API."
         noindex
       />
 
@@ -371,11 +366,11 @@ export default function AdminHelp() {
               <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Ayuda y documentación</h1>
+              <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Guía del sistema</h1>
               <p className="text-primary-700 mt-1.5 max-w-2xl leading-relaxed">
-                Documentación completa de Hocico Pet Shop: stack, arquitectura, modelo de datos,
-                catálogo de endpoints de la API, reglas de negocio y estado del frontend.
-                Usa el índice para navegar a la sección que necesites.
+                Cómo funciona Hocico Pet Shop: dos canales de venta (online y POS), gestión de
+                inventario, órdenes, pagos con facturación electrónica y administración completa.
+                 Usa el índice para navegar a la sección que necesites.
               </p>
             </div>
           </div>
@@ -387,7 +382,7 @@ export default function AdminHelp() {
               </div>
               <div>
                 <p className="text-xl font-display font-bold text-primary-900 leading-none">{DOC_SECTIONS.length}</p>
-                <p className="text-xs text-primary-700 mt-1">Secciones documentadas</p>
+                <p className="text-xs text-primary-700 mt-1">Secciones</p>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
@@ -396,7 +391,7 @@ export default function AdminHelp() {
               </div>
               <div>
                 <p className="text-xl font-display font-bold text-primary-900 leading-none">{ENDPOINTS.length}</p>
-                <p className="text-xs text-primary-700 mt-1">Endpoints de la API</p>
+                <p className="text-xs text-primary-700 mt-1">Endpoints</p>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
@@ -405,13 +400,13 @@ export default function AdminHelp() {
               </div>
               <div>
                 <p className="text-sm sm:text-base font-display font-bold text-primary-900 leading-tight">React · Express · MySQL</p>
-                <p className="text-xs text-primary-700 mt-1">Stack principal</p>
+                <p className="text-xs text-primary-700 mt-1">Stack</p>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Selector rápido — solo móvil/tablet */}
+        {/* Selector rápido — móvil/tablet */}
         <div className="lg:hidden">
           <label htmlFor="doc-jump" className="sr-only">Ir a sección</label>
           <select
@@ -455,27 +450,27 @@ export default function AdminHelp() {
             <Section id="overview" index={1} title="Visión general y stack">
               <Prose>
                 <p>
-                  Hocico Pet Shop es una aplicación e-commerce completa dedicada a las mascotas. El
-                  frontend es una aplicación React (SPA) con panel de administración; el
-                  backend es una API REST en Express con base de datos MySQL, autenticación
-                  JWT (cookie HttpOnly + Bearer), autorización basada en roles (RBAC),
-                  carrito persistente (invitado → usuario), creación de órdenes
-                  transaccional y pagos vía Mercado Pago.
+                  Hocico Pet Shop administra el negocio de venta de productos para mascotas a través de
+                  <b> dos canales de venta</b>: una tienda online (web) y un punto de venta (POS) para
+                  la tienda física. El frontend es una aplicación React (SPA); el backend expone una API
+                  REST que maneja catálogo, órdenes, pagos, inventario y la caja registradora del POS.
                 </p>
                 <h3>Stack</h3>
                 <ul>
                   <li>
-                    <b>Frontend:</b> React 18 + Vite + React Router v6 + Tailwind CSS + Axios
-                    + React Hook Form/Yup + react-hot-toast + react-helmet-async +
-                    recharts + lucide-react + framer-motion.
+                    <b>Frontend:</b> React 18 + Vite + React Router v6 + Tailwind CSS + Axios +
+                    react-hot-toast + react-helmet-async + recharts + lucide-react + framer-motion.
                   </li>
                   <li>
                     <b>Backend:</b> Node.js (ESM) + Express + MySQL (mysql2) + jsonwebtoken
                     + bcryptjs + cloudinary + mercadopago + cors/helmet/rate-limit/cookie-parser.
                   </li>
                   <li>
-                    <b>Infraestructura:</b> Railway (API) + Netlify (SPA), Cloudinary
-                    (imágenes) y Mercado Pago (pagos).
+                    <b>Facturación:</b> Factus API (facturación electrónica Colombia) — se dispara
+                    automáticamente después de confirmar una orden.
+                  </li>
+                  <li>
+                    <b>Pagos online:</b> Mercado Pago (Wompi disponible como alternativa).
                   </li>
                 </ul>
               </Prose>
@@ -484,33 +479,33 @@ export default function AdminHelp() {
             <Section id="architecture" index={2} title="Arquitectura">
               <Prose>
                 <p>
-                  El frontend arranca en <code>frontend/src/main.jsx</code> (HelmetProvider,
-                  BrowserRouter, ErrorBoundary, Toaster). <code>App.jsx</code> define el árbol
-                  de rutas envuelto en <code>AuthProvider → CartProvider → WishlistProvider</code>,
-                  con <code>Layout</code> para rutas públicas y <code>AdminLayout</code> para
-                  <code>/admin/*</code>, protegidas por <code>ProtectedRoute</code>/<code>AdminRoute</code>.
+                  El frontend arranca en <code>frontend/src/main.jsx</code> (HelmetProvider, BrowserRouter,
+                  AuthProvider, CartProvider, ErrorBoundary, Toaster). <code>App.jsx</code> define el árbol de
+                  rutas con <code>Layout</code> para rutas públicas, <code>AdminLayout</code> para
+                  <code>/admin/*</code> y <code>CashierRoute</code> para <code>/pos/*</code>, protegidas
+                  por <code>ProtectedRoute</code>, <code>AdminRoute</code> y <code>CashierRoute</code>.
                 </p>
                 <p>
-                  El backend (<code>backend/src/index.js</code>) aplica helmet + cors +
-                  rate-limit (100 req/15 min) + parsers (10 MB) + cookie-parser, monta las
-                  rutas en <code>/api/</code> y un manejador centralizado de errores, con
-                  <code>GET /api/health</code>.
+                  El backend (<code>backend/src/index.js</code>) aplica helmet + cors + rate-limit (100 req/15 min)
+                  + parsers (10 MB) + cookie-parser, monta las rutas en <code>/api/</code> y un manejador
+                  centralizado de errores, con <code>GET /api/health</code>.
                 </p>
-                <h3>Línea base de rutas (SPA)</h3>
+                <h3>Rutas del SPA</h3>
                 <ul>
                   <li>Públicas: <code>/</code>, <code>/tienda</code>, <code>/categoria/:slug</code>, <code>/producto/:slug</code>, <code>/carrito</code>, <code>/checkout</code>, <code>/buscar</code>, <code>/contacto</code>, etc.</li>
-                  <li>Protegidas (usuario): <code>/cuenta</code>, <code>/cuenta/pedido/:id</code>, <code>/checkout</code>.</li>
-                  <li>Admin: <code>/admin/*</code> (Dashboard, Productos, Categorías, Pedidos, Usuarios, Configuración, Ayuda).</li>
+                  <li>Usuario: <code>/cuenta</code>, <code>/cuenta/pedido/:id</code>.</li>
+                  <li>Admin: <code>/admin/*</code> — Dashboard, Productos, Categorías, Pedidos, Usuarios, Configuración, Ayuda.</li>
+                  <li>Pos (cajero): <code>/pos/*</code> — Caja, búsqueda de productos, carrito, pago, recibo, reportes.</li>
                 </ul>
                 <h3>Estado global (contextos)</h3>
                 <ul>
-                  <li><code>AuthContext</code>: usuario, token (localStorage + cookie), login/logout/register, refresco de sesión.</li>
-                  <li><code>CartContext</code>: carrito, sincronización con el servidor y fusión del carrito anónimo al iniciar sesión.</li>
-                  <li><code>WishlistContext</code>: lista de deseos (localStorage, cliente).</li>
+                  <li><code>AuthContext</code>: usuario, token, login/logout/register, refresco de sesión, flags <code>isAdmin</code>/<code>isCashier</code>.</li>
+                  <li><code>CartContext</code>: carrito online, sincronización invitado → usuario.</li>
+                  <li><code>WishlistContext</code>: lista de deseos en localStorage.</li>
                 </ul>
                 <h3>Servicios de API</h3>
                 <p>
-                  <code>services/api.js</code> (axios con <code>withCredentials</code>, interceptor de token y redirección 401), <code>services/products.js</code> y <code>services/admin.js</code> (CRUD de productos, categorías, órdenes, usuarios, configuración y estadísticas).
+                  <code>services/api.js</code> (axios con <code>withCredentials</code>, interceptor de token), <code>services/pos.js</code> (caja y ventas POS), <code>services/admin.js</code> (CRUD completo + reportes POS).
                 </p>
               </Prose>
             </Section>
@@ -518,10 +513,10 @@ export default function AdminHelp() {
             <Section id="database" index={3} title="Base de datos">
               <Prose>
                 <p>
-                  Esquema en <code>backend/src/utils/migrate.js</code>. Todas las tablas usan
-                  InnoDB, soft-delete (<code>deleted_at</code>) y timestamps UTC. Se accede vía
-                  <code>database.js</code> (<code>query</code>, <code>queryOne</code>,
-                  <code>transaction(fn)</code> con commit/rollback).
+                  Esquema en <code>backend/src/utils/migrate.js</code> y <code>database.sql</code>. Todas las
+                  tablas usan InnoDB, soft-delete (<code>deleted_at</code>) y timestamps UTC. El acceso es
+                  vía <code>database.js</code>: <code>query</code>, <code>queryOne</code>,
+                  <code>transaction(fn)</code> con commit/rollback automático.
                 </p>
               </Prose>
               <CodeBlock code={SCHEMA_TABLES} />
@@ -531,120 +526,181 @@ export default function AdminHelp() {
               <Prose>
                 <h3>Flujo</h3>
                 <ol>
-                  <li><b>Registro:</b> <code>POST /api/auth/register</code>. Hash bcrypt, JWT en cookie HttpOnly (Secure, SameSite=Strict, 7 días).</li>
-                  <li><b>Login:</b> <code>POST /api/auth/login</code>. Verifica hash con bcrypt, firma JWT <code>{'{id,uuid,role}'}</code>, devuelve usuario + cookie.</li>
-                  <li><b>Request auth:</b> el servidor lee <code>req.cookies.token</code> o <code>Authorization: Bearer</code>, verifica JWT y carga el usuario de la BD (<code>req.user</code>).</li>
-                  <li><b>Autorización:</b> <code>authorize('admin')</code> en rutas admin; <code>authorize()</code> (usuario/admin) en rutas de cliente.</li>
-                  <li><b>Logout:</b> borra la cookie y el token del cliente.</li>
+                  <li><b>Login:</b> <code>POST /api/auth/login</code>. Verifica el hash bcrypt, firma un JWT <code>{'{id, role}'}</code> y lo envía en cookie HttpOnly (Secure, SameSite=Strict, 7 días). El frontend almacena el usuario en contexto y localStorage.</li>
+                  <li><b>Request auth:</b> el middleware <code>authenticate</code> lee <code>req.cookies.token</code> o <code>Authorization: Bearer</code>, verifica el JWT y carga el usuario + permisos desde la tabla <code>roles.permissions</code> (JSON).</li>
+                  <li><b>Autorización:</b> <code>authorize('admin')</code> o <code>authorize('cashier')</code> según la ruta. El <code>requirePermission(module, action)</code> verifica permisos granulares (solo para roles distintos a admin).</li>
+                  <li><b>Logout:</b> <code>POST /api/auth/logout</code> borra la cookie y el cliente limpia el storage.</li>
                 </ol>
                 <h3>Roles</h3>
                 <ul>
-                  <li><b>admin (id=1):</b> acceso total a <code>/api/admin/*</code>, CRUD de productos/categorías/órdenes/usuarios, dashboard, configuración.</li>
-                  <li><b>user (id=2):</b> carrito, checkout, historial de pedidos, perfil.</li>
+                  <li><b>admin (id=1):</b> acceso total. CRUD de productos, categorías, órdenes, usuarios, configuración. Dashboard completo. Reportes POS consolidados. Puede abrir/cerrar cualquier caja.</li>
+                  <li><b>cashier (id=4):</b> acceso solo a <code>/pos/*</code>. Abre su propia caja, procesa ventas POS, cierra su caja, ve reportes diarios y el reporte de cajas de su usuario.</li>
+                  <li><b>user (id=2):</b> tienda online. Carrito, checkout, historial de pedidos, perfil.</li>
+                  <li><b>manager (id=3):</b> acceso limitado de administración (reservas futuras).</li>
                 </ul>
               </Prose>
             </Section>
 
-            <Section id="api" index={5} title="Catálogo de API (resumen)">
+            <Section id="pos" index={5} title="Módulo POS (caja registradora)">
+              <Prose>
+                <h3>Concepto</h3>
+                <p>
+                  El POS permite operar la tienda física: escanear productos, armar el carrito,
+                  cobrar en efectivo o tarjeta POS y facturar. Cada sesión requiere una <b>caja abierta</b>.
+                </p>
+                <h3>Flujo de caja</h3>
+                <ol>
+                  <li><b>Abrir caja:</b> el cajero ingresa el monto inicial. Se crea un registro en <code>cash_registers</code> con <code>status='open'</code>.</li>
+                  <li><b>Vender:</b> cada venta POS asocia <code>cash_register_id</code>, descuenta stock transaccionalmente, genera la orden (<code>channel='pos'</code>, <code>status='paid'</code>) y, para efectivo, guarda <code>cash_received</code> en <code>notes</code>.</li>
+                  <li><b>Facturar:</b> tras crear la orden, <code>triggerInvoiceGeneration()</code> envía la factura a Factus en background (no bloquea la venta).</li>
+                  <li><b>Cerrar caja:</b> el cajero ingresa el monto físico de cierre. El sistema calcula <code>expected_amount = opening + ventas - cierres_previos</code>, <code>difference = closing - expected</code> y marca <code>status='closed'</code>.</li>
+                </ol>
+                <h3>Métodos de pago POS</h3>
+                <ul>
+                  <li><b>Efectivo:</b> el cajero ingresa el monto recibido; el sistema valida que cubra el total y calcula el cambio.</li>
+                  <li><b>Tarjeta POS (<code>card_pos</code>):</b> se registra la venta; el cobro físico se realiza en el terminal.</li>
+                </ul>
+                <h3>Vista POS (frontend)</h3>
+                <p>
+                  La pantalla <code>/pos</code> (CashierRoute) muestra: barra de búsqueda y escáner de código de barras,
+                  cuadrícula de productos con stock, carrito con control de cantidades, modal de pago y
+                  recibo imprimible. Los administradores ven un botón de reportes integrado.
+                </p>
+              </Prose>
+            </Section>
+
+            <Section id="online" index={6} title="Ventas online">
+              <Prose>
+                <h3>Checkout</h3>
+                <p>
+                  El usuario agrega productos al carrito (persistido en localStorage para invitados, en la BD para usuarios).
+                  Al checkout crea una orden <code>channel='online'</code>, <code>status='pending'</code> y luego
+                  <code>POST /api/payments/create</code> genera una preferencia de Mercado Pago; el cliente se redirige
+                  a <code>init_point</code> (checkout externo).
+                </p>
+                <h3>Webhook y confirmación</h3>
+                <p>
+                  Mercado Pago notifica <code>POST /api/payments/webhook</code> (valida firma HMAC). El webhook actualiza
+                  <code>orders.payment_status</code>, la tabla <code>payments</code> y el historial. Si el pago es exitoso,
+                  se dispara <code>triggerInvoiceGeneration()</code> para generar la factura electrónica.
+                </p>
+                <h3>Pago en efectivo contraentrega</h3>
+                <p>
+                  <code>payment_method = 'cash_on_delivery'</code> crea la orden como <code>pending</code> y el admin
+                  la marca como <code>paid</code> al recibir el pago físico.
+                </p>
+              </Prose>
+            </Section>
+
+            <Section id="payments" index={7} title="Pagos y facturación">
+              <Prose>
+                <h3>Mercado Pago</h3>
+                <p>
+                  Se crea una preferencia con <code>payment_preferences</code> que incluye los items del carrito.
+                  El cliente paga en la página de Mercado Pago y retorna al sitio (<code>success</code>/<code>pending</code>/<code>failure</code>).
+                  El webhook confirma el pago y actualiza el estado de la orden.
+                </p>
+                <h3>Factus (facturación electrónica)</h3>
+                <p>
+                  Cuando una orden se paga (<code>payment_status = 'approved'</code>), se invoca <code>triggerInvoiceGeneration(orderId)</code>.
+                  Este servicio obtiene tokens OAuth de Factus, construye el payload con el RUT del cliente, items, impuestos (IVA 19%) y envía
+                  la factura. Si el cliente no tiene NIT, se usa NIT de la tienda. Los errores de Factus se registran en <code>invoices.status='error'</code>
+                  sin fallar la venta.
+                </p>
+              </Prose>
+            </Section>
+
+            <Section id="catalog" index={8} title="Catálogo y administración">
+              <Prose>
+                <h3>Productos</h3>
+                <p>
+                  Cada producto tiene <code>sku</code>, <code>barcode</code>, precios (<code>price</code>, <code>original_price</code> para descuento),
+                  <code>stock</code>, <code>min_stock</code>, imágenes y relaciones con categoría/marca. Al crear un producto se puede subir imágenes a
+                    Cloudinary (multipart), que guarda las URLs en <code>images</code> (JSON). El descuento se muestra cuando <code>original_price &gt; price</code>.
+                </p>
+                <h3>Inventario</h3>
+                <p>
+                  Cada orden descuenta stock de forma atómica (<code>UPDATE products SET stock = stock - qty WHERE id = ? AND stock &gt;= qty</code>),
+                  registrando cada movimiento en <code>stock_movements</code>. El admin puede hacer ajustes manuales de entrada/salida.
+                </p>
+                <h3>Órdenes</h3>
+                <p>
+                  Las órdenes pasan por estados: <code>pending → paid → preparing → shipped → delivered</code> (o <code>cancelled</code>/<code>refunded</code>).
+                  Cada cambio de estado se registra en <code>order_status_history</code>. La factura electrónica se enlaza vía <code>invoice_id</code>.
+                </p>
+              </Prose>
+            </Section>
+
+            <Section id="api" index={9} title="Catálogo de API (resumen)">
               <Prose>
                 <p>
-                  Todas las rutas usan <code>/api</code> con body JSON y la cookie HttpOnly
-                  (o header <code>Authorization</code>).
+                  Todas las rutas usan <code>/api</code> con body JSON. La autenticación usa cookie HttpOnly (cookie HttpOnly) o header <code>Authorization: Bearer</code>.
                 </p>
               </Prose>
               <EndpointsTable endpoints={ENDPOINTS} />
             </Section>
 
-            <Section id="business" index={6} title="Reglas de negocio">
-              <Prose>
-                <h3>Creación de orden (transacción)</h3>
-                <p>
-                  <code>POST /api/orders</code> requiere autenticación. Dentro de una
-                  transacción: (1) verifica y descuenta stock con <code>UPDATE … SET stock = stock - qty WHERE id = ? AND stock &gt;= qty</code>; si falla, rollback; (2) inserta la orden (<code>generateOrderNumber()</code> → <code>ORD-YYYYMMDD-XXXX-RNNNN</code>); (3) inserta <code>order_items</code>; (4) registra <code>order_status_history</code>; (5) vacía el carrito. En error → rollback y 500.
-                </p>
-                <h3>Carrito</h3>
-                <p>
-                  Los invitados usan carrito en <code>localStorage</code>; al iniciar sesión el
-                  frontend llama <code>POST /api/cart/merge</code> para fusionar cantidades.
-                  Los usuarios autenticados persisten su carrito en la BD.
-                </p>
-                <h3>Pagos (Mercado Pago)</h3>
-                <p>
-                  El checkout crea la orden y luego <code>POST /api/payments/create</code> genera
-                  una preferencia de Mercado Pago; el cliente se redirige a <code>init_point</code>.
-                  El webhook actualiza <code>orders.payment_status</code>, la tabla <code>payments</code>
-                  y el historial. El frontend sondea <code>GET /api/payments/status/:orderId</code>.
-                </p>
-                <h3>Borrado lógico y otras reglas</h3>
-                <ul>
-                  <li>Los productos/categorías/usuarios se "borran" con <code>deleted_at</code>; las listas filtran <code>deleted_at IS NULL</code>.</li>
-                  <li>Borrar una categoría con productos activos falla (restricción).</li>
-                  <li><code>compare_price</code> &gt; <code>price</code> muestra el porcentaje de descuento.</li>
-                  <li>Cancelar orden solo permitido en estados <code>pending</code>/<code>processing</code>.</li>
-                </ul>
-              </Prose>
-            </Section>
-
-            <Section id="frontend-state" index={7} title="Estado del frontend">
+            <Section id="frontend-state" index={10} title="Estado del frontend">
               <Prose>
                 <h3>AuthContext</h3>
                 <p>
-                  Estado: <code>{'{user, token, isAuthenticated, isLoading, error}'}</code>. Token y
-                  usuario en <code>localStorage</code>. <code>login</code> guarda el token y
-                  refresca la sesión; <code>logout</code> llama al API y borra el storage.
-                  Al montar, decodifica el JWT y expira la sesión automáticamente si venció.
+                  Estado: <code>{'{user, loading, login, logout, register, updateProfile, isAuthenticated, isAdmin, isCashier}'}</code>. Token y usuario en localStorage.
+                  <code>login</code> guarda la sesión y <code>logout</code> llama al API y borra el storage.
+                  Al montar, <code>fetchUser</code> verifica la sesión activa.
                 </p>
                 <h3>CartContext</h3>
                 <p>
-                  Estado: carrito + helpers (<code>addItem</code>, <code>updateQuantity</code>,
-                  <code>clearCart</code>, <code>getTotal</code>, <code>getItemCount</code>,
-                  <code>syncGuestCart</code>). Persistencia en <code>localStorage</code> para
-                  invitados y en BD para usuarios; <code>syncGuestCart</code> fusiona al login.
+                  Estado: carrito + helpers (<code>addItem</code>, <code>updateQuantity</code>, <code>clearCart</code>, <code>getTotal</code>, <code>getItemCount</code>).
+                  Persistencia en localStorage para invitados y en BD para usuarios; <code>syncCart</code> fusiona el carrito anónimo al iniciar sesión.
                 </p>
                 <h3>WishlistContext</h3>
                 <p>
-                  Lista de IDs de producto en <code>localStorage</code> (cliente). No hay
-                  endpoints de API para wishlist en esta versión.
+                  Lista de IDs de producto en localStorage (cliente). No requiere endpoints de API.
+                </p>
+                <h3>POS (estado local)</h3>
+                <p>
+                  El módulo POS usa estado local dentro del componente <code>POS.jsx</code>: carrito, caja abierta,
+                  búsqueda de productos y escáner de código de barras. La caja se carga al iniciar y se mantiene en estado.
                 </p>
               </Prose>
             </Section>
 
-            <Section id="services" index={8} title="Servicios y utilidades">
+            <Section id="services" index={11} title="Servicios y utilidades">
               <Prose>
                 <h3>Servicios (frontend/src/services/)</h3>
                 <ul>
-                  <li><b>api.js:</b> axios (<code>baseURL: '/api'</code>, <code>withCredentials</code>), interceptor de solicitud (token Bearer) y respuesta (401 → redirige a <code>/login</code>).</li>
-                  <li><b>products.js:</b> <code>fetchProducts</code>, <code>fetchProductBySlug</code>, <code>fetchCategories</code>, <code>fetchBrands</code>.</li>
-                  <li><b>admin.js:</b> CRUD de productos/categorías/órdenes/usuarios, estadísticas, configuración y carga de logo.</li>
+                  <li><b>api.js:</b> axios (<code>baseURL: '/api'</code>, <code>withCredentials</code>), interceptor de respuesta (401 → redirige a <code>/login</code>).</li>
+                  <li><b>products.js:</b> <code>fetchProducts</code>, <code>fetchProductBySlug</code>, <code>fetchCategories</code>, <code>fetchBrands</code>, <code>fetchProductById</code>.</li>
+                  <li><b>admin.js:</b> CRUD de productos/categorías/órdenes/usuarios, estadísticas, configuración, carga de logo y servicios POS (<code>adminPosService</code>).</li>
+                  <li><b>pos.js:</b> búsqueda de productos, ventas POS, apertura/cierre de caja, reportes y recibos.</li>
                 </ul>
                 <h3>Utilidades</h3>
                 <ul>
-                  <li><b>utils/helpers.js:</b> <code>formatPrice</code>, <code>formatDate</code>, <code>calculateDiscountPercentage</code>, <code>calculateSubtotal/Tax/Shipping/Total</code>, <code>generateSlug</code>, <code>truncate</code>, utilidades de clases.</li>
-                  <li><b>hooks/useDebounce.js:</b> debounce de valor para búsquedas y filtrados.</li>
+                  <li><b>utils/helpers.js:</b> <code>formatPrice</code>, <code>formatDate</code>, <code>calculateDiscount</code>, <code>getStockStatus</code>, <code>getImageUrl</code>, <code>getProductImage</code>, <code>debounce</code>, <code>throttle</code>, <code>classNames</code>.</li>
                 </ul>
               </Prose>
             </Section>
 
-            <Section id="env" index={9} title="Variables de entorno">
+            <Section id="env" index={12} title="Variables de entorno">
               <CodeBlock code={ENV_VARS} />
             </Section>
 
-            <Section id="errors" index={10} title="Manejo de errores">
+            <Section id="errors" index={13} title="Manejo de errores">
               <Prose>
                 <h3>Backend</h3>
                 <p>
                   <code>middleware/errorHandler.js</code> formatea errores (success, message, errors, statusCode), distingue errores operacionales
-                  (401/403/404/ValidationError) de errores de programación (500) y suprime el
-                  stack en producción. <code>notFound.js</code> captura 404.
+                  (401/403/404/ValidationError) de errores de programación (500) y suprime el stack en producción. La validación de express-validator
+                  retorna <code>{'{ errors: [...] }'}</code> en 400 para peticiones inválidas.
                 </p>
                 <p>
-                  Las rutas async usan <code>express-async-handler</code> (o try/catch) para que
-                  los rechazos lleguen al manejador centralizado.
+                  Las rutas async usan try/catch para que los errores lleguen al manejador centralizado. Las validaciones retornan
+                  <code>&nbsp;400</code> con el detalle de los campos inválidos.
                 </p>
                 <h3>Frontend</h3>
                 <ul>
                   <li><b>ErrorBoundary.jsx:</b> componente de clase con fallback UI y botón de recarga.</li>
-                  <li><b>api.js:</b> 401 → redirige a <code>/login</code>; otros errores disparan toast vía react-hot-toast y rechazan la promesa.</li>
+                  <li><b>api.js:</b> 401 → redirige a <code>/login</code>; otros errores disparan toast vía react-hot-toast.</li>
                 </ul>
               </Prose>
             </Section>
