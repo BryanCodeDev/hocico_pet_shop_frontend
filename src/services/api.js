@@ -6,6 +6,12 @@ import axios from 'axios'
  * responda 404: la tienda aparece vacía y el login falla, sin ninguna pista
  * de la causa. Se normaliza aquí para que una variable mal escrita no pueda
  * tumbar la aplicación entera.
+ *
+ * Conviene dejar VITE_API_URL vacía en producción. La sesión se guarda en una
+ * cookie httpOnly con sameSite=lax: si el frontend llama al backend por su
+ * dominio, la petición es cross-site, el navegador no manda la cookie y todos
+ * los endpoints autenticados responden 401. Con la variable vacía todo va a
+ * /api en el mismo origen y netlify.toml lo reenvía desde el servidor.
  */
 export function normalizeBaseUrl(value) {
   const base = (value || '/api').replace(/\/+$/, '')
