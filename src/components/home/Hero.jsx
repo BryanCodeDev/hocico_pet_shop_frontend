@@ -27,7 +27,7 @@ export default function Hero() {
             aria-hidden="true"
           />
         ))}
-        <div className="absolute inset-0 bg-black/35" />
+         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
       </div>
 
       <div className="relative z-10 container-custom py-20 lg:py-32">
@@ -60,7 +60,7 @@ export default function Hero() {
             <span className="text-white">
               CUIDADO QUE{' '}
             </span>
-            <span className="text-charcoal-600">
+            <span className="text-mustard-400">
               MARCA LA DIFERENCIA
             </span>
           </motion.h1>

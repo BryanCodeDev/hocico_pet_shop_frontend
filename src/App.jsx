@@ -20,6 +20,7 @@ import Category from './pages/Category'
 import Search from './pages/Search'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import Grooming from './pages/Grooming'
 import { PrivacyPolicy, Terms, Returns, DataPolicy } from './pages/legal/index'
 import NotFound from './pages/NotFound'
 import AdminDashboard from './pages/admin/Dashboard'
@@ -49,8 +50,9 @@ function App() {
               <Route path="checkout/success" element={<CheckoutSuccess />} />
               <Route path="checkout/failure" element={<CheckoutFailure />} />
               <Route path="checkout/pending" element={<CheckoutPending />} />
-              <Route path="nosotros" element={<About />} />
-              <Route path="contacto" element={<Contact />} />
+               <Route path="nosotros" element={<About />} />
+               <Route path="contacto" element={<Contact />} />
+               <Route path="grooming" element={<Grooming />} />
               <Route path="politica-privacidad" element={<PrivacyPolicy />} />
               <Route path="terminos" element={<Terms />} />
               <Route path="cambios-devoluciones" element={<Returns />} />

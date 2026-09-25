@@ -78,11 +78,11 @@ export default function Newsletter() {
                       disabled={loading}
                     />
                   </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-primary px-8 py-4 flex items-center gap-2 whitespace-nowrap"
-                  >
+                   <button
+                     type="submit"
+                     disabled={loading}
+                     className="group btn-primary px-8 py-4 flex items-center gap-2 whitespace-nowrap"
+                   >
                     {loading ? (
                       <motion.svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M12 2a10 10 0 0 1 10 10A10 10 0 0 1 12 22 10 10 0 0 1 2 12 10 10 0 0 1 12 2" /></motion.svg>
                     ) : (
