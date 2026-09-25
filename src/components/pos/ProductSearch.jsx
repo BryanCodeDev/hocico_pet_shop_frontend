@@ -1,9 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { X, ShoppingCart, Package, Search } from 'lucide-react'
-import { posService } from '../../services/pos'
-import { formatPrice } from '../../utils/helpers'
-import toast from 'react-hot-toast'
+import { useState, useRef } from 'react'
+import { Search, Package } from 'lucide-react'
 
 export default function ProductSearch({
   searchQuery,
@@ -30,18 +26,6 @@ export default function ProductSearch({
         }
       }, 300)
     }
-  }
-
-  const handleBarcodeSubmit = (e) => {
-    e.preventDefault()
-    if (barcodeInput.trim()) {
-      onBarcodeSubmit(barcodeInput.trim())
-      setBarcodeInput('')
-    }
-  }
-
-  const handleSearchInput = (e) => {
-    onSearchChange(e)
   }
 
   return (
@@ -74,7 +58,7 @@ export default function ProductSearch({
         <input
           type="text"
           value={searchQuery}
-          onChange={handleSearchInput}
+          onChange={onSearchChange}
           placeholder="Buscar producto por nombre o categoría..."
           className="w-full pl-12 pr-4 py-3 bg-white border border-charcoal-200 rounded-xl focus:border-primary-600 focus:outline-none text-primary-900 transition-colors"
           autoComplete="off"

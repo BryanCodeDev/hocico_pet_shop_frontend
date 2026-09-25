@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Search, ShoppingCart, Receipt, Package, X, BarChart3, LogOut, User
+  ShoppingCart, Receipt, Package, BarChart3, LogOut, User
 } from 'lucide-react'
 import { posService } from '../../services/pos'
 import { formatPrice } from '../../utils/helpers'
@@ -38,6 +38,12 @@ export default function POS() {
   useEffect(() => {
     loadCurrentCashRegister()
   }, [])
+
+  useEffect(() => {
+    if (!cashRegisterLoading && !cashRegister && !showReceipt) {
+      setShowCashRegisterModal(true)
+    }
+  }, [cashRegisterLoading, cashRegister, showReceipt])
 
   const handleSearch = useCallback(async (query, page = 1) => {
     if (!query) {
@@ -129,17 +135,12 @@ export default function POS() {
   }
 
   const cartTotal = useMemo(() => {
-    return cart.reduce(
-      (sum, item) => sum + ((item.originalPrice || item.price) > item.price
-        ? item.price * item.quantity
-        : item.price * item.quantity),
-      0
-    )
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   }, [cart])
 
   const cartSubtotal = useMemo(() => {
     return cart.reduce(
-      (sum, item) => sum + ((item.originalPrice || item.price) > item.price
+      (sum, item) => sum + ((item.originalPrice && item.originalPrice > item.price)
         ? item.originalPrice * item.quantity
         : item.price * item.quantity),
       0

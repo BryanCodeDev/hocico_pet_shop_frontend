@@ -174,6 +174,38 @@ export const adminDashboardService = {
   },
 }
 
+export const adminPosService = {
+  async getReportsSummary(params = {}) {
+    const response = await api.get('/pos/reports/summary', { params })
+    return response.data
+  },
+
+  async getCashRegistersReport(params = {}) {
+    const response = await api.get('/pos/reports/cash-registers', { params })
+    return response.data
+  },
+
+  async getAllCashRegisters(params = {}) {
+    const response = await api.get('/pos/cash-register/admin/history', { params })
+    return response.data
+  },
+
+  async getSalesByChannel(params = {}) {
+    const response = await api.get('/pos/reports/admin/by-channel', { params })
+    return response.data
+  },
+
+  async getSalesByPaymentMethod(params = {}) {
+    const response = await api.get('/pos/reports/admin/by-payment-method', { params })
+    return response.data
+  },
+
+  async getAdminDailyReport(params = {}) {
+    const response = await api.get('/pos/reports/admin/daily', { params })
+    return response.data
+  },
+}
+
 export const adminSettingsService = {
   async getSettings() {
     const response = await api.get('/admin/settings')

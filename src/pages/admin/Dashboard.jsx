@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { ShoppingCart, Package, Users, TrendingUp, AlertTriangle, DollarSign, Clock, CheckCircle } from 'lucide-react'
 import SEO from '../../components/seo/SEO'
-import { adminDashboardService } from '../../services/admin'
+import { adminDashboardService, adminPosService } from '../../services/admin'
 import { formatPrice, formatDate } from '../../utils/helpers'
 import toast from 'react-hot-toast'
 
@@ -16,10 +16,12 @@ export default function AdminDashboard() {
   const [ordersChart, setOrdersChart] = useState(null)
   const [topProducts, setTopProducts] = useState([])
   const [lowStock, setLowStock] = useState([])
+  const [posSummary, setPosSummary] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchDashboard()
+    fetchPosSummary()
   }, [])
 
   const fetchDashboard = async () => {
@@ -32,7 +34,7 @@ export default function AdminDashboard() {
         adminDashboardService.getTopProducts(10),
         adminDashboardService.getLowStock(10),
       ])
-      setStats(statsData.stats)
+      setStats(statsData.stats || {})
       setSalesChart(salesData)
       setOrdersChart(ordersData)
       setTopProducts(topData.products || [])
@@ -45,6 +47,16 @@ export default function AdminDashboard() {
     }
   }
 
+  const fetchPosSummary = async () => {
+    try {
+      const posData = await adminPosService.getReportsSummary()
+      setPosSummary(posData || null)
+    } catch (error) {
+      console.error('Fetch POS summary error:', error)
+      setPosSummary(null)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -54,14 +66,14 @@ export default function AdminDashboard() {
   }
 
   const statCards = [
-    { label: 'Ventas totales', value: stats.totalSales, icon: DollarSign, color: 'mint', format: 'money' },
-    { label: 'Ventas de hoy', value: stats.todaySales, icon: TrendingUp, color: 'mint', format: 'money' },
-    { label: 'Ventas del mes', value: stats.monthSales, icon: ShoppingCart, color: 'mint', format: 'money' },
-    { label: 'Pedidos totales', value: stats.totalOrders, icon: Package, color: 'mint', format: 'number' },
-    { label: 'Pedidos pendientes', value: stats.pendingOrders, icon: Clock, color: 'mustard', format: 'number' },
-    { label: 'Productos', value: stats.totalProducts, icon: Package, color: 'mint', format: 'number' },
-    { label: 'Usuarios', value: stats.totalUsers, icon: Users, color: 'mint', format: 'number' },
-    { label: 'Stock bajo', value: stats.lowStockCount, icon: AlertTriangle, color: stats.lowStockCount > 0 ? 'alert' : 'mint', format: 'number' },
+    { label: 'Ventas totales', value: stats?.totalSales, icon: DollarSign, color: 'mint', format: 'money' },
+    { label: 'Ventas de hoy', value: stats?.todaySales, icon: TrendingUp, color: 'mint', format: 'money' },
+    { label: 'Ventas del mes', value: stats?.monthSales, icon: ShoppingCart, color: 'mint', format: 'money' },
+    { label: 'Pedidos totales', value: stats?.totalOrders, icon: Package, color: 'mint', format: 'number' },
+    { label: 'Pedidos pendientes', value: stats?.pendingOrders, icon: Clock, color: 'mustard', format: 'number' },
+    { label: 'Productos', value: stats?.totalProducts, icon: Package, color: 'mint', format: 'number' },
+    { label: 'Usuarios', value: stats?.totalUsers, icon: Users, color: 'mint', format: 'number' },
+    { label: 'Stock bajo', value: stats?.lowStockCount, icon: AlertTriangle, color: stats?.lowStockCount > 0 ? 'alert' : 'mint', format: 'number' },
   ]
 
   const salesData = salesChart?.labels?.map((label, index) => ({
@@ -132,9 +144,87 @@ export default function AdminDashboard() {
               </motion.div>
             )
           })}
-        </div>
+         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+         {posSummary && (
+           <motion.div
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.5, delay: 0.35 }}
+             className="min-w-0 p-4 sm:p-6 bg-white border border-dark-border rounded-2xl"
+           >
+             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+               <h2 className="font-display font-semibold text-xl text-primary-900">Comparativa Online vs POS</h2>
+               <Link to="/pos" className="text-charcoal-600 hover:text-charcoal-500 text-sm font-medium transition-colors">Ir a POS</Link>
+             </div>
+
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+               <div className="bg-cream-100 rounded-xl p-4 border border-dark-border">
+                 <p className="text-sm text-primary-700 mb-1">Ventas Online</p>
+                 <p className="font-display font-bold text-xl text-primary-900">{formatPrice(posSummary.byChannel?.online?.total || 0)}</p>
+                 <p className="text-xs text-primary-900/60">{posSummary.byChannel?.online?.count || 0} órdenes</p>
+               </div>
+               <div className="bg-charcoal-600/10 rounded-xl p-4 border border-dark-border">
+                 <p className="text-sm text-primary-700 mb-1">Ventas POS</p>
+                 <p className="font-display font-bold text-xl text-primary-900">{formatPrice(posSummary.byChannel?.pos?.total || 0)}</p>
+                 <p className="text-xs text-primary-900/60">{posSummary.byChannel?.pos?.count || 0} órdenes</p>
+               </div>
+               <div className="bg-mustard-100 rounded-xl p-4 border border-dark-border">
+                 <p className="text-sm text-primary-700 mb-1">Efectivo hoy</p>
+                 <p className="font-display font-bold text-xl text-primary-900">{formatPrice(posSummary.todayCashSales || 0)}</p>
+               </div>
+               <div className="bg-primary-100 rounded-xl p-4 border border-dark-border">
+                 <p className="text-sm text-primary-700 mb-1">Ticket promedio</p>
+                 <p className="font-display font-bold text-xl text-primary-900">{formatPrice(posSummary.summary?.ticketPromedio || 0)}</p>
+               </div>
+             </div>
+
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+               <div>
+                 <h3 className="font-display font-semibold text-sm text-primary-900 mb-4">Ventas por canal (últimos 30 días)</h3>
+                 <ResponsiveContainer width="100%" height={200}>
+                   <BarChart
+                     data={[
+                       { name: 'Online', total: posSummary.byChannel?.online?.total || 0 },
+                       { name: 'POS', total: posSummary.byChannel?.pos?.total || 0 },
+                     ]}
+                     margin={{ top: 5, right: 10, left: -25, bottom: 5 }}
+                   >
+                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E2D9" />
+                     <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#6B6862" fontSize={12} />
+                     <YAxis axisLine={false} tickLine={false} stroke="#6B6862" fontSize={12} />
+                     <Tooltip
+                       contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E2D9', borderRadius: '12px' }}
+                       formatter={(value) => formatPrice(value)}
+                     />
+                     <Bar dataKey="total" radius={[8, 8, 0, 0]} fill="#C9A860" />
+                   </BarChart>
+                 </ResponsiveContainer>
+               </div>
+
+               <div>
+                 <h3 className="font-display font-semibold text-sm text-primary-900 mb-4">Métodos de pago POS</h3>
+                 <ResponsiveContainer width="100%" height={200}>
+                   <BarChart
+                     data={posSummary.byPaymentMethod?.map(p => ({ name: p.method, value: p.total })) || []}
+                     margin={{ top: 5, right: 10, left: -25, bottom: 5 }}
+                   >
+                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E2D9" />
+                     <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="#6B6862" fontSize={12} />
+                     <YAxis axisLine={false} tickLine={false} stroke="#6B6862" fontSize={12} />
+                     <Tooltip
+                       contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E2D9', borderRadius: '12px' }}
+                       formatter={(value) => formatPrice(value)}
+                     />
+                     <Bar dataKey="value" radius={[8, 8, 0, 0]} fill="#22C55E" />
+                   </BarChart>
+                 </ResponsiveContainer>
+               </div>
+             </div>
+           </motion.div>
+         )}
+
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
