@@ -1,7 +1,28 @@
 import axios from 'axios'
 
+/**
+ * El backend monta TODO bajo /api (ver src/app.js del backend). Una
+ * VITE_API_URL sin ese sufijo hace que cada petición pegue en la raíz y
+ * responda 404: la tienda aparece vacía y el login falla, sin ninguna pista
+ * de la causa. Se normaliza aquí para que una variable mal escrita no pueda
+ * tumbar la aplicación entera.
+ */
+export function normalizeBaseUrl(value) {
+  const base = (value || '/api').replace(/\/+$/, '')
+  return base.endsWith('/api') ? base : `${base}/api`
+}
+
+const configuredBaseUrl = import.meta.env.VITE_API_URL
+const baseURL = normalizeBaseUrl(configuredBaseUrl)
+
+if (configuredBaseUrl && normalizeBaseUrl(configuredBaseUrl) !== configuredBaseUrl.replace(/\/+$/, '')) {
+  console.warn(
+    `[api] VITE_API_URL="${configuredBaseUrl}" no terminaba en /api; se usa "${baseURL}".`
+  )
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },

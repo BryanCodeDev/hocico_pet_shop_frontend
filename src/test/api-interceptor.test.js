@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import api from '../services/api'
+import api, { normalizeBaseUrl } from '../services/api'
 import { server, API } from './mocks/server'
 
 /**
@@ -25,6 +25,39 @@ describe('configuración del cliente HTTP', () => {
 
   it('apunta al prefijo /api por defecto', () => {
     expect(api.defaults.baseURL).toBe('/api')
+  })
+})
+
+// Regresión de un despliegue real: con VITE_API_URL apuntando a la raíz del
+// backend (sin /api) TODAS las peticiones devolvían 404 — la tienda se veía
+// vacía y el login fallaba, sin error que señalara la causa. La normalización
+// convierte ese error de configuración en algo que simplemente funciona.
+describe('normalizeBaseUrl', () => {
+  it('deja intacta una URL que ya termina en /api', () => {
+    expect(normalizeBaseUrl('https://api.hocico.com/api')).toBe('https://api.hocico.com/api')
+  })
+
+  it('añade /api a un host pelado', () => {
+    expect(normalizeBaseUrl('https://hocicopetshopbackend-production.up.railway.app')).toBe(
+      'https://hocicopetshopbackend-production.up.railway.app/api'
+    )
+  })
+
+  it('no duplica el sufijo si viene con barra final', () => {
+    expect(normalizeBaseUrl('https://api.hocico.com/api/')).toBe('https://api.hocico.com/api')
+  })
+
+  it('tolera barras finales en el host pelado', () => {
+    expect(normalizeBaseUrl('https://api.hocico.com//')).toBe('https://api.hocico.com/api')
+  })
+
+  it('usa /api cuando no hay nada configurado', () => {
+    expect(normalizeBaseUrl('')).toBe('/api')
+    expect(normalizeBaseUrl(undefined)).toBe('/api')
+  })
+
+  it('deja intacta la ruta relativa del proxy de desarrollo', () => {
+    expect(normalizeBaseUrl('/api')).toBe('/api')
   })
 })
 
