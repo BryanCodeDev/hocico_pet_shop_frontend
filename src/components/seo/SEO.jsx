@@ -7,6 +7,16 @@ const defaultDescription = 'Tu tienda online de alimentos, snacks y accesorios p
 const defaultImage = '/og-image.jpg'
 const twitterHandle = '@hocico_petshop'
 
+/**
+ * Los datos de las etiquetas llegan de la API, donde un campo sin valor es
+ * `null`, no `undefined`. Los parámetros por defecto de abajo solo sustituyen
+ * `undefined`, así que un `null` atravesaba el componente y reventaba en el
+ * primer `.startsWith`. Cualquier hueco vuelve al valor por defecto.
+ */
+const resolve = (value, fallback) => (value == null || value === '' ? fallback : value)
+
+const toAbsoluteUrl = path => (path.startsWith('http') ? path : `${siteUrl}${path}`)
+
 export default function SEO({
   title = defaultTitle,
   description = defaultDescription,
@@ -21,8 +31,10 @@ export default function SEO({
   breadcrumbs,
 }) {
   const location = useLocation()
-  const fullUrl = canonical || `${siteUrl}${location.pathname}${location.search}`
-  const fullImage = image.startsWith('http') ? image : `${siteUrl}${image}`
+  const resolvedTitle = resolve(title, defaultTitle)
+  const resolvedDescription = resolve(description, defaultDescription)
+  const fullUrl = resolve(canonical, `${siteUrl}${location.pathname}${location.search}`)
+  const fullImage = toAbsoluteUrl(resolve(image, defaultImage))
 
   const jsonLd = []
 
@@ -37,7 +49,7 @@ export default function SEO({
         '@type': 'Brand',
         name: product.brand,
       },
-      image: product.images.map(img => img.startsWith('http') ? img : `${siteUrl}${img}`),
+      image: (product.images || []).map(toAbsoluteUrl),
       offers: {
         '@type': 'Offer',
         url: fullUrl,
@@ -67,7 +79,7 @@ export default function SEO({
         '@type': 'ListItem',
         position: index + 1,
         name: crumb.name,
-        item: crumb.url.startsWith('http') ? crumb.url : `${siteUrl}${crumb.url}`,
+        ...(crumb.url && { item: toAbsoluteUrl(crumb.url) }),
       })),
     })
   }
@@ -114,8 +126,8 @@ export default function SEO({
 
   return (
     <Helmet>
-      <title>{title}</title>
-      <meta name="description" content={description} />
+      <title>{resolvedTitle}</title>
+      <meta name="description" content={resolvedDescription} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link rel="canonical" href={fullUrl} />
 
@@ -125,8 +137,8 @@ export default function SEO({
 
       <meta property="og:type" content={type} />
       <meta property="og:url" content={fullUrl} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
+      <meta property="og:title" content={resolvedTitle} />
+      <meta property="og:description" content={resolvedDescription} />
       <meta property="og:image" content={fullImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
@@ -136,25 +148,16 @@ export default function SEO({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content={twitterHandle} />
       <meta name="twitter:url" content={fullUrl} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
+      <meta name="twitter:title" content={resolvedTitle} />
+      <meta name="twitter:description" content={resolvedDescription} />
       <meta name="twitter:image" content={fullImage} />
 
       {jsonLd.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       )}
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
+      <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
+      <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
     </Helmet>
   )
 }
