@@ -12,7 +12,7 @@ const trustItems = [
 
 export default function TrustSection() {
   return (
-    <section className="py-20 lg:py-28 border-y border-dark-border" aria-labelledby="trust-title">
+     <section className="py-20 lg:py-28" aria-labelledby="trust-title">
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

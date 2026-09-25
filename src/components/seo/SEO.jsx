@@ -2,8 +2,8 @@ import { Helmet } from 'react-helmet-async'
 import { useLocation } from 'react-router-dom'
 
 const siteUrl = 'https://hocico.com.co'
-const defaultTitle = 'Hocico Pet Shop - Alimentos, Accesorios y Grooming para tu Mascota'
-const defaultDescription = 'Tu tienda online de alimentos, snacks, accesorios y servicios de grooming para perros y gatas. Envíos a Mosquera, Madrid y Funza.'
+const defaultTitle = 'Hocico Pet Shop - Alimentos, Accesorios y Snacks para tu Mascota'
+const defaultDescription = 'Tu tienda online de alimentos, snacks y accesorios para perros y gatas. Envíos a Mosquera, Madrid y Funza.'
 const defaultImage = '/og-image.jpg'
 const twitterHandle = '@hocico_petshop'
 
@@ -82,7 +82,7 @@ export default function SEO({
     '@type': 'Organization',
     name: 'Hocico Pet Shop',
     url: siteUrl,
-    logo: `${siteUrl}/assets/images/logo-hocico.svg`,
+    logo: `${siteUrl}/assets/images/Logo.webp`,
     sameAs: [
       'https://facebook.com/hocico_petshop',
       'https://instagram.com/hocico_petshop',

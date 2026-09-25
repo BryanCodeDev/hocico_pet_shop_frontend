@@ -62,7 +62,7 @@ export default function Search() {
     <>
       <SEO
         title={`Búsqueda: "${query}" | Hocico Pet Shop`}
-        description={query ? `Resultados de búsqueda para "${query}"` : 'Busca alimentos, snacks, accesorios y servicios de grooming para tu mascota'}
+         description={query ? `Resultados de búsqueda para "${query}"` : 'Busca alimentos, snacks y accesorios para tu mascota'}
         noindex
       />
 

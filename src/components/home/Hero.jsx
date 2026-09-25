@@ -60,7 +60,7 @@ export default function Hero() {
             <span className="text-white">
               CUIDADO QUE{' '}
             </span>
-            <span className="text-mustard-400">
+            <span className="text-charcoal-300">
               MARCA LA DIFERENCIA
             </span>
           </motion.h1>
@@ -71,7 +71,7 @@ export default function Hero() {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="text-lg sm:text-xl text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Alimentos, snacks, accesorios y grooming de calidad para que tu mejor amigo siempre esté feliz y saludable.
+             Alimentos, snacks y accesorios de calidad para que tu mejor amigo siempre esté feliz y saludable.
           </motion.p>
 
           <motion.div
@@ -80,30 +80,30 @@ export default function Hero() {
             transition={{ delay: 0.5, duration: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full"
           >
-            <MotionLink
-              to="/tienda"
-              className="group btn-primary px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg gap-2 w-full sm:w-auto"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              VER PRODUCTOS
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-            </MotionLink>
-            <MotionLink
-              to="/grooming"
-              className="btn-outline px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg w-full sm:w-auto"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              SERVICIO DE GROOMING
-            </MotionLink>
+             <MotionLink
+               to="/tienda"
+               className="group btn-primary px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg gap-2 w-full sm:w-auto"
+               whileHover={{ scale: 1.02 }}
+               whileTap={{ scale: 0.98 }}
+             >
+               VER PRODUCTOS
+               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+             </MotionLink>
+             <MotionLink
+               to="/contacto"
+               className="btn-outline px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg w-full sm:w-auto"
+               whileHover={{ scale: 1.02 }}
+               whileTap={{ scale: 0.98 }}
+             >
+               CONTACTANOS
+             </MotionLink>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className="mt-10 sm:mt-16 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs sm:text-sm text-primary-600"
+            className="mt-10 sm:mt-16 flex flex-wrap items-center justify-center gap-6 sm:gap-8 text-xs sm:text-sm text-primary-900 font-medium"
           >
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 text-charcoal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>

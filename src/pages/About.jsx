@@ -13,7 +13,7 @@ const features = [
 ]
 
 const team = [
-  { name: 'Equipo Hocico', role: 'Fundadores', desc: 'Apasionados por las mascotas con 10+ años de experiencia en nutrición, grooming y accesorios' },
+  { name: 'Equipo Hocico', role: 'Fundadores', desc: 'Apasionados por las mascotas con 10+ años de experiencia en nutrición y accesorios' },
 ]
 
 export default function About() {
@@ -21,7 +21,7 @@ export default function About() {
     <>
       <SEO
         title="Nosotros | Hocico Pet Shop"
-        description="Conoce a Hocico Pet Shop: tu tienda online de alimentos, snacks, accesorios y grooming para perros y gatas. Selección curada, garantía oficial, envíos a Mosquera, Madrid y Funza."
+        description="Conoce a Hocico Pet Shop: tu tienda online de alimentos, snacks y accesorios para perros y gatas. Selección curada, garantía oficial, envíos a Mosquera, Madrid y Funza."
       />
 
       <div className="min-h-screen bg-white pt-20">
@@ -103,7 +103,7 @@ export default function About() {
                   el cariño por las mascotas— sigue siendo nuestro núcleo aunque ahora operamos online en toda la región.
                 </p>
                 <p>
-                  Hoy, Hocico Pet Shop es referente en alimentos, snacks, accesorios y grooming para perros y gatas en Colombia.
+                  Hoy, Hocico Pet Shop es referente en alimentos, snacks y accesorios para perros y gatas en Colombia.
                   Trabajamos directamente con marcas reconocidas y fabricantes oficiales para garantizar autenticidad,
                   garantía y el mejor precio. Cada producto en nuestro catálogo ha pasado por nuestro filtro de calidad:
                   si no lo recomendaríamos a nuestro propio perro, no lo vendemos.

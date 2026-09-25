@@ -63,7 +63,7 @@ export default function Contact() {
     <>
       <SEO
         title="Contacto 24/7 | Hocico Pet Shop - Mosquera, Madrid, Funza"
-        description="Hocico Pet Shop atiende 24/7 por WhatsApp al +57 313 3245600. Alimentos, snacks, accesorios y grooming para perros y gatas. Envíos a Mosquera, Madrid y Funza."
+         description="Hocico Pet Shop atiende 24/7 por WhatsApp al +57 313 3245600. Alimentos, snacks y accesorios para perros y gatas. Envíos a Mosquera, Madrid y Funza."
       />
 
       <div className="min-h-screen bg-white pt-20">
@@ -79,8 +79,8 @@ export default function Contact() {
                 HABLEMOS DE TU MASCOTA
               </h1>
               <p className="text-lg text-primary-900 leading-relaxed">
-                Estamos aquí para ayudarte. Ya sea que necesites asesoramiento para la compra de alimentos,
-                tengas dudas sobre un pedido o quieras coordinar un servicio de grooming.
+                 Estamos aquí para ayudarte. Ya sea que necesites asesoramiento para la compra de alimentos,
+                 snacks o accesorios, o tengas dudas sobre un pedido.
               </p>
             </motion.div>
           </div>
@@ -257,9 +257,8 @@ export default function Contact() {
                           <option value="">Seleccionar asunto</option>
                           <option value="consulta">Consulta general</option>
                           <option value="pedido">Consulta por pedido</option>
-                          <option value="productos">Consulta por productos</option>
-                          <option value="grooming">Servicio de grooming</option>
-                          <option value="garantia">Garantía / Devolución</option>
+                           <option value="productos">Consulta por productos</option>
+                           <option value="garantia">Garantía / Devolución</option>
                           <option value="otro">Otro</option>
                         </select>
                       </div>

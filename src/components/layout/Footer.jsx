@@ -13,7 +13,7 @@ const footerLinks = {
     { label: 'Alimentos', href: '/categoria/alimentos' },
     { label: 'Snacks', href: '/categoria/snacks' },
     { label: 'Accesorios', href: '/categoria/accesorios' },
-    { label: 'Grooming / Peluquería', href: '/grooming' },
+    { label: 'Higiene y cuidado', href: '/categoria/higiene-cuidado' },
   ],
   ayuda: [
     { label: 'Preguntas frecuentes', href: '/contacto#faq' },
@@ -68,13 +68,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-6" aria-label="Hocico Pet Shop - Inicio">
-              <div className="w-12 h-12 rounded-xl bg-charcoal-600 flex items-center justify-center">
-                <img src="/assets/images/favicon.svg" alt="Hocico Pet Shop" className="w-7 h-7" />
-              </div>
+              <img src="/assets/images/Logo.webp" alt="Hocico Pet Shop" className="w-12 h-12" />
               <span className="font-display font-bold text-2xl text-white">Hocico Pet Shop</span>
             </Link>
             <p className="text-primary-300 text-base leading-relaxed mb-6 max-w-xs">
-              Tu tienda online de alimentos, snacks, accesorios y servicios de grooming para perros y gatas. Envíos a Mosquera, Madrid y Funza.
+              Tu tienda online de alimentos, snacks y accesorios para perros y gatas. Envíos a Mosquera, Madrid y Funza.
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social, index) => (
@@ -156,7 +154,7 @@ export default function Footer() {
                 {trustItems.map((item, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-xl bg-primary-200 border border-dark-border flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 text-primary-900" aria-hidden="true" />
+                      <item.icon className="w-5 h-5 text-charcoal-600" aria-hidden="true" />
                     </div>
                     <div>
                       <p className="font-medium text-white text-sm">{item.title}</p>

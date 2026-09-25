@@ -10,7 +10,6 @@ const navLinks = [
   { path: '/', label: 'Inicio' },
   { path: '/tienda', label: 'Tienda' },
   { path: '/tienda?category=ofertas', label: 'Ofertas' },
-  { path: '/grooming', label: 'Grooming' },
   { path: '/nosotros', label: 'Nosotros' },
   { path: '/contacto', label: 'Contacto' },
 ]
@@ -117,7 +116,7 @@ export default function Navbar() {
                  animate={{ scale: 1, rotate: 0 }}
                  transition={{ type: 'spring', damping: 15, stiffness: 200 }}
                >
-                 <img src="/assets/images/logo-hocico.svg" alt="Hocico Pet Shop" className="w-10 h-10" />
+                 <img src="/assets/images/Logo.webp" alt="Hocico Pet Shop" className="w-10 h-10" />
                </motion.div>
                <span className="font-display font-bold text-xl lg:text-2xl text-primary-900">Hocico Pet Shop</span>
              </Link>
@@ -314,7 +313,7 @@ export default function Navbar() {
               >
                 <div className="p-6 flex items-center justify-between border-b border-charcoal-200">
                   <Link to="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                    <img src="/assets/images/logo-hocico.svg" alt="Hocico Pet Shop" className="w-10 h-10" />
+                    <img src="/assets/images/Logo.webp" alt="Hocico Pet Shop" className="w-10 h-10" />
                     <span className="font-display font-bold text-xl text-primary-900">Hocico Pet Shop</span>
                   </Link>
                   <button
