@@ -415,7 +415,7 @@ export default function AdminHelp() {
                 <ul>
                   <li>Los productos/categorías/usuarios se "borran" con <code>deleted_at</code>; las listas filtran <code>deleted_at IS NULL</code>.</li>
                   <li>Borrar una categoría con productos activos falla (restricción).</li>
-                  <li><code>compare_price</code> > <code>price</code> muestra el porcentaje de descuento.</li>
+                   <li><code>compare_price</code> &gt; <code>price</code> muestra el porcentaje de descuento.</li>
                   <li>Cancelar orden solo permitido en estados <code>pending</code>/<code>processing</code>.</li>
                 </ul>
               </Prose>
