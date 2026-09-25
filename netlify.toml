@@ -2,6 +2,11 @@
   command = "npm run build"
   publish = "dist"
 
+# El frontend llama SIEMPRE a /api en el mismo origen; este redirect es lo que
+# lo lleva al backend. Por eso en producción no hace falta definir VITE_API_URL.
+#
+# OJO: si el servicio de Railway está detenido, este dominio devuelve 404 y la
+# tienda responde con error en todo lo que venga de la API.
 [[redirects]]
   from = "/api/*"
   to = "https://hocicopetshopbackend-production.up.railway.app/api/:splat"
