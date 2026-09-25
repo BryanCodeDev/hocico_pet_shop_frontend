@@ -1,17 +1,37 @@
-import { Link, Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { LayoutDashboard, Package, Tag, ShoppingCart, Users, Settings, LogOut, Box, Menu, X, HelpCircle } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, ShoppingCart, Users, Settings, HelpCircle, LogOut } from 'lucide-react'
+import { Outlet } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import AdminTopbar from '../components/layout/AdminTopbar'
 
-const adminNavItems = [
-  { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/productos', label: 'Productos', icon: Package },
-  { path: '/admin/categorias', label: 'Categorías', icon: Tag },
-  { path: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
-  { path: '/admin/usuarios', label: 'Usuarios', icon: Users },
-  { path: '/admin/configuracion', label: 'Configuración', icon: Settings },
-  { path: '/admin/ayuda', label: 'Ayuda', icon: HelpCircle },
+const navSections = [
+  {
+    label: 'General',
+    items: [{ path: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true }],
+  },
+  {
+    label: 'Catálogo',
+    items: [
+      { path: '/admin/productos', label: 'Productos', icon: Package },
+      { path: '/admin/categorias', label: 'Categorías', icon: Tag },
+    ],
+  },
+  {
+    label: 'Ventas',
+    items: [
+      { path: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
+      { path: '/admin/usuarios', label: 'Usuarios', icon: Users },
+    ],
+  },
+  {
+    label: 'Sistema',
+    items: [
+      { path: '/admin/configuracion', label: 'Configuración', icon: Settings },
+      { path: '/admin/ayuda', label: 'Ayuda', icon: HelpCircle },
+    ],
+  },
 ]
 
 export default function AdminLayout() {
@@ -41,10 +61,6 @@ export default function AdminLayout() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isMobile, sidebarOpen])
 
-  const handleLogout = async () => {
-    await logout()
-  }
-
   useEffect(() => {
     if (isMobile && sidebarOpen) {
       document.body.style.overflow = 'hidden'
@@ -56,91 +72,106 @@ export default function AdminLayout() {
     }
   }, [isMobile, sidebarOpen])
 
+  // Cierra el sidebar en móvil cada vez que cambia de página
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [location.pathname])
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
+  const isItemActive = (item) =>
+    item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path)
+
   return (
-    <div className="min-h-screen bg-white flex overflow-x-hidden">
-      <AnimatePresence>
-        {isMobile && sidebarOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/20 z-40"
-            onClick={() => setSidebarOpen(false)}
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
+    <>
+      <AdminTopbar onOpenSidebar={() => setSidebarOpen(true)} />
 
-      <aside className={`${isMobile ? 'fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out' : 'static'} w-72 bg-primary-50 border-r border-dark-border flex flex-col h-full lg:translate-x-0 ${isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'} pt-16 lg:pt-20`}>
-        <div className="p-6 border-b border-dark-border flex-shrink-0">
-          <Link to="/admin" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-charcoal-600 to-charcoal-700 flex items-center justify-center">
-              <Box className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-display font-bold text-xl text-primary-900">Hocico Admin</span>
-          </Link>
-        </div>
+      <div className="min-h-screen bg-primary-50/50 flex overflow-x-clip">
+        <AnimatePresence>
+          {isMobile && sidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-primary-950/30 z-40"
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+          )}
+        </AnimatePresence>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto min-h-0">
-          {adminNavItems.map(item => {
-            const Icon = item.icon
-            const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path))
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
-                  isActive
-                    ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20'
-                    : 'text-primary-900 hover:bg-primary-100 hover:text-primary-900 hover:border-charcoal-600/20'
-                }`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                {item.label}
-              </NavLink>
-            )
-          })}
-        </nav>
+        <aside
+          className={`${
+            isMobile
+              ? `fixed left-0 top-16 bottom-0 z-[45] transform transition-transform duration-300 ease-in-out ${
+                  sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                }`
+              : 'lg:sticky lg:top-[72px] lg:self-start lg:h-[calc(100vh-72px)]'
+          } w-72 bg-white border-r border-dark-border flex flex-col`}
+        >
+          {/* Nav con scroll propio — independiente del resto de la página */}
+          <nav className="flex-1 overflow-y-auto min-h-0 py-3 px-3 admin-sidebar-scroll">
+            {navSections.map((section, sIndex) => (
+              <div key={section.label} className={sIndex > 0 ? 'mt-5' : ''}>
+                <p className="px-3.5 mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-black">
+                  {section.label}
+                </p>
+                <div className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const Icon = item.icon
+                    const active = isItemActive(item)
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                          active
+                            ? 'bg-charcoal-600 text-white shadow-sm'
+                            : 'text-black hover:bg-primary-50'
+                        }`}
+                      >
+                        <Icon
+                          className={`w-[18px] h-[18px] flex-shrink-0 transition-colors ${
+                            active ? 'text-white' : 'text-primary-400 group-hover:text-charcoal-600'
+                          }`}
+                          aria-hidden="true"
+                        />
+                        {item.label}
+                      </NavLink>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
 
-        <div className="p-4 border-t border-dark-border flex-shrink-0">
-          <div className="flex items-center gap-3 px-4 py-3 text-sm text-primary-900">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-charcoal-600 to-charcoal-700 flex items-center justify-center text-white font-medium">
-              {user?.name?.charAt(0).toUpperCase()}
+          {/* Footer fijo: no se mueve con el scroll del nav */}
+          <div className="p-3 border-t border-dark-border flex-shrink-0">
+            <div className="flex items-center gap-3 px-3.5 py-2.5">
+              <div className="w-9 h-9 rounded-full bg-charcoal-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-primary-900 truncate">{user?.name}</p>
+                <p className="text-xs text-black truncate capitalize">{user?.role}</p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-primary-900 truncate">{user?.name}</p>
-              <p className="text-xs text-primary-900">{user?.role}</p>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-primary-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors mt-1"
+            >
+              <LogOut className="w-[18px] h-[18px]" aria-hidden="true" />
+              Cerrar sesión
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-primary-900 hover:text-charcoal-600 hover:bg-primary-100 rounded-xl transition-colors mt-2"
-          >
-            <LogOut className="w-5 h-5" aria-hidden="true" />
-            Cerrar sesión
-          </button>
-        </div>
-      </aside>
-
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-0 pt-16 lg:pt-20">
-        <header className="lg:hidden bg-primary-50 border-b border-dark-border px-4 py-3 flex items-center justify-between">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg text-primary-900 hover:bg-primary-100 transition-colors"
-            aria-label="Abrir menú"
-            aria-expanded={sidebarOpen}
-          >
-            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-          <span className="font-display font-bold text-xl text-primary-900">Hocico Admin</span>
-          <div className="w-10" />
-        </header>
+        </aside>
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto min-w-0">
           <Outlet />
         </main>
       </div>
-    </div>
+    </>
   )
 }

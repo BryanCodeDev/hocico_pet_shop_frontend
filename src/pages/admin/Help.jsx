@@ -164,22 +164,25 @@ function AccordionItem({ title, children, defaultOpen = false, number }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: number * 0.03 }}
-      className="bg-white border border-dark-border rounded-2xl overflow-hidden"
+      className="bg-white border border-dark-border rounded-xl overflow-hidden transition-colors duration-200 hover:border-charcoal-300/60"
     >
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-3 p-4 sm:p-6 text-left"
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left"
       >
-        <span className="font-display font-semibold text-primary-900 text-lg">{title}</span>
-        {open ? (
-          <ChevronUp className="w-5 h-5 text-charcoal-600 flex-shrink-0" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-charcoal-600 flex-shrink-0" />
-        )}
+        <span className="font-display font-semibold text-primary-900 text-base sm:text-lg">{title}</span>
+        <span
+          className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200 ${
+            open ? 'bg-charcoal-600 text-white' : 'bg-primary-100 text-charcoal-600'
+          }`}
+        >
+          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </span>
       </button>
       {open && (
-        <div className="px-4 sm:px-6 pb-4 sm:pb-6 text-primary-900 prose-sm max-w-none">
+        <div className="px-4 sm:px-5 pt-1 pb-5 sm:pb-6 border-t border-dark-border text-primary-900 prose-sm max-w-none">
           {children}
         </div>
       )}
@@ -189,7 +192,7 @@ function AccordionItem({ title, children, defaultOpen = false, number }) {
 
 function Prose({ children }) {
   return (
-    <div className="prose prose-sm max-w-none text-primary-900 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-primary-900 [&_ul]:ml-5 [&_ol]:ml-5 [&_code]:bg-charcoal-600/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_pre]:bg-charcoal-600/5 [&_pre]:border [&_pre]:border-dark-border [&_pre]:rounded-xl [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:text-xs [&_table]:w-full [&_table]:border-collapse [&_th]:text-left [&_th]:py-2 [&_th]:pr-4 [&_th]:font-medium [&_td]:py-2 [&_td]:pr-4">
+    <div className="prose prose-sm max-w-none text-primary-900 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-primary-900 [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:first:mt-0 [&_p]:leading-relaxed [&_ul]:ml-5 [&_ul]:space-y-1 [&_ol]:ml-5 [&_ol]:space-y-1 [&_li]:leading-relaxed [&_code]:font-mono [&_code]:bg-charcoal-600/10 [&_code]:text-charcoal-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[0.8em] [&_pre]:bg-primary-900 [&_pre]:text-primary-100 [&_pre]:border [&_pre]:border-primary-800 [&_pre]:rounded-xl [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:text-xs [&_pre]:leading-relaxed [&_pre_code]:bg-transparent [&_pre_code]:text-inherit [&_pre_code]:p-0 [&_table]:w-full [&_table]:border-collapse [&_th]:text-left [&_th]:py-2 [&_th]:pr-4 [&_th]:font-medium [&_th]:text-primary-600 [&_th]:border-b [&_th]:border-dark-border [&_td]:py-2 [&_td]:pr-4">
       {children}
     </div>
   )
@@ -226,34 +229,56 @@ export default function AdminHelp() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex flex-wrap items-center gap-3">
-            <BookOpen className="w-7 h-7 text-charcoal-600" />
-            <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Ayuda y documentación</h1>
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-charcoal-600 flex items-center justify-center shadow-gold-sm">
+              <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Ayuda y documentación</h1>
+              <p className="text-primary-700 mt-1.5 max-w-2xl leading-relaxed">
+                Documentación completa de Hocico Pet Shop: stack, arquitectura, modelo de datos,
+                catálogo de endpoints de la API, reglas de negocio y estado del frontend.
+                Usa el índice para navegar a la sección que necesites.
+              </p>
+            </div>
           </div>
-          <p className="text-primary-700 mt-2 max-w-3xl">
-            Documentación completa de Hocico Pet Shop: stack, arquitectura, modelo de datos,
-            catálogo de endpoints de la API, reglas de negocio y estado del frontend.
-            Usa el índice para navegar a la sección que necesites.
-          </p>
+
+          <div className="mt-6 flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-dark-border bg-white border border-dark-border rounded-2xl overflow-hidden">
+            <div className="flex-1 px-5 py-4">
+              <p className="text-2xl font-display font-bold text-primary-900">{DOC_SECTIONS.length}</p>
+              <p className="text-xs text-primary-700 mt-0.5">Secciones documentadas</p>
+            </div>
+            <div className="flex-1 px-5 py-4">
+              <p className="text-2xl font-display font-bold text-primary-900">{ENDPOINTS.length}</p>
+              <p className="text-xs text-primary-700 mt-0.5">Endpoints de la API</p>
+            </div>
+            <div className="flex-1 px-5 py-4">
+              <p className="text-lg sm:text-2xl font-display font-bold text-primary-900">React, Express y MySQL</p>
+              <p className="text-xs text-primary-700 mt-0.5">Stack principal</p>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-6 min-w-0">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
           <nav className="lg:w-64 lg:flex-shrink-0 min-w-0" aria-label="Índice de documentación">
-            <div className="lg:sticky lg:top-20 bg-white border border-dark-border rounded-2xl p-4 space-y-1">
-              {DOC_SECTIONS.map((s) => (
-                <a
-                  key={s.id}
-                  href={`#${s.id}`}
-                  onClick={() => setActive(s.id)}
-                  className={`block text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200 ${
-                    active === s.id
-                      ? 'bg-charcoal-600/10 text-charcoal-600 border border-charcoal-600/20'
-                      : 'text-primary-700 border border-transparent hover:bg-primary-100 hover:text-charcoal-600'
-                  }`}
-                >
-                  {s.label}
-                </a>
-              ))}
+            <div className="lg:sticky lg:top-20 bg-white border border-dark-border rounded-2xl overflow-hidden">
+              <p className="px-4 pt-4 pb-2 text-xs font-medium text-primary-600">Índice</p>
+              <div className="p-2 space-y-0.5">
+                {DOC_SECTIONS.map((s) => (
+                  <a
+                    key={s.id}
+                    href={`#${s.id}`}
+                    onClick={() => setActive(s.id)}
+                    className={`block text-sm py-2 pl-3 pr-3 rounded-lg border-l-2 transition-colors duration-200 ${
+                      active === s.id
+                        ? 'bg-charcoal-600/10 border-charcoal-600 text-charcoal-700 font-semibold'
+                        : 'border-transparent text-primary-700 font-medium hover:bg-primary-100 hover:text-charcoal-600'
+                    }`}
+                  >
+                    {s.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </nav>
 
@@ -357,34 +382,41 @@ export default function AdminHelp() {
                   Todas las rutas usan <code>/api</code> con body JSON y la cookie HttpOnly
                   (o header <code>Authorization</code>). Tabla completa de endpoints:
                 </p>
-                <table className="w-full text-xs sm:text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-dark-border text-left text-primary-700">
-                      <th className="py-2 pr-4 font-medium">Método</th>
-                      <th className="py-2 pr-4 font-medium">Ruta</th>
-                      <th className="py-2 pr-4 font-medium">Auth</th>
-                      <th className="py-2 pr-4 font-medium">Descripción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ENDPOINTS.map((e, i) => (
-                      <tr key={i} className={`border-b border-dark-border/50 ${i % 2 === 0 ? 'bg-cream-100/60' : ''}`}>
-                        <td className="py-2 pr-4">
-                          <span className={`inline-flex w-16 justify-center font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${
-                            e.method === 'GET' ? 'bg-charcoal-600/10 text-charcoal-700'
-                            : e.method === 'POST' ? 'bg-mustard-100 text-mustard-800'
-                            : e.method === 'PUT' ? 'bg-primary-100 text-primary-800'
-                            : 'bg-red-600/10 text-red-700'
-                          }`}>{e.method}</span>
-                        </td>
-                        <td className="py-2 pr-4 font-mono text-xs text-primary-900">{e.path}</td>
-                        <td className="py-2 pr-4 text-primary-700">{e.auth}</td>
-                        <td className="py-2 pr-4 text-primary-800">{e.desc}</td>
+                <div className="overflow-x-auto rounded-xl border border-dark-border">
+                  <table className="w-full min-w-[640px] text-xs sm:text-sm border-collapse">
+                    <thead>
+                      <tr className="bg-primary-50 text-left text-primary-600">
+                        <th className="py-2.5 px-4 font-medium">Método</th>
+                        <th className="py-2.5 px-4 font-medium">Ruta</th>
+                        <th className="py-2.5 px-4 font-medium">Auth</th>
+                        <th className="py-2.5 px-4 font-medium">Descripción</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <p className="text-xs text-primary-700">
+                    </thead>
+                    <tbody>
+                      {ENDPOINTS.map((e, i) => (
+                        <tr
+                          key={i}
+                          className={`border-t border-dark-border/60 transition-colors hover:bg-primary-50/80 ${
+                            i % 2 === 0 ? 'bg-white' : 'bg-cream-100/60'
+                          }`}
+                        >
+                          <td className="py-2.5 px-4">
+                            <span className={`inline-flex w-16 justify-center font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${
+                              e.method === 'GET' ? 'bg-charcoal-600/10 text-charcoal-700'
+                              : e.method === 'POST' ? 'bg-mustard-100 text-mustard-800'
+                              : e.method === 'PUT' ? 'bg-primary-100 text-primary-800'
+                              : 'bg-red-600/10 text-red-700'
+                            }`}>{e.method}</span>
+                          </td>
+                          <td className="py-2.5 px-4 font-mono text-xs text-primary-900">{e.path}</td>
+                          <td className="py-2.5 px-4 text-primary-700 whitespace-nowrap">{e.auth}</td>
+                          <td className="py-2.5 px-4 text-primary-800">{e.desc}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-primary-700 bg-primary-50 border border-dark-border rounded-lg px-3 py-2">
                   Nota: <code>POST /api/payments/webhook</code> es llamado por Mercado Pago
                   (valida firma HMAC) y <code>GET /api/health</code> es el health check.
                 </p>

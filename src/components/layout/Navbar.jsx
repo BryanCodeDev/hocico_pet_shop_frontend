@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import { Search, Menu, X, User, ShoppingCart, ChevronDown, LayoutDashboard, LogOut, Home } from 'lucide-react'
-import CartDrawer from '../cart/CartDrawer'
 
 const navLinks = [
   { path: '/', label: 'Inicio' },
@@ -421,8 +420,6 @@ export default function Navbar() {
           )}
         </AnimatePresence>
       )}
-
-      <CartDrawer />
     </>
   )
 }
