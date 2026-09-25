@@ -13,8 +13,20 @@ export function formatNumber(num, locale = 'es-CO') {
 }
 
 export function calculateDiscount(originalPrice, currentPrice) {
-  if (!originalPrice || originalPrice <= currentPrice) return 0
-  return Math.round(((originalPrice - currentPrice) / originalPrice) * 100)
+  // El backend devuelve DECIMAL como string (mysql2 no los coerciona), así que
+  // comparar sin Number() es una comparación LÉXICA: '10000.00' <= '9500.00'
+  // da TRUE porque '1' < '9' y el descuento salía 0 en los productos rebajados
+  // cuyo precio actual tiene más dígitos que el original.
+  const original = Number(originalPrice)
+  const current = Number(currentPrice)
+  if (!original || !Number.isFinite(original) || original <= current) return 0
+  return Math.round(((original - current) / original) * 100)
+}
+
+/** ¿El producto está en oferta? Fuente única de verdad para toda la UI. */
+export function hasDiscount(product) {
+  if (!product) return false
+  return calculateDiscount(product.originalPrice, product.price) > 0
 }
 
 export function slugify(text) {
@@ -156,7 +168,7 @@ export function validateEmail(email) {
 }
 
 export function validatePhone(phone) {
-  const re = /^[\d\s\-\+\(\)]{10,}$/
+  const re = /^[\d\s+()-]{10,}$/
   return re.test(phone)
 }
 
@@ -197,9 +209,48 @@ export function getProductImage(product, index = 0) {
   return product.image || '/assets/images/producto1.webp'
 }
 
-export function getWhatsAppUrl(message) {
+/**
+ * Mensaje de consulta por WhatsApp a partir de un producto.
+ *
+ * Antes, getWhatsAppUrl() esperaba un string y los dos llamantes le pasaban un
+ * objeto: encodeURIComponent(objeto) produceía "text=%5Bobject%20Object%5D" y
+ * el vendedor abría el chat con un mensaje vacío. Ahora la normalización vive
+ * aquí, en un sitio testeable.
+ */
+export function getProductMessage(product) {
+  if (!product || !product.name) return ''
+
+  const price = Number(product.price) || 0
+  const original = Number(product.originalPrice ?? product.discountPrice) || 0
+  const lines = [
+    'Hola, me interesa este producto de Hocico Pet Shop:',
+    '',
+    `*${product.name}*`,
+  ]
+
+  if (original > price) {
+    lines.push(`Precio: ${formatPrice(price)} (antes ${formatPrice(original)}, ${calculateDiscount(original, price)}% de descuento)`)
+  } else {
+    lines.push(`Precio: ${formatPrice(price)}`)
+  }
+
+  if (product.sku) lines.push(`SKU: ${product.sku}`)
+  if (product.slug && typeof window !== 'undefined') {
+    lines.push('', `${window.location.origin}/producto/${product.slug}`)
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * Acepta un mensaje ya redactado o un producto, del que compone el mensaje.
+ * Aceptar ambos evita el "[object Object]" en cualquier llamante nuevo.
+ */
+export function getWhatsAppUrl(message, quantity) {
   const number = import.meta.env.VITE_WHATSAPP_NUMBER
-  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`
+  const text = typeof message === 'string' ? message : getProductMessage(message)
+  const suffix = quantity > 1 ? `\n\nCantidad: ${quantity}` : ''
+  return `https://wa.me/${number}?text=${encodeURIComponent(text + suffix)}`
 }
 
 export function getWhatsAppUrlForCart(items, total) {

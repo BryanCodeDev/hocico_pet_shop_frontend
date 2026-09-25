@@ -110,11 +110,7 @@ export default function ProductDetail() {
   }
 
   const handleWhatsApp = () => {
-    window.open(getWhatsAppUrl({
-      name: product.name,
-      price: product.price,
-      discountPrice: product.originalPrice && product.price < product.originalPrice ? product.price : null,
-    }, quantity), '_blank')
+    window.open(getWhatsAppUrl(product, quantity), '_blank')
   }
 
   const handleShare = () => {

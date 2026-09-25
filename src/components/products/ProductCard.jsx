@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ShoppingCart, Zap, MessageSquare, Star } from 'lucide-react'
-import { formatPrice, calculateDiscount, getStockStatus, getWhatsAppUrl } from '../../utils/helpers'
+import { formatPrice, calculateDiscount, hasDiscount, getStockStatus, getWhatsAppUrl } from '../../utils/helpers'
 import { useCart } from '../../context/CartContext'
 import { useWishlist } from '../../context/WishlistContext'
 import { useState } from 'react'
@@ -12,7 +12,8 @@ export default function ProductCard({ product, variant = 'default' }) {
   const [hovered, setHovered] = useState(false)
   const [adding, setAdding] = useState(false)
 
-  const discount = product.discount || (product.originalPrice && product.price < product.originalPrice
+  const onSale = hasDiscount(product)
+  const discount = product.discount || (onSale
     ? calculateDiscount(product.originalPrice, product.price)
     : 0)
 
@@ -38,11 +39,7 @@ export default function ProductCard({ product, variant = 'default' }) {
   const handleWhatsApp = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    window.open(getWhatsAppUrl({
-      name: product.name,
-      price: product.price,
-      discountPrice: product.originalPrice && product.price < product.originalPrice ? product.price : null,
-    }), '_blank')
+    window.open(getWhatsAppUrl(product), '_blank')
   }
 
   const badges = []
@@ -161,7 +158,7 @@ export default function ProductCard({ product, variant = 'default' }) {
 
           <div className="flex items-baseline gap-3">
             <span className="font-display font-bold text-xl text-charcoal-600">{formatPrice(product.price)}</span>
-            {product.originalPrice && product.price < product.originalPrice && (
+            {onSale && (
               <span className="text-primary-600 line-through text-sm">{formatPrice(product.originalPrice)}</span>
             )}
           </div>
@@ -305,7 +302,7 @@ export default function ProductCard({ product, variant = 'default' }) {
 
         <div className="flex items-baseline gap-3">
           <span className="font-display font-bold text-lg text-charcoal-600">{formatPrice(product.price)}</span>
-          {product.originalPrice && product.price < product.originalPrice && (
+          {onSale && (
             <span className="text-primary-600 line-through text-sm">{formatPrice(product.originalPrice)}</span>
           )}
         </div>

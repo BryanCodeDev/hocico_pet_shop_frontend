@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Filter, X, ChevronDown, ChevronUp, Grid, List, Loader2 } from 'lucide-react'
+import { Filter, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Grid, List, Loader2 } from 'lucide-react'
 import SEO from '../components/seo/SEO'
 import ProductCard from '../components/products/ProductCard'
 import ProductSkeleton from '../components/products/ProductSkeleton'
