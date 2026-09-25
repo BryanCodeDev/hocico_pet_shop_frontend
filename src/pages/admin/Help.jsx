@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-import { BookOpen, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
+import { BookOpen, Layers, Network, Boxes, Search, Copy, Check } from 'lucide-react'
 import SEO from '../../components/seo/SEO'
 
 const DOC_SECTIONS = [
@@ -153,67 +152,205 @@ NODE_ENV=development
 # ── Frontend (.env en frontend/, prefijo VITE_) ──
 VITE_API_URL=/api
 VITE_CURRENCY=USD
-  VITE_SITE_NAME=Hocico Pet Shop
+VITE_SITE_NAME=Hocico Pet Shop
 VITE_SITE_DESCRIPTION=...
 `
 
-function AccordionItem({ title, children, defaultOpen = false, number }) {
-  const [open, setOpen] = useState(defaultOpen)
+/* ---------- Piezas reutilizables ---------- */
+
+function Section({ id, index, title, children }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: number * 0.03 }}
-      className="bg-white border border-dark-border rounded-xl overflow-hidden transition-colors duration-200 hover:border-charcoal-300/60"
-    >
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 p-4 sm:p-5 text-left"
-      >
-        <span className="font-display font-semibold text-primary-900 text-base sm:text-lg">{title}</span>
-        <span
-          className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200 ${
-            open ? 'bg-charcoal-600 text-white' : 'bg-primary-100 text-charcoal-600'
-          }`}
-        >
-          {open ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-        </span>
-      </button>
-      {open && (
-        <div className="px-4 sm:px-5 pt-1 pb-5 sm:pb-6 border-t border-dark-border text-primary-900 prose-sm max-w-none">
-          {children}
+    <section id={id} className="scroll-mt-24">
+      <div className="bg-white border border-dark-border rounded-2xl p-5 sm:p-7">
+        <div className="flex items-center gap-3 mb-5">
+          <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-charcoal-600 text-white font-display font-bold text-sm flex items-center justify-center">
+            {index}
+          </span>
+          <h2 className="font-display font-bold text-lg sm:text-xl text-primary-900">{title}</h2>
         </div>
-      )}
-    </motion.div>
+        {children}
+      </div>
+    </section>
   )
 }
 
 function Prose({ children }) {
   return (
-    <div className="prose prose-sm max-w-none text-primary-900 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-primary-900 [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:first:mt-0 [&_p]:leading-relaxed [&_ul]:ml-5 [&_ul]:space-y-1 [&_ol]:ml-5 [&_ol]:space-y-1 [&_li]:leading-relaxed [&_code]:font-mono [&_code]:bg-charcoal-600/10 [&_code]:text-charcoal-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[0.8em] [&_pre]:bg-primary-900 [&_pre]:text-primary-100 [&_pre]:border [&_pre]:border-primary-800 [&_pre]:rounded-xl [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:text-xs [&_pre]:leading-relaxed [&_pre_code]:bg-transparent [&_pre_code]:text-inherit [&_pre_code]:p-0 [&_table]:w-full [&_table]:border-collapse [&_th]:text-left [&_th]:py-2 [&_th]:pr-4 [&_th]:font-medium [&_th]:text-primary-600 [&_th]:border-b [&_th]:border-dark-border [&_td]:py-2 [&_td]:pr-4">
+    <div className="prose prose-sm max-w-none text-primary-900 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-primary-900 [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:first:mt-0 [&_p]:leading-relaxed [&_ul]:ml-5 [&_ul]:space-y-1 [&_ol]:ml-5 [&_ol]:space-y-1 [&_li]:leading-relaxed [&_code]:font-mono [&_code]:bg-charcoal-600/10 [&_code]:text-charcoal-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[0.8em]">
       {children}
     </div>
   )
 }
 
+function CodeBlock({ code }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code.trim())
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      /* clipboard no disponible: no-op */
+    }
+  }
+
+  return (
+    <div className="relative mt-4">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="absolute top-3 right-3 inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/10 text-primary-100 hover:bg-white/20 transition-colors duration-200"
+      >
+        {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+        {copied ? 'Copiado' : 'Copiar'}
+      </button>
+      <pre className="bg-primary-900 text-primary-100 border border-primary-800 rounded-xl p-4 pr-24 overflow-x-auto text-xs leading-relaxed font-mono whitespace-pre">
+        {code.trim()}
+      </pre>
+    </div>
+  )
+}
+
+const METHOD_STYLES = {
+  GET: 'bg-charcoal-600/10 text-charcoal-700',
+  POST: 'bg-mustard-100 text-mustard-800',
+  PUT: 'bg-primary-200 text-primary-800',
+  DELETE: 'bg-red-600/10 text-red-700',
+}
+
+function authBadgeClass(auth) {
+  if (auth === 'Admin') return 'bg-red-600/10 text-red-700'
+  if (auth === 'Usuario/Admin') return 'bg-mustard-100 text-mustard-800'
+  if (auth === 'Usuario') return 'bg-charcoal-600/10 text-charcoal-700'
+  if (auth === 'Público' || auth === 'Ninguno') return 'bg-primary-100 text-primary-700'
+  return 'bg-primary-100 text-primary-600 italic'
+}
+
+function EndpointsTable({ endpoints }) {
+  const [query, setQuery] = useState('')
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return endpoints
+    return endpoints.filter(
+      (e) =>
+        e.path.toLowerCase().includes(q) ||
+        e.desc.toLowerCase().includes(q) ||
+        e.method.toLowerCase().includes(q) ||
+        e.auth.toLowerCase().includes(q)
+    )
+  }, [endpoints, query])
+
+  return (
+    <div className="mt-4">
+      <div className="relative mb-3">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-600" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar por ruta, método o descripción…"
+          className="w-full pl-10 pr-3 py-2.5 text-sm bg-primary-50 border border-dark-border rounded-lg focus:outline-none focus:border-charcoal-400 focus:ring-2 focus:ring-charcoal-300/40 transition-all duration-200"
+        />
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border border-dark-border">
+        <table className="w-full min-w-[640px] text-xs sm:text-sm border-collapse">
+          <thead>
+            <tr className="bg-primary-50 text-left text-primary-600">
+              <th className="py-2.5 px-4 font-medium">Método</th>
+              <th className="py-2.5 px-4 font-medium">Ruta</th>
+              <th className="py-2.5 px-4 font-medium">Auth</th>
+              <th className="py-2.5 px-4 font-medium">Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((e, i) => (
+              <tr
+                key={`${e.method}-${e.path}`}
+                className={`border-t border-dark-border/60 transition-colors hover:bg-primary-50/80 ${
+                  i % 2 === 0 ? 'bg-white' : 'bg-cream-100/60'
+                }`}
+              >
+                <td className="py-2.5 px-4">
+                  <span className={`inline-flex w-16 justify-center font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${METHOD_STYLES[e.method] || 'bg-primary-100 text-primary-800'}`}>
+                    {e.method}
+                  </span>
+                </td>
+                <td className="py-2.5 px-4 font-mono text-xs text-primary-900">{e.path}</td>
+                <td className="py-2.5 px-4 whitespace-nowrap">
+                  <span className={`badge ${authBadgeClass(e.auth)}`}>{e.auth}</span>
+                </td>
+                <td className="py-2.5 px-4 text-primary-800">{e.desc}</td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={4} className="py-6 px-4 text-center text-primary-600">
+                  No hay endpoints que coincidan con "{query}".
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="mt-2 text-xs text-primary-600">
+        Mostrando {filtered.length} de {endpoints.length} endpoints.
+      </p>
+
+      <p className="mt-3 text-xs text-primary-700 bg-primary-50 border border-dark-border rounded-lg px-3 py-2">
+        Nota: <code className="font-mono bg-charcoal-600/10 text-charcoal-800 px-1.5 py-0.5 rounded text-[0.8em]">POST /api/payments/webhook</code> es llamado por Mercado Pago
+        (valida firma HMAC) y <code className="font-mono bg-charcoal-600/10 text-charcoal-800 px-1.5 py-0.5 rounded text-[0.8em]">GET /api/health</code> es el health check.
+      </p>
+    </div>
+  )
+}
+
+/* ---------- Página ---------- */
+
 export default function AdminHelp() {
   const [active, setActive] = useState(DOC_SECTIONS[0].id)
+  const didInitialScroll = useRef(false)
 
+  // Al montar: si hay hash en la URL, ir directo a esa sección
   useEffect(() => {
+    if (didInitialScroll.current) return
+    didInitialScroll.current = true
     const id = window.location.hash.replace('#', '')
-    if (id) setActive(id)
+    if (!id) return
+    const el = document.getElementById(id)
+    if (el) {
+      requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }))
+      setActive(id)
+    }
   }, [])
 
+  // Scrollspy: resalta en el índice la sección visible mientras se hace scroll
   useEffect(() => {
-    const onHash = () => {
-      const id = window.location.hash.replace('#', '')
-      if (id) setActive(id)
-    }
-    window.addEventListener('hashchange', onHash)
-    return () => window.removeEventListener('hashchange', onHash)
+    const sections = DOC_SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean)
+    if (sections.length === 0) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        if (visible[0]) setActive(visible[0].target.id)
+      },
+      { rootMargin: '-96px 0px -70% 0px', threshold: 0 }
+    )
+
+    sections.forEach((s) => observer.observe(s))
+    return () => observer.disconnect()
   }, [])
+
+  const goTo = (id) => {
+    setActive(id)
+    document.getElementById(id)?.scrollIntoView({ block: 'start' })
+    window.history.replaceState(null, '', `#${id}`)
+  }
 
   return (
     <>
@@ -223,7 +360,7 @@ export default function AdminHelp() {
         noindex
       />
 
-      <div className="space-y-8 min-w-0">
+      <div className="space-y-6 min-w-0">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -243,47 +380,79 @@ export default function AdminHelp() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col sm:flex-row divide-y sm:divide-y-0 sm:divide-x divide-dark-border bg-white border border-dark-border rounded-2xl overflow-hidden">
-            <div className="flex-1 px-5 py-4">
-              <p className="text-2xl font-display font-bold text-primary-900">{DOC_SECTIONS.length}</p>
-              <p className="text-xs text-primary-700 mt-0.5">Secciones documentadas</p>
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
+              <div className="w-9 h-9 rounded-lg bg-charcoal-600/10 text-charcoal-700 flex items-center justify-center flex-shrink-0">
+                <Layers className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-xl font-display font-bold text-primary-900 leading-none">{DOC_SECTIONS.length}</p>
+                <p className="text-xs text-primary-700 mt-1">Secciones documentadas</p>
+              </div>
             </div>
-            <div className="flex-1 px-5 py-4">
-              <p className="text-2xl font-display font-bold text-primary-900">{ENDPOINTS.length}</p>
-              <p className="text-xs text-primary-700 mt-0.5">Endpoints de la API</p>
+            <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
+              <div className="w-9 h-9 rounded-lg bg-mustard-100 text-mustard-800 flex items-center justify-center flex-shrink-0">
+                <Network className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-xl font-display font-bold text-primary-900 leading-none">{ENDPOINTS.length}</p>
+                <p className="text-xs text-primary-700 mt-1">Endpoints de la API</p>
+              </div>
             </div>
-            <div className="flex-1 px-5 py-4">
-              <p className="text-lg sm:text-2xl font-display font-bold text-primary-900">React, Express y MySQL</p>
-              <p className="text-xs text-primary-700 mt-0.5">Stack principal</p>
+            <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
+              <div className="w-9 h-9 rounded-lg bg-primary-200 text-primary-800 flex items-center justify-center flex-shrink-0">
+                <Boxes className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-sm sm:text-base font-display font-bold text-primary-900 leading-tight">React · Express · MySQL</p>
+                <p className="text-xs text-primary-700 mt-1">Stack principal</p>
+              </div>
             </div>
           </div>
         </motion.div>
 
+        {/* Selector rápido — solo móvil/tablet */}
+        <div className="lg:hidden">
+          <label htmlFor="doc-jump" className="sr-only">Ir a sección</label>
+          <select
+            id="doc-jump"
+            value={active}
+            onChange={(e) => goTo(e.target.value)}
+            className="w-full px-4 py-3 bg-white border border-dark-border text-primary-900 rounded-xl focus:outline-none focus:border-charcoal-400 focus:ring-2 focus:ring-charcoal-300/40 transition-all duration-200"
+          >
+            {DOC_SECTIONS.map((s, i) => (
+              <option key={s.id} value={s.id}>{i + 1}. {s.label}</option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-          <nav className="lg:w-64 lg:flex-shrink-0 min-w-0" aria-label="Índice de documentación">
+          <nav className="hidden lg:block lg:w-64 lg:flex-shrink-0 min-w-0" aria-label="Índice de documentación">
             <div className="lg:sticky lg:top-20 bg-white border border-dark-border rounded-2xl overflow-hidden">
               <p className="px-4 pt-4 pb-2 text-xs font-medium text-primary-600">Índice</p>
-              <div className="p-2 space-y-0.5">
-                {DOC_SECTIONS.map((s) => (
-                  <a
-                    key={s.id}
-                    href={`#${s.id}`}
-                    onClick={() => setActive(s.id)}
-                    className={`block text-sm py-2 pl-3 pr-3 rounded-lg border-l-2 transition-colors duration-200 ${
-                      active === s.id
-                        ? 'bg-charcoal-600/10 border-charcoal-600 text-charcoal-700 font-semibold'
-                        : 'border-transparent text-primary-700 font-medium hover:bg-primary-100 hover:text-charcoal-600'
-                    }`}
-                  >
-                    {s.label}
-                  </a>
+              <ul className="p-2 space-y-0.5">
+                {DOC_SECTIONS.map((s, i) => (
+                  <li key={s.id}>
+                    <a
+                      href={`#${s.id}`}
+                      onClick={(e) => { e.preventDefault(); goTo(s.id) }}
+                      className={`flex items-center gap-2.5 text-sm py-2 pl-3 pr-3 rounded-lg border-l-2 transition-colors duration-200 ${
+                        active === s.id
+                          ? 'bg-charcoal-600/10 border-charcoal-600 text-charcoal-700 font-semibold'
+                          : 'border-transparent text-primary-700 font-medium hover:bg-primary-100 hover:text-charcoal-600'
+                      }`}
+                    >
+                      <span className={`flex-shrink-0 w-4 text-[11px] font-mono ${active === s.id ? 'text-charcoal-600' : 'text-primary-500'}`}>{i + 1}</span>
+                      {s.label}
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </nav>
 
-          <div className="flex-1 min-w-0 space-y-6">
-            <AccordionItem title="1. Visión general y stack" number={0} defaultOpen>
+          <div className="flex-1 min-w-0 space-y-5">
+            <Section id="overview" index={1} title="Visión general y stack">
               <Prose>
                 <p>
                   Hocico Pet Shop es una aplicación e-commerce completa dedicada a las mascotas. El
@@ -310,9 +479,9 @@ export default function AdminHelp() {
                   </li>
                 </ul>
               </Prose>
-            </AccordionItem>
+            </Section>
 
-            <AccordionItem title="2. Arquitectura" number={1}>
+            <Section id="architecture" index={2} title="Arquitectura">
               <Prose>
                 <p>
                   El frontend arranca en <code>frontend/src/main.jsx</code> (HelmetProvider,
@@ -344,9 +513,9 @@ export default function AdminHelp() {
                   <code>services/api.js</code> (axios con <code>withCredentials</code>, interceptor de token y redirección 401), <code>services/products.js</code> y <code>services/admin.js</code> (CRUD de productos, categorías, órdenes, usuarios, configuración y estadísticas).
                 </p>
               </Prose>
-            </AccordionItem>
+            </Section>
 
-            <AccordionItem title="3. Base de datos" number={2}>
+            <Section id="database" index={3} title="Base de datos">
               <Prose>
                 <p>
                   Esquema en <code>backend/src/utils/migrate.js</code>. Todas las tablas usan
@@ -354,11 +523,11 @@ export default function AdminHelp() {
                   <code>database.js</code> (<code>query</code>, <code>queryOne</code>,
                   <code>transaction(fn)</code> con commit/rollback).
                 </p>
-                <pre>{SCHEMA_TABLES}</pre>
               </Prose>
-            </AccordionItem>
+              <CodeBlock code={SCHEMA_TABLES} />
+            </Section>
 
-            <AccordionItem title="4. Autenticación y roles" number={3}>
+            <Section id="auth" index={4} title="Autenticación y roles">
               <Prose>
                 <h3>Flujo</h3>
                 <ol>
@@ -374,56 +543,19 @@ export default function AdminHelp() {
                   <li><b>user (id=2):</b> carrito, checkout, historial de pedidos, perfil.</li>
                 </ul>
               </Prose>
-            </AccordionItem>
+            </Section>
 
-            <AccordionItem title="5. Catálogo de API (resumen)" number={4}>
+            <Section id="api" index={5} title="Catálogo de API (resumen)">
               <Prose>
                 <p>
                   Todas las rutas usan <code>/api</code> con body JSON y la cookie HttpOnly
-                  (o header <code>Authorization</code>). Tabla completa de endpoints:
-                </p>
-                <div className="overflow-x-auto rounded-xl border border-dark-border">
-                  <table className="w-full min-w-[640px] text-xs sm:text-sm border-collapse">
-                    <thead>
-                      <tr className="bg-primary-50 text-left text-primary-600">
-                        <th className="py-2.5 px-4 font-medium">Método</th>
-                        <th className="py-2.5 px-4 font-medium">Ruta</th>
-                        <th className="py-2.5 px-4 font-medium">Auth</th>
-                        <th className="py-2.5 px-4 font-medium">Descripción</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ENDPOINTS.map((e, i) => (
-                        <tr
-                          key={i}
-                          className={`border-t border-dark-border/60 transition-colors hover:bg-primary-50/80 ${
-                            i % 2 === 0 ? 'bg-white' : 'bg-cream-100/60'
-                          }`}
-                        >
-                          <td className="py-2.5 px-4">
-                            <span className={`inline-flex w-16 justify-center font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${
-                              e.method === 'GET' ? 'bg-charcoal-600/10 text-charcoal-700'
-                              : e.method === 'POST' ? 'bg-mustard-100 text-mustard-800'
-                              : e.method === 'PUT' ? 'bg-primary-100 text-primary-800'
-                              : 'bg-red-600/10 text-red-700'
-                            }`}>{e.method}</span>
-                          </td>
-                          <td className="py-2.5 px-4 font-mono text-xs text-primary-900">{e.path}</td>
-                          <td className="py-2.5 px-4 text-primary-700 whitespace-nowrap">{e.auth}</td>
-                          <td className="py-2.5 px-4 text-primary-800">{e.desc}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <p className="text-xs text-primary-700 bg-primary-50 border border-dark-border rounded-lg px-3 py-2">
-                  Nota: <code>POST /api/payments/webhook</code> es llamado por Mercado Pago
-                  (valida firma HMAC) y <code>GET /api/health</code> es el health check.
+                  (o header <code>Authorization</code>).
                 </p>
               </Prose>
-            </AccordionItem>
+              <EndpointsTable endpoints={ENDPOINTS} />
+            </Section>
 
-            <AccordionItem title="6. Reglas de negocio" number={5}>
+            <Section id="business" index={6} title="Reglas de negocio">
               <Prose>
                 <h3>Creación de orden (transacción)</h3>
                 <p>
@@ -439,7 +571,7 @@ export default function AdminHelp() {
                 <h3>Pagos (Mercado Pago)</h3>
                 <p>
                   El checkout crea la orden y luego <code>POST /api/payments/create</code> genera
-                  unaPreferencia de Mercado Pago; el cliente se redirige a <code>init_point</code>.
+                  una preferencia de Mercado Pago; el cliente se redirige a <code>init_point</code>.
                   El webhook actualiza <code>orders.payment_status</code>, la tabla <code>payments</code>
                   y el historial. El frontend sondea <code>GET /api/payments/status/:orderId</code>.
                 </p>
@@ -447,13 +579,13 @@ export default function AdminHelp() {
                 <ul>
                   <li>Los productos/categorías/usuarios se "borran" con <code>deleted_at</code>; las listas filtran <code>deleted_at IS NULL</code>.</li>
                   <li>Borrar una categoría con productos activos falla (restricción).</li>
-                   <li><code>compare_price</code> &gt; <code>price</code> muestra el porcentaje de descuento.</li>
+                  <li><code>compare_price</code> &gt; <code>price</code> muestra el porcentaje de descuento.</li>
                   <li>Cancelar orden solo permitido en estados <code>pending</code>/<code>processing</code>.</li>
                 </ul>
               </Prose>
-            </AccordionItem>
+            </Section>
 
-            <AccordionItem title="7. Estado del frontend" number={6}>
+            <Section id="frontend-state" index={7} title="Estado del frontend">
               <Prose>
                 <h3>AuthContext</h3>
                 <p>
@@ -475,9 +607,9 @@ export default function AdminHelp() {
                   endpoints de API para wishlist en esta versión.
                 </p>
               </Prose>
-            </AccordionItem>
+            </Section>
 
-            <AccordionItem title="8. Servicios y utilidades" number={7}>
+            <Section id="services" index={8} title="Servicios y utilidades">
               <Prose>
                 <h3>Servicios (frontend/src/services/)</h3>
                 <ul>
@@ -491,21 +623,19 @@ export default function AdminHelp() {
                   <li><b>hooks/useDebounce.js:</b> debounce de valor para búsquedas y filtrados.</li>
                 </ul>
               </Prose>
-            </AccordionItem>
+            </Section>
 
-            <AccordionItem title="9. Variables de entorno" number={8}>
-              <Prose>
-                <pre>{ENV_VARS}</pre>
-              </Prose>
-            </AccordionItem>
+            <Section id="env" index={9} title="Variables de entorno">
+              <CodeBlock code={ENV_VARS} />
+            </Section>
 
-            <AccordionItem title="10. Manejo de errores" number={9}>
+            <Section id="errors" index={10} title="Manejo de errores">
               <Prose>
                 <h3>Backend</h3>
-                  <p>
-                    <code>middleware/errorHandler.js</code> formatea errores (success, message, errors, statusCode), distingue errores operacionales
-                    (401/403/404/ValidationError) de errores de programación (500) y suprime el
-                    stack en producción. <code>notFound.js</code> captura 404.
+                <p>
+                  <code>middleware/errorHandler.js</code> formatea errores (success, message, errors, statusCode), distingue errores operacionales
+                  (401/403/404/ValidationError) de errores de programación (500) y suprime el
+                  stack en producción. <code>notFound.js</code> captura 404.
                 </p>
                 <p>
                   Las rutas async usan <code>express-async-handler</code> (o try/catch) para que
@@ -517,7 +647,7 @@ export default function AdminHelp() {
                   <li><b>api.js:</b> 401 → redirige a <code>/login</code>; otros errores disparan toast vía react-hot-toast y rechazan la promesa.</li>
                 </ul>
               </Prose>
-            </AccordionItem>
+            </Section>
           </div>
         </div>
       </div>
