@@ -248,20 +248,20 @@ export default function POS() {
     <>
       <Toaster position="top-right" />
 
-      {cashRegisterLoading ? (
-        <div className="min-h-screen bg-charcoal-50 flex items-center justify-center">
+       {cashRegisterLoading ? (
+        <div className="flex items-center justify-center py-20">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
             <p className="text-primary-900/70">Cargando caja...</p>
           </div>
         </div>
       ) : (
-        <div className="min-h-screen bg-charcoal-50 text-primary-900 flex flex-col">
-          {/* Header */}
+        <div className="flex flex-col h-[calc(100vh-72px-80px)]">
+          {/* Header interno del POS (controles de caja) */}
           <header className="bg-white border-b border-charcoal-100 px-4 py-3 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <Package className="w-7 h-7 text-primary-600" />
-              <h1 className="font-display font-bold text-xl text-primary-900">POS — Hocico Pet Shop</h1>
+              <h1 className="font-display font-bold text-xl text-primary-900">Caja — Hocico Pet Shop</h1>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 text-sm text-primary-900/70">

@@ -1,709 +1,447 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { BookOpen, Layers, Network, Boxes, Search, Copy, Check } from 'lucide-react'
+import { useState } from 'react'
+import {
+  BookOpen, BarChart3, Package, Tag, ShoppingCart,
+  Users, Globe, Settings, HelpCircle, DollarSign, Store, Search
+} from 'lucide-react'
 import SEO from '../../components/seo/SEO'
 
-const DOC_SECTIONS = [
-  { id: 'overview', label: 'Visión general y stack' },
-  { id: 'architecture', label: 'Arquitectura' },
-  { id: 'database', label: 'Base de datos' },
-  { id: 'auth', label: 'Autenticación y roles' },
-  { id: 'pos', label: 'Módulo POS (caja)' },
-  { id: 'online', label: 'Ventas online' },
-  { id: 'payments', label: 'Pagos y facturación' },
-  { id: 'catalog', label: 'Catálogo y administración' },
-  { id: 'api', label: 'Catálogo de API (resumen)' },
-  { id: 'frontend-state', label: 'Estado del frontend' },
-  { id: 'services', label: 'Servicios y utilidades' },
-  { id: 'env', label: 'Variables de entorno' },
-  { id: 'errors', label: 'Manejo de errores' },
+const sections = [
+  {
+    id: 'overview',
+    title: '¿Qué es Hocico Pet Shop?',
+    icon: <Package className="h-4 w-4" />,
+    content: `Hocico Pet Shop es un sistema integral de e-commerce y punto de venta para la venta de productos para mascotas. Permite administrar el catálogo de productos, órdenes, inventario, caja registradora POS, pagos en línea, facturación electrónica y reportes de negocio.
+
+El sistema opera con **dos canales de venta**:
+- **Tienda Online**: clientes navegan, agregan al carrito y pagan vía Mercado Pago.
+- **Punto de Venta (POS)**: cajeros gestionan ventas en tienda física con caja registradora, en efectivo o tarjeta POS.
+
+**Partes principales:**
+1. **Portal público**: catálogo, carrito y checkout para clientes.
+2. **Panel administrativo**: dashboard, productos, categorías, órdenes, usuarios, configuración.
+3. **Módulo POS**: caja registradora, búsqueda de productos, carrito, pago y recibos — accesible para admins y cashiers.`,
+  },
+  {
+    id: 'roles',
+    title: 'Roles y Permisos',
+    icon: <Users className="h-4 w-4" />,
+    content: `El sistema maneja **cuatro roles** con distintos niveles de acceso:
+
+### Administrador
+- Acceso total al sistema
+- Gestiona productos, categorías, órdenes, usuarios y configuración
+- Ve todos los reportes y estadísticas
+- Puede abrir/cerrar cualquier caja del POS
+- Accede al módulo POS y al manual de ayuda
+
+### Cajero (Cashier)
+- Accede exclusivamente al módulo POS en <code>/admin/caja</code>
+- Abre su propia caja con monto inicial
+- Procesa ventas en efectivo o tarjeta POS
+- Cierra su caja al final del turno (el sistema calcula la diferencia)
+- Ve reportes diarios y el historial de su caja
+- NO puede acceder al resto del panel administrativo
+
+### Cliente (User)
+- Navega la tienda online, agrega al carrito y paga
+- Ve su historial de pedidos y detalles
+- Edita su perfil (nombre, email, teléfono, dirección)
+
+### Manager
+- Rol reservado para futuras funciones de gestión de equipo
+- Acceso limitado de administración`,
+  },
+  {
+    id: 'dashboard',
+    title: 'Dashboard / Resumen',
+    icon: <BarChart3 className="h-4 w-4" />,
+    content: `El dashboard muestra las métricas clave del negocio en un periodo seleccionado (por defecto, últimos 30 días).
+
+**KPIs principales:**
+- **Ventas totales**: suma de todos los ingresos (online + POS)
+- **Ventas de hoy**: ingresos del día actual
+- **Ventas del mes**: ingresos del mes en curso
+- **Pedidos totales**: cantidad de órdenes creadas
+- **Pedidos pendientes**: órdenes esperando pago o confirmación
+- **Productos / Usuarios**: conteo de registros activos
+- **Stock bajo**: productos que han cruzado el stock mínimo
+
+**Comparativa Online vs POS:**
+- Gráfica de barras con ventas por canal
+- Gráfica de métodos de pago
+- Efectivo en caja del día
+- Ticket promedio
+
+**Estado de pedidos:** gráfica circular de órdenes pagadas vs pendientes.
+
+**Productos más vendidos:** top 5 productos por ingresos.`,
+  },
+  {
+    id: 'pos',
+    title: 'Módulo POS (Caja)',
+    icon: <Store className="h-4 w-4" />,
+    content: `El POS es el módulo para operar la tienda física. Se accede desde <code>/admin/caja</code> y requiere rol admin o cashier.
+
+**Flujo de una venta POS:**
+1. **Abrir caja**: el cajero ingresa el monto inicial (float). Se crea un registro de caja con <code>status='open'</code>.
+2. **Buscar producto**: usa la barra de búsqueda o escanea el código de barras. La cuadrícula muestra productos con stock disponible.
+3. **Agregar al carrito**: cada clic suma una unidad (respetando el stock máximo).
+4. **Procesar pago**: elige efectivo o tarjeta POS y completa la transacción.
+5. **Recibo**: se genera y puede imprimirse.
+
+**Métodos de pago:**
+- **Efectivo**: el cajero ingresa el monto recibido; el sistema valida que cubra el total y calcula el cambio.
+- **Tarjeta POS**: la venta se registra; el cobro físico se realiza en el terminal de la tienda.
+
+**Cierre de caja:**
+- El cajero ingresa el monto físico de cierre
+- El sistema calcula <code>expected = apertura + ventas</code> y <code>diferencia = cierre - esperado</code>
+- Se guarda el cierre y la caja queda <code>status='closed'</code>
+
+**Nota:** las ventas POS descuentan stock transaccionalmente. Si el stock es insuficiente, la venta se rechaza y se muestra un error.`,
+  },
+  {
+    id: 'online-store',
+    title: 'Tienda Online',
+    icon: <Globe className="h-4 w-4" />,
+    content: `La tienda online es la tienda pública donde los clientes navegan y compran.
+
+**Navegación:**
+- Categorías y filtros (precio, marca, rating)
+- Página de producto con galería de imágenes, stock y botón de agregar al carrito
+- Carrito persistente (localStorage para invitados, BD para usuarios)
+
+**Checkout:**
+1. El cliente revisa su carrito
+2. Ingresa datos de envío (nombre, email, teléfono, dirección, ciudad, documento)
+3. El sistema calcula el costo de envío según la zona de envío configurada para la ciudad
+4. Se crea la orden (<code>channel='online'</code>, <code>status='pending'</code>) dentro de una transacción
+4. El cliente es redirigido a Mercado Pago para pagar
+5. Al confirmar el pago, la orden pasa a <code>status='paid'</code> y se genera la factura
+
+**Seguimiento:** el cliente ve el estado de su pedido en <code>/cuenta/pedido/:id</code>.`,
+  },
+  {
+    id: 'products',
+    title: 'Gestión de Productos',
+    icon: <Package className="h-4 w-4" />,
+    content: `Los productos son el núcleo del catálogo. Cada producto pertenece a una categoría y opcionalmente a una marca.
+
+**Campos de un producto:**
+- **Nombre y slug**: identificador interno y URL
+- **SKU y barcode**: códigos únicos (el barcode se usa en el POS)
+- **Precio**: <code>price</code> (precio de venta) y <code>original_price</code> (precio base para calcular descuentos)
+- **Stock**: cantidad disponible; <code>min_stock</code> define el umbral de alerta
+- **Costo** (<code>cost_price</code>): precio de adquisición (solo admin)
+- **Imágenes**: galería subida a Cloudinary
+- **Estado**: <code>is_active</code> (visible), <code>is_featured</code> (destacado)
+
+**Descuentos:**
+- Si <code>original_price &gt; price</code>, se muestra el porcentaje de descuento y el precio tachado
+- El cálculo es automático; no se configura un porcentaje manual
+
+**Acciones (solo admin):**
+- Crear, editar y eliminar productos (borrado lógico)
+- Subir y reordenar imágenes
+- Establecer imagen principal
+
+**Alertas:**
+- El dashboard muestra productos con <code>stock &lt;= min_stock</code>`,
+  },
+  {
+    id: 'categories',
+    title: 'Categorías',
+    icon: <Tag className="h-4 w-4" />,
+    content: `Las categorías organizan los productos en grupos. Pueden ser anidadas (categorías padre e hijas).
+
+**Campos:**
+- Nombre y slug (único)
+- Descripción e imagen
+- Estado (activo/inactivo)
+
+**Reglas:**
+- Una categoría con productos activos no se puede eliminar (falla la operación)
+- Las categorías inactivas no aparecen en la tienda pública`,
+  },
+  {
+    id: 'orders',
+    title: 'Gestión de Pedidos',
+    icon: <ShoppingCart className="h-4 w-4" />,
+    content: `Las órdenes representan las compras de clientes. Cada orden tiene un channel (<code>online</code> o <code>pos</code>).
+
+### Estados de una orden
+- **pending**: Recién creada, esperando pago o confirmación
+- **paid**: Pago confirmado
+- **preparing**: En preparación para envío
+- **shipped**: Enviada
+- **delivered**: Entregada al cliente
+- **cancelled**: Cancelada
+- **refunded**: Reembolsada
+
+### Transacción de creación
+Cuando se crea una orden (online o POS), el backend:
+1. Verifica y descuenta stock de cada producto (<code>FOR UPDATE</code>)
+2. Inserta la orden con número único
+3. Inserta los <code>order_items</code>
+4. Registra el <code>order_status_history</code>
+5. Si algo falla, hace rollback de toda la transacción
+
+### Estados de pago
+- **pending**: Pago iniciado pero no confirmado
+- **approved**: Pago confirmado
+- **rejected**: Pago rechazado
+
+### Panel admin
+- Lista todas las órdenes con paginación y filtro por estado
+- Cambia el estado de una orden (y registra quién lo hizo en el historial)
+- Ve el detalle con items, historial y factura`,
+  },
+  {
+    id: 'users',
+    title: 'Gestión de Usuarios',
+    icon: <Users className="h-4 w-4" />,
+    content: `Los usuarios son las personas que usan el sistema.
+
+**Roles disponibles:** admin, user, cashier, manager
+
+**Campos:**
+- Nombre, email (único), teléfono, dirección, avatar
+- Estado (activo/inactivo)
+- Fecha de creación y última actualización
+
+**Acciones (solo admin):**
+- Listar, buscar y filtrar usuarios
+- Ver detalle de un usuario
+- Cambiar el rol de un usuario (admin ↔ user ↔ cashier)
+- Activar/desactivar usuarios (borrado lógico)`,
+  },
+  {
+    id: 'payments',
+    title: 'Pagos y Facturación',
+    icon: <DollarSign className="h-4 w-4" />,
+    content: `### Mercado Pago (online)
+Cuando un cliente completa el checkout, el sistema crea una preferencia de Mercado Pago y redirige al cliente a <code>init_point</code>. El cliente paga y es redirigido de vuelta al sitio (success/pending/failure).
+
+El webhook (<code>POST /api/payments/webhook</code>) recibe notificaciones de Mercado Pago:
+- Valida la firma HMAC
+- Busca el <code>payment_id</code> en la tabla <code>payments</code>
+- Actualiza <code>orders.payment_status</code> y <code>order_status_history</code>
+
+El frontend sondea <code>GET /api/payments/status/:orderId</code> para mostrar el estado actual.
+
+### Facturación electrónica (Factus)
+Cuando una orden se paga (<code>payment_status='approved'</code>), el sistema llama <code>triggerInvoiceGeneration(orderId)</code>:
+1. Obtiene tokens OAuth de Factus
+2. Construye el payload con los items, IVA (19%), y datos del cliente
+3. Si el cliente no tiene NIT, usa el NIT de la tienda
+4. Si hay error, registra <code>invoices.status='error'</code> con el mensaje — la venta no se cancela
+
+### POS
+- **Efectivo**: el cajero ingresa el monto recibido; el cambio se calcula y guarda en <code>notes</code>
+- **Tarjeta POS**: la venta se registra como <code>payment_method='card_pos'</code> y el cobro físico se hace en el terminal`,
+  },
+  {
+    id: 'settings',
+    title: 'Configuración del Sitio',
+    icon: <Settings className="h-4 w-4" />,
+    content: `La configuración permite definir los datos del negocio y el entorno.
+
+**Campos configurables (admin):**
+- Nombre, dirección, teléfono, WhatsApp, email, redes sociales (Instagram, Facebook, TikTok, YouTube)
+- Logo del sitio (subido a Cloudinary)
+- Zonas de envío: costo por ciudad (ej: Mosquera = $0, Madrid = $5.000)
+- Variables de entorno (backend .env): DB, JWT, Cloudinary, Wompi, Factus, email
+
+**Cómo acceder:**
+Solo administradores pueden acceder a la configuración desde el dashboard, botón "Configuración".
+
+**Efecto:** los cambios (nombre, logo, redes) se reflejan inmediatamente en la tienda pública.`,
+  },
+  {
+    id: 'faq',
+    title: 'Preguntas Frecuentes',
+    icon: <HelpCircle className="h-4 w-4" />,
+    content: `**P: ¿Cómo abro la caja del POS?**
+R: Desde el dashboard o el sidebar, ve a Caja (<code>/admin/caja</code>). Si no hay caja abierta, el sistema abre el modal automáticamente. Ingresa el monto inicial y confirma.
+
+**P: ¿Puedo un cajero acceder al panel completo?**
+R: No. El cajero (rol cashier) solo accede a <code>/admin/caja</code>. Si intenta entrar a otras rutas de <code>/admin</code>, es redirigido a la página principal.
+
+**P: ¿Qué pasa si cierro la caja con menos dinero del esperado?**
+R: El sistema calcula la diferencia (<code>difference = cierre - esperado</code>) y la muestra en el reporte de cajas. Si hay faltante, se registra como valor negativo.
+
+**P: ¿Cómo escaneó un código de barras?**
+R: En la pantalla de Caja, escribe o escanea el código de barras en el campo superior. Si el código coincide con un producto, se agrega al carrito. Los escáneres USB funcionan como teclado.
+
+**P: ¿Se puede vender sin abrir caja?**
+R: No. El endpoint <code>POST /api/pos/sale</code> verifica que exista una caja abierta para el usuario. Si no, responde con error 400.
+
+**P: ¿Cómo imprimo un recibo?**
+R: Después de completar una venta, haz clic en "Imprimir" en la pantalla del recibo. También puedes acceder al recibo desde <code>GET /api/pos/sale/:id/receipt</code>.
+
+**P: ¿Cómo veo los reportes del POS?**
+R: Los administradores ven un botón "Reportes" en la pantalla de Caja. Los cajeros ven reportes diarios. Los reportes incluyen: ventas por canal, métodos de pago, cajas recientes y efectivo del día.
+
+**P: ¿Qué pasa si la factura de Factus falla?**
+R: El error se guarda en <code>invoices.status='error'</code> con el mensaje. La venta se completa normalmente; puedes reintentar la facturación más tarde.
+
+**P: ¿Cómo cambio el rol de un usuario?**
+R: Solo el admin puede hacerlo. Desde <code>/admin/usuarios</code>, abre el menú de un usuario y selecciona "Cambiar rol".
+
+**P: ¿Puedo eliminar un producto con ventas?**
+R: Sí, pero se hace un borrado lógico (<code>deleted_at</code>). El producto desaparece de la tienda pero sus órdenes e históricos se conservan.`,
+  },
 ]
 
-const ENDPOINTS = [
-  { method: 'POST', path: '/api/auth/register', auth: 'Ninguno', desc: 'Registro de usuario (bcrypt + JWT en cookie HttpOnly).' },
-  { method: 'POST', path: '/api/auth/login', auth: 'Ninguno', desc: 'Login. Emite JWT en cookie HttpOnly y devuelve usuario en el cuerpo.' },
-  { method: 'POST', path: '/api/auth/logout', auth: 'Opcional', desc: 'Cierra sesión y elimina la cookie.' },
-  { method: 'GET', path: '/api/auth/me', auth: 'Usuario', desc: 'Usuario autenticado + roles y permisos.' },
-  { method: 'GET', path: '/api/products', auth: 'Público', desc: 'Listado con filtros (búsqueda, categoría, marca, precio, rating, orden, paginación, destacados).' },
-  { method: 'GET', path: '/api/products/:id', auth: 'Admin', desc: 'Detalle de producto por id.' },
-  { method: 'GET', path: '/api/products/slug/:slug', auth: 'Público', desc: 'Detalle de producto por slug.' },
-  { method: 'POST', path: '/api/products', auth: 'Admin', desc: 'Crea un producto (incluye imágenes vía multipart).' },
-  { method: 'PUT', path: '/api/products/:id', auth: 'Admin', desc: 'Actualiza un producto.' },
-  { method: 'DELETE', path: '/api/products/:id', auth: 'Admin', desc: 'Borrado lógico (soft delete).' },
-  { method: 'GET', path: '/api/categories', auth: 'Público', desc: 'Listado de categorías activas.' },
-  { method: 'POST', path: '/api/orders', auth: 'Usuario', desc: 'Crea orden online (transacción: stock, orden, items, historial).' },
-  { method: 'GET', path: '/api/orders', auth: 'Usuario', desc: 'Órdenes del usuario autenticado.' },
-  { method: 'GET', path: '/api/orders/:id', auth: 'Usuario/Admin', desc: 'Detalle de orden con items, historial y factura.' },
-  { method: 'GET', path: '/api/orders/admin/all', auth: 'Admin', desc: 'Todas las órdenes (paginado, filtro por estado).' },
-  { method: 'PUT', path: '/api/orders/:id/status', auth: 'Admin', desc: 'Actualiza estado y registra historial.' },
-  { method: 'POST', path: '/api/payments/create', auth: 'Usuario', desc: 'Crea preferencia de Mercado Pago (redirect init_point).' },
-  { method: 'POST', path: '/api/payments/webhook', auth: 'IPN (MP)', desc: 'Webhook de Mercado Pago: valida firma HMAC e intenta notificación de pago.' },
-  { method: 'GET', path: '/api/payments/status/:orderId', auth: 'Usuario', desc: 'Estado del pago de una orden.' },
-  { method: 'GET', path: '/api/invoices/:id', auth: 'Admin', desc: 'Detalle de factura (Factus).' },
-  { method: 'GET', path: '/api/stock', auth: 'Admin', desc: 'Movimientos de stock (paginado, filtros).' },
-  { method: 'POST', path: '/api/stock/adjust', auth: 'Admin', desc: 'Ajuste manual de stock.' },
-  { method: 'GET', path: '/api/admin/dashboard/stats', auth: 'Admin', desc: 'Estadísticas globales: ventas, órdenes, productos, usuarios, stock bajo.' },
-  { method: 'GET', path: '/api/pos/cash-register/current', auth: 'Admin/Cashier', desc: 'Caja abierta del usuario autenticado.' },
-  { method: 'POST', path: '/api/pos/cash-register/open', auth: 'Admin/Cashier', desc: 'Abre la caja con monto inicial.' },
-  { method: 'POST', path: '/api/pos/cash-register/close', auth: 'Admin/Cashier', desc: 'Cierra la caja con monto de cierre y notas.' },
-  { method: 'GET', path: '/api/pos/cash-register/:id', auth: 'Admin/Cashier', desc: 'Detalle de una caja específica.' },
-  { method: 'GET', path: '/api/pos/cash-register/history', auth: 'Admin/Cashier', desc: 'Historial de cajas del usuario (últimos 30 días).' },
-  { method: 'GET', path: '/api/pos/cash-register/admin/history', auth: 'Admin', desc: 'Historial de todas las cajas.' },
-  { method: 'GET', path: '/api/pos/products/search', auth: 'Admin/Cashier', desc: 'Busca productos con stock disponible (paginado).' },
-  { method: 'GET', path: '/api/pos/products/barcode/:barcode', auth: 'Admin/Cashier', desc: 'Obtiene un producto por código de barras.' },
-  { method: 'POST', path: '/api/pos/sale', auth: 'Admin/Cashier', desc: 'Crea una venta POS (transacción + Factus en background).' },
-  { method: 'GET', path: '/api/pos/sale/:id/receipt', auth: 'Admin/Cashier', desc: 'Recibo detallado de una venta POS.' },
-  { method: 'GET', path: '/api/pos/sales', auth: 'Admin/Cashier', desc: 'Listado de ventas POS (paginado, filtros de fecha).' },
-  { method: 'GET', path: '/api/pos/reports/daily', auth: 'Admin/Cashier', desc: 'Reporte diario de caja del usuario.' },
-  { method: 'GET', path: '/api/pos/reports/admin/daily', auth: 'Admin', desc: 'Reporte diario consolidado de ventas POS.' },
-  { method: 'GET', path: '/api/pos/reports/admin/by-channel', auth: 'Admin', desc: 'Ventas segmentadas por canal (online vs POS).' },
-  { method: 'GET', path: '/api/pos/reports/admin/by-payment-method', auth: 'Admin', desc: 'Ventas segmentadas por método de pago.' },
-  { method: 'GET', path: '/api/pos/reports/summary', auth: 'Admin', desc: 'Resumen ejecutivo de POS: totales, canales, métodos de pago, cajas.' },
-  { method: 'GET', path: '/api/pos/reports/cash-registers', auth: 'Admin/Cashier', desc: 'Reporte de movimientos de caja (diferencias y cierres).' },
-  { method: 'GET', path: '/api/health', auth: 'Ninguno', desc: 'Health check: { status: "ok", timestamp }. ' },
-]
-
-const SCHEMA_TABLES = `
-roles
-  id 1=admin, 2=user, 3=manager, 4=cashier  UNIQUE name
-  permissions JSON (estructura: {module: [acciones]})
-
-users
-  id BIGINT PK AI  email UNIQUE  password (bcrypt)
-  role_id → roles  first_name  last_name  phone  address  city  province
-  is_active  created_at  updated_at  deleted_at
-
-products
-  id PK AI  sku UNIQUE  barcode UNIQUE  name  slug UNIQUE
-  price  original_price  cost_price  stock  min_stock
-  category_id → categories  brand_id → brands
-  is_active  is_featured  images (JSON)
-  created_at  updated_at  deleted_at
-
-orders  (online + POS)
-  id PK AI  order_number UNIQUE  user_id → users  channel ENUM(online,pos)
-  status ENUM(pending,paid,preparing,shipped,delivered,cancelled,refunded)
-  payment_status ENUM(pending,approved,rejected,cancelled,refunded,...)
-  payment_method ENUM(wompi,whatsapp,bank_transfer,cash,card_pos,cash_on_delivery)
-  subtotal  discount  shipping_cost  total  currency
-  customer_name  customer_email  customer_phone
-  customer_document_type  customer_document_number
-  address  city  province  notes
-  cash_register_id → cash_registers  invoice_id → invoices  paid_at
-  created_at  updated_at
-
-order_items
-  id PK AI  order_id → orders CASCADE
-  product_id  product_name  product_sku  product_slug
-  quantity  unit_price  discount_price  subtotal  image
-
-cash_registers
-  id PK AI  user_id → users
-  register_number  opening_amount  closing_amount  expected_amount  difference
-  status ENUM(open,closed)  opened_at  closed_at  notes
-  INDEX(user_id)  INDEX(status)
-
-invoices
-  id PK AI  order_id → orders
-  factus_id  invoice_number  cufe  status ENUM(pending,sent,error,voided)
-  xml_url  pdf_url  error_message  issued_at
-
-stock_movements
-  id PK AI  product_id → products  type ENUM(in,out)  quantity
-  reason  reference_type  reference_id  created_by
-  INDEX(product_id)  INDEX(created_at)
-
-settings
-  id PK AI  key VARCHAR(100) UNIQUE  value TEXT
-  type ENUM(string,number,boolean,image,json)
-
-Convenciones: InnoDB, soft-delete (deleted_at), timestamps UTC,
-transacciones vía transaction(fn) (commit/rollback), FK CASCADE
-para order_items/cart_items, ER_DUP_FIELDNAME tolerado en migraciones.
-`
-
-const ENV_VARS = `
-# ── Backend (.env en backend/) ──
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=hocico_pet_shop
-DB_PORT=3306
-
-JWT_SECRET=<requerido>
-JWT_EXPIRES_IN=7d
-
-CLOUDINARY_CLOUD_NAME=<...>
-CLOUDINARY_API_KEY=<...>
-CLOUDINARY_API_SECRET=<...>
-
-WOMPI_PRIVATE_KEY=sk_test_...
-WOMPI_PUBLIC_KEY=AK_TEST_...
-WOMPI_EVENT_ID=webhook-test
-
-FACTUS_CLIENT_ID=<...>
-FACTUS_CLIENT_SECRET=<...>
-FACTUS_USERNAME=<...>
-FACTUS_PASSWORD=<...>
-FACTUS_BASE_URL=https://api.factus.com.co
-
-FRONTEND_URL=http://localhost:5173
-NODE_ENV=development
-
-# ── Frontend (.env en frontend/, prefijo VITE_) ──
-VITE_API_URL=/api
-VITE_CURRENCY=COP
-VITE_SITE_NAME=Hocico Pet Shop
-VITE_SITE_DESCRIPTION=...
-`
-
-/* ---------- Componentes reutilizables ---------- */
-
-function Section({ id, index, title, children }) {
-  return (
-    <section id={id} className="scroll-mt-24">
-      <div className="bg-white border border-dark-border rounded-2xl p-5 sm:p-7">
-        <div className="flex items-center gap-3 mb-5">
-          <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-charcoal-600 text-white font-display font-bold text-sm flex items-center justify-center">
-            {index}
-          </span>
-          <h2 className="font-display font-bold text-lg sm:text-xl text-primary-900">{title}</h2>
-        </div>
-        {children}
-      </div>
-    </section>
-  )
-}
-
-function Prose({ children }) {
-  return (
-    <div className="prose prose-sm max-w-none text-primary-900 [&_h3]:font-display [&_h3]:font-semibold [&_h3]:text-primary-900 [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:first:mt-0 [&_p]:leading-relaxed [&_ul]:ml-5 [&_ul]:space-y-1 [&_ol]:ml-5 [&_ol]:space-y-1 [&_li]:leading-relaxed [&_code]:font-mono [&_code]:bg-charcoal-600/10 [&_code]:text-charcoal-800 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[0.8em]">
-      {children}
-    </div>
-  )
-}
-
-function CodeBlock({ code }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code.trim())
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      /* clipboard no disponible */
+const parseInlineBold = (text) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const inner = part.slice(2, -2)
+      if (inner.startsWith('<code>') && inner.endsWith('</code>')) {
+        return <code key={i} className="font-mono bg-charcoal-600/10 text-charcoal-800 px-1.5 py-0.5 rounded text-[0.8em]">{inner.slice(6, -6)}</code>
+      }
+      return <strong key={i} className="font-semibold text-primary-900">{inner}</strong>
     }
+    return <React.Fragment key={i}>{part}</React.Fragment>
+  })
+}
+
+const renderMarkdown = (content) => {
+  const lines = content.split('\n')
+  const blocks = []
+  let listBuffer = []
+  let listType = null
+
+  const flushList = () => {
+    if (listBuffer.length === 0) return
+    const Tag = listType === 'ol' ? 'ol' : 'ul'
+    blocks.push(
+      <Tag key={`list-${blocks.length}`} className={`${listType === 'ol' ? 'list-decimal' : 'list-disc'} pl-5 space-y-1 my-3 text-primary-900/70`}>
+        {listBuffer.map((item, i) => <li key={i}>{parseInlineBold(item)}</li>)}
+      </Tag>
+    )
+    listBuffer = []
+    listType = null
   }
 
-  return (
-    <div className="relative mt-4">
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="absolute top-3 right-3 inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/10 text-primary-100 hover:bg-white/20 transition-colors duration-200"
-      >
-        {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-        {copied ? 'Copiado' : 'Copiar'}
-      </button>
-      <pre className="bg-primary-900 text-primary-100 border border-primary-800 rounded-xl p-4 pr-24 overflow-x-auto text-xs leading-relaxed font-mono whitespace-pre">
-        {code.trim()}
-      </pre>
-    </div>
-  )
-}
-
-const METHOD_STYLES = {
-  GET: 'bg-charcoal-600/10 text-charcoal-700',
-  POST: 'bg-mustard-100 text-mustard-800',
-  PUT: 'bg-primary-200 text-primary-800',
-  DELETE: 'bg-red-600/10 text-red-700',
-}
-
-function authBadgeClass(auth) {
-  if (auth === 'Admin') return 'bg-red-600/10 text-red-700'
-  if (auth === 'Admin/Cashier') return 'bg-green-600/10 text-green-700'
-  if (auth === 'Usuario/Admin') return 'bg-mustard-100 text-mustard-800'
-  if (auth === 'Usuario') return 'bg-charcoal-600/10 text-charcoal-700'
-  if (auth === 'Público' || auth === 'Ninguno') return 'bg-primary-100 text-primary-700'
-  return 'bg-primary-100 text-primary-600 italic'
-}
-
-function EndpointsTable({ endpoints }) {
-  const [query, setQuery] = useState('')
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return endpoints
-    return endpoints.filter(
-      (e) =>
-        e.path.toLowerCase().includes(q) ||
-        e.desc.toLowerCase().includes(q) ||
-        e.method.toLowerCase().includes(q) ||
-        e.auth.toLowerCase().includes(q)
-    )
-  }, [endpoints, query])
-
-  return (
-    <div className="mt-4">
-      <div className="relative mb-3">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary-600" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar por ruta, método o descripción…"
-          className="w-full pl-10 pr-3 py-2.5 text-sm bg-primary-50 border border-dark-border rounded-lg focus:outline-none focus:border-charcoal-400 focus:ring-2 focus:ring-charcoal-300/40 transition-all duration-200"
-        />
-      </div>
-
-      <div className="overflow-x-auto rounded-xl border border-dark-border">
-        <table className="w-full min-w-[640px] text-xs sm:text-sm border-collapse">
-          <thead>
-            <tr className="bg-primary-50 text-left text-primary-600">
-              <th className="py-2.5 px-4 font-medium">Método</th>
-              <th className="py-2.5 px-4 font-medium">Ruta</th>
-              <th className="py-2.5 px-4 font-medium">Auth</th>
-              <th className="py-2.5 px-4 font-medium">Descripción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((e, i) => (
-              <tr
-                key={`${e.method}-${e.path}`}
-                className={`border-t border-dark-border/60 transition-colors hover:bg-primary-50/80 ${
-                  i % 2 === 0 ? 'bg-white' : 'bg-cream-100/60'
-                }`}
-              >
-                <td className="py-2.5 px-4">
-                  <span className={`inline-flex w-16 justify-center font-mono text-[11px] font-bold px-1.5 py-0.5 rounded ${METHOD_STYLES[e.method] || 'bg-primary-100 text-primary-800'}`}>
-                    {e.method}
-                  </span>
-                </td>
-                <td className="py-2.5 px-4 font-mono text-xs text-primary-900">{e.path}</td>
-                <td className="py-2.5 px-4 whitespace-nowrap">
-                  <span className={`badge ${authBadgeClass(e.auth)}`}>{e.auth}</span>
-                </td>
-                <td className="py-2.5 px-4 text-primary-800">{e.desc}</td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={4} className="py-6 px-4 text-center text-primary-600">
-                  No hay endpoints que coincidan con "{query}".
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <p className="mt-2 text-xs text-primary-600">
-        Mostrando {filtered.length} de {endpoints.length} endpoints.
-      </p>
-    </div>
-  )
-}
-
-/* ---------- Página ---------- */
-
-export default function AdminHelp() {
-  const [active, setActive] = useState(DOC_SECTIONS[0].id)
-  const didInitialScroll = useRef(false)
-
-  useEffect(() => {
-    if (didInitialScroll.current) return
-    didInitialScroll.current = true
-    const id = window.location.hash.replace('#', '')
-    if (!id) return
-    const el = document.getElementById(id)
-    if (el) {
-      requestAnimationFrame(() => el.scrollIntoView({ block: 'start' }))
-      setActive(id)
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim()
+    if (trimmed.startsWith('### ')) {
+      flushList()
+      blocks.push(<h4 key={idx} className="font-display text-lg text-primary-900 mt-5 mb-2 first:mt-0">{trimmed.slice(4)}</h4>)
+      return
     }
-  }, [])
+    const numberedMatch = trimmed.match(/^(\d+)\.\s(.*)/)
+    if (numberedMatch) {
+      if (listType && listType !== 'ol') flushList()
+      listType = 'ol'
+      listBuffer.push(numberedMatch[2])
+      return
+    }
+    if (trimmed.startsWith('- ')) {
+      if (listType && listType !== 'ul') flushList()
+      listType = 'ul'
+      listBuffer.push(trimmed.slice(2))
+      return
+    }
+    if (trimmed === '') {
+      flushList()
+      return
+    }
+    flushList()
+    blocks.push(<p key={idx} className="mb-2.5 leading-relaxed text-primary-900/80">{parseInlineBold(trimmed)}</p>)
+  })
+  flushList()
+  return blocks
+}
 
-  useEffect(() => {
-    const sections = DOC_SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean)
-    if (sections.length === 0) return
+const Help = () => {
+  const [activeSection, setActiveSection] = useState('overview')
+  const [searchQuery, setSearchQuery] = useState('')
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-        if (visible[0]) setActive(visible[0].target.id)
-      },
-      { rootMargin: '-96px 0px -70% 0px', threshold: 0 }
-    )
+  const filteredSections = sections.filter(
+    (section) =>
+      section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      section.content.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
-    sections.forEach((s) => observer.observe(s))
-    return () => observer.disconnect()
-  }, [])
-
-  const goTo = (id) => {
-    setActive(id)
-    document.getElementById(id)?.scrollIntoView({ block: 'start' })
-    window.history.replaceState(null, '', `#${id}`)
-  }
+  const activeContent = sections.find((s) => s.id === activeSection)
 
   return (
     <>
       <SEO
         title="Ayuda | Hocico Admin"
-        description="Funcionamiento del sistema Hocico Pet Shop: módulos, roles, flujos y API."
+        description="Manual del sistema Hocico Pet Shop: roles, POS, tienda online, pagos y configuración."
         noindex
       />
 
       <div className="space-y-6 min-w-0">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-charcoal-600 flex items-center justify-center shadow-gold-sm">
-              <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-2xl sm:text-3xl text-primary-900">Guía del sistema</h1>
-              <p className="text-primary-700 mt-1.5 max-w-2xl leading-relaxed">
-                Cómo funciona Hocico Pet Shop: dos canales de venta (online y POS), gestión de
-                inventario, órdenes, pagos con facturación electrónica y administración completa.
-                 Usa el índice para navegar a la sección que necesites.
-              </p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="section-title">Guía del Sistema</h2>
+            <p className="text-sm text-primary-700 mt-1">
+              Manual de uso de Hocico Pet Shop: roles, POS, tienda online y administración
+            </p>
           </div>
-
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
-              <div className="w-9 h-9 rounded-lg bg-charcoal-600/10 text-charcoal-700 flex items-center justify-center flex-shrink-0">
-                <Layers className="w-4.5 h-4.5" />
-              </div>
-              <div>
-                <p className="text-xl font-display font-bold text-primary-900 leading-none">{DOC_SECTIONS.length}</p>
-                <p className="text-xs text-primary-700 mt-1">Secciones</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
-              <div className="w-9 h-9 rounded-lg bg-mustard-100 text-mustard-800 flex items-center justify-center flex-shrink-0">
-                <Network className="w-4.5 h-4.5" />
-              </div>
-              <div>
-                <p className="text-xl font-display font-bold text-primary-900 leading-none">{ENDPOINTS.length}</p>
-                <p className="text-xs text-primary-700 mt-1">Endpoints</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 bg-white border border-dark-border rounded-2xl px-5 py-4">
-              <div className="w-9 h-9 rounded-lg bg-primary-200 text-primary-800 flex items-center justify-center flex-shrink-0">
-                <Boxes className="w-4.5 h-4.5" />
-              </div>
-              <div>
-                <p className="text-sm sm:text-base font-display font-bold text-primary-900 leading-tight">React · Express · MySQL</p>
-                <p className="text-xs text-primary-700 mt-1">Stack</p>
-              </div>
-            </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary-500" />
+            <input
+              type="text"
+              placeholder="Buscar en el manual..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 pr-4 py-2.5 border border-dark-border rounded-xl text-sm bg-white focus:ring-2 focus:ring-charcoal-300/40 focus:border-charcoal-400 outline-none transition-all duration-200 text-primary-900 w-full sm:w-64"
+            />
           </div>
-        </motion.div>
-
-        {/* Selector rápido — móvil/tablet */}
-        <div className="lg:hidden">
-          <label htmlFor="doc-jump" className="sr-only">Ir a sección</label>
-          <select
-            id="doc-jump"
-            value={active}
-            onChange={(e) => goTo(e.target.value)}
-            className="w-full px-4 py-3 bg-white border border-dark-border text-primary-900 rounded-xl focus:outline-none focus:border-charcoal-400 focus:ring-2 focus:ring-charcoal-300/40 transition-all duration-200"
-          >
-            {DOC_SECTIONS.map((s, i) => (
-              <option key={s.id} value={s.id}>{i + 1}. {s.label}</option>
-            ))}
-          </select>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 min-w-0">
-          <nav className="hidden lg:block lg:w-64 lg:flex-shrink-0 min-w-0" aria-label="Índice de documentación">
-            <div className="lg:sticky lg:top-20 bg-white border border-dark-border rounded-2xl overflow-hidden">
-              <p className="px-4 pt-4 pb-2 text-xs font-medium text-primary-600">Índice</p>
-              <ul className="p-2 space-y-0.5">
-                {DOC_SECTIONS.map((s, i) => (
-                  <li key={s.id}>
-                    <a
-                      href={`#${s.id}`}
-                      onClick={(e) => { e.preventDefault(); goTo(s.id) }}
-                      className={`flex items-center gap-2.5 text-sm py-2 pl-3 pr-3 rounded-lg border-l-2 transition-colors duration-200 ${
-                        active === s.id
-                          ? 'bg-charcoal-600/10 border-charcoal-600 text-charcoal-700 font-semibold'
-                          : 'border-transparent text-primary-700 font-medium hover:bg-primary-100 hover:text-charcoal-600'
-                      }`}
-                    >
-                      <span className={`flex-shrink-0 w-4 text-[11px] font-mono ${active === s.id ? 'text-charcoal-600' : 'text-primary-500'}`}>{i + 1}</span>
-                      {s.label}
-                    </a>
-                  </li>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-w-0">
+          <div className="lg:col-span-1 min-w-0">
+            <div className="bg-white border border-dark-border rounded-2xl shadow-card p-3 sm:p-4 lg:sticky lg:top-6 min-w-0">
+              <nav className="space-y-1">
+                {filteredSections.map((section) => (
+                  <button
+                    key={section.id}
+                    onClick={() => {
+                      setActiveSection(section.id)
+                      setSearchQuery('')
+                    }}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      activeSection === section.id
+                        ? 'bg-charcoal-600/10 text-charcoal-700 shadow-sm'
+                        : 'text-primary-900/70 hover:text-primary-900 hover:bg-charcoal-50/50'
+                    }`}
+                  >
+                    <span className="flex-shrink-0">{section.icon}</span>
+                    <span className="truncate text-left">{section.title}</span>
+                  </button>
                 ))}
-              </ul>
+              </nav>
+              {filteredSections.length === 0 && (
+                <p className="text-sm text-primary-900/40 text-center py-4">
+                  No se encontraron resultados para "{searchQuery}"
+                </p>
+              )}
             </div>
-          </nav>
+          </div>
 
-          <div className="flex-1 min-w-0 space-y-5">
-            <Section id="overview" index={1} title="Visión general y stack">
-              <Prose>
-                <p>
-                  Hocico Pet Shop administra el negocio de venta de productos para mascotas a través de
-                  <b> dos canales de venta</b>: una tienda online (web) y un punto de venta (POS) para
-                  la tienda física. El frontend es una aplicación React (SPA); el backend expone una API
-                  REST que maneja catálogo, órdenes, pagos, inventario y la caja registradora del POS.
-                </p>
-                <h3>Stack</h3>
-                <ul>
-                  <li>
-                    <b>Frontend:</b> React 18 + Vite + React Router v6 + Tailwind CSS + Axios +
-                    react-hot-toast + react-helmet-async + recharts + lucide-react + framer-motion.
-                  </li>
-                  <li>
-                    <b>Backend:</b> Node.js (ESM) + Express + MySQL (mysql2) + jsonwebtoken
-                    + bcryptjs + cloudinary + mercadopago + cors/helmet/rate-limit/cookie-parser.
-                  </li>
-                  <li>
-                    <b>Facturación:</b> Factus API (facturación electrónica Colombia) — se dispara
-                    automáticamente después de confirmar una orden.
-                  </li>
-                  <li>
-                    <b>Pagos online:</b> Mercado Pago (Wompi disponible como alternativa).
-                  </li>
-                </ul>
-              </Prose>
-            </Section>
-
-            <Section id="architecture" index={2} title="Arquitectura">
-              <Prose>
-                <p>
-                  El frontend arranca en <code>frontend/src/main.jsx</code> (HelmetProvider, BrowserRouter,
-                  AuthProvider, CartProvider, ErrorBoundary, Toaster). <code>App.jsx</code> define el árbol de
-                  rutas con <code>Layout</code> para rutas públicas, <code>AdminLayout</code> para
-                  <code>/admin/*</code> y <code>CashierRoute</code> para <code>/pos/*</code>, protegidas
-                  por <code>ProtectedRoute</code>, <code>AdminRoute</code> y <code>CashierRoute</code>.
-                </p>
-                <p>
-                  El backend (<code>backend/src/index.js</code>) aplica helmet + cors + rate-limit (100 req/15 min)
-                  + parsers (10 MB) + cookie-parser, monta las rutas en <code>/api/</code> y un manejador
-                  centralizado de errores, con <code>GET /api/health</code>.
-                </p>
-                <h3>Rutas del SPA</h3>
-                <ul>
-                  <li>Públicas: <code>/</code>, <code>/tienda</code>, <code>/categoria/:slug</code>, <code>/producto/:slug</code>, <code>/carrito</code>, <code>/checkout</code>, <code>/buscar</code>, <code>/contacto</code>, etc.</li>
-                  <li>Usuario: <code>/cuenta</code>, <code>/cuenta/pedido/:id</code>.</li>
-                  <li>Admin: <code>/admin/*</code> — Dashboard, Productos, Categorías, Pedidos, Usuarios, Configuración, Ayuda.</li>
-                  <li>Pos (cajero): <code>/pos/*</code> — Caja, búsqueda de productos, carrito, pago, recibo, reportes.</li>
-                </ul>
-                <h3>Estado global (contextos)</h3>
-                <ul>
-                  <li><code>AuthContext</code>: usuario, token, login/logout/register, refresco de sesión, flags <code>isAdmin</code>/<code>isCashier</code>.</li>
-                  <li><code>CartContext</code>: carrito online, sincronización invitado → usuario.</li>
-                  <li><code>WishlistContext</code>: lista de deseos en localStorage.</li>
-                </ul>
-                <h3>Servicios de API</h3>
-                <p>
-                  <code>services/api.js</code> (axios con <code>withCredentials</code>, interceptor de token), <code>services/pos.js</code> (caja y ventas POS), <code>services/admin.js</code> (CRUD completo + reportes POS).
-                </p>
-              </Prose>
-            </Section>
-
-            <Section id="database" index={3} title="Base de datos">
-              <Prose>
-                <p>
-                  Esquema en <code>backend/src/utils/migrate.js</code> y <code>database.sql</code>. Todas las
-                  tablas usan InnoDB, soft-delete (<code>deleted_at</code>) y timestamps UTC. El acceso es
-                  vía <code>database.js</code>: <code>query</code>, <code>queryOne</code>,
-                  <code>transaction(fn)</code> con commit/rollback automático.
-                </p>
-              </Prose>
-              <CodeBlock code={SCHEMA_TABLES} />
-            </Section>
-
-            <Section id="auth" index={4} title="Autenticación y roles">
-              <Prose>
-                <h3>Flujo</h3>
-                <ol>
-                  <li><b>Login:</b> <code>POST /api/auth/login</code>. Verifica el hash bcrypt, firma un JWT <code>{'{id, role}'}</code> y lo envía en cookie HttpOnly (Secure, SameSite=Strict, 7 días). El frontend almacena el usuario en contexto y localStorage.</li>
-                  <li><b>Request auth:</b> el middleware <code>authenticate</code> lee <code>req.cookies.token</code> o <code>Authorization: Bearer</code>, verifica el JWT y carga el usuario + permisos desde la tabla <code>roles.permissions</code> (JSON).</li>
-                  <li><b>Autorización:</b> <code>authorize('admin')</code> o <code>authorize('cashier')</code> según la ruta. El <code>requirePermission(module, action)</code> verifica permisos granulares (solo para roles distintos a admin).</li>
-                  <li><b>Logout:</b> <code>POST /api/auth/logout</code> borra la cookie y el cliente limpia el storage.</li>
-                </ol>
-                <h3>Roles</h3>
-                <ul>
-                  <li><b>admin (id=1):</b> acceso total. CRUD de productos, categorías, órdenes, usuarios, configuración. Dashboard completo. Reportes POS consolidados. Puede abrir/cerrar cualquier caja.</li>
-                  <li><b>cashier (id=4):</b> acceso solo a <code>/pos/*</code>. Abre su propia caja, procesa ventas POS, cierra su caja, ve reportes diarios y el reporte de cajas de su usuario.</li>
-                  <li><b>user (id=2):</b> tienda online. Carrito, checkout, historial de pedidos, perfil.</li>
-                  <li><b>manager (id=3):</b> acceso limitado de administración (reservas futuras).</li>
-                </ul>
-              </Prose>
-            </Section>
-
-            <Section id="pos" index={5} title="Módulo POS (caja registradora)">
-              <Prose>
-                <h3>Concepto</h3>
-                <p>
-                  El POS permite operar la tienda física: escanear productos, armar el carrito,
-                  cobrar en efectivo o tarjeta POS y facturar. Cada sesión requiere una <b>caja abierta</b>.
-                </p>
-                <h3>Flujo de caja</h3>
-                <ol>
-                  <li><b>Abrir caja:</b> el cajero ingresa el monto inicial. Se crea un registro en <code>cash_registers</code> con <code>status='open'</code>.</li>
-                  <li><b>Vender:</b> cada venta POS asocia <code>cash_register_id</code>, descuenta stock transaccionalmente, genera la orden (<code>channel='pos'</code>, <code>status='paid'</code>) y, para efectivo, guarda <code>cash_received</code> en <code>notes</code>.</li>
-                  <li><b>Facturar:</b> tras crear la orden, <code>triggerInvoiceGeneration()</code> envía la factura a Factus en background (no bloquea la venta).</li>
-                  <li><b>Cerrar caja:</b> el cajero ingresa el monto físico de cierre. El sistema calcula <code>expected_amount = opening + ventas - cierres_previos</code>, <code>difference = closing - expected</code> y marca <code>status='closed'</code>.</li>
-                </ol>
-                <h3>Métodos de pago POS</h3>
-                <ul>
-                  <li><b>Efectivo:</b> el cajero ingresa el monto recibido; el sistema valida que cubra el total y calcula el cambio.</li>
-                  <li><b>Tarjeta POS (<code>card_pos</code>):</b> se registra la venta; el cobro físico se realiza en el terminal.</li>
-                </ul>
-                <h3>Vista POS (frontend)</h3>
-                <p>
-                  La pantalla <code>/pos</code> (CashierRoute) muestra: barra de búsqueda y escáner de código de barras,
-                  cuadrícula de productos con stock, carrito con control de cantidades, modal de pago y
-                  recibo imprimible. Los administradores ven un botón de reportes integrado.
-                </p>
-              </Prose>
-            </Section>
-
-            <Section id="online" index={6} title="Ventas online">
-              <Prose>
-                <h3>Checkout</h3>
-                <p>
-                  El usuario agrega productos al carrito (persistido en localStorage para invitados, en la BD para usuarios).
-                  Al checkout crea una orden <code>channel='online'</code>, <code>status='pending'</code> y luego
-                  <code>POST /api/payments/create</code> genera una preferencia de Mercado Pago; el cliente se redirige
-                  a <code>init_point</code> (checkout externo).
-                </p>
-                <h3>Webhook y confirmación</h3>
-                <p>
-                  Mercado Pago notifica <code>POST /api/payments/webhook</code> (valida firma HMAC). El webhook actualiza
-                  <code>orders.payment_status</code>, la tabla <code>payments</code> y el historial. Si el pago es exitoso,
-                  se dispara <code>triggerInvoiceGeneration()</code> para generar la factura electrónica.
-                </p>
-                <h3>Pago en efectivo contraentrega</h3>
-                <p>
-                  <code>payment_method = 'cash_on_delivery'</code> crea la orden como <code>pending</code> y el admin
-                  la marca como <code>paid</code> al recibir el pago físico.
-                </p>
-              </Prose>
-            </Section>
-
-            <Section id="payments" index={7} title="Pagos y facturación">
-              <Prose>
-                <h3>Mercado Pago</h3>
-                <p>
-                  Se crea una preferencia con <code>payment_preferences</code> que incluye los items del carrito.
-                  El cliente paga en la página de Mercado Pago y retorna al sitio (<code>success</code>/<code>pending</code>/<code>failure</code>).
-                  El webhook confirma el pago y actualiza el estado de la orden.
-                </p>
-                <h3>Factus (facturación electrónica)</h3>
-                <p>
-                  Cuando una orden se paga (<code>payment_status = 'approved'</code>), se invoca <code>triggerInvoiceGeneration(orderId)</code>.
-                  Este servicio obtiene tokens OAuth de Factus, construye el payload con el RUT del cliente, items, impuestos (IVA 19%) y envía
-                  la factura. Si el cliente no tiene NIT, se usa NIT de la tienda. Los errores de Factus se registran en <code>invoices.status='error'</code>
-                  sin fallar la venta.
-                </p>
-              </Prose>
-            </Section>
-
-            <Section id="catalog" index={8} title="Catálogo y administración">
-              <Prose>
-                <h3>Productos</h3>
-                <p>
-                  Cada producto tiene <code>sku</code>, <code>barcode</code>, precios (<code>price</code>, <code>original_price</code> para descuento),
-                  <code>stock</code>, <code>min_stock</code>, imágenes y relaciones con categoría/marca. Al crear un producto se puede subir imágenes a
-                    Cloudinary (multipart), que guarda las URLs en <code>images</code> (JSON). El descuento se muestra cuando <code>original_price &gt; price</code>.
-                </p>
-                <h3>Inventario</h3>
-                <p>
-                  Cada orden descuenta stock de forma atómica (<code>UPDATE products SET stock = stock - qty WHERE id = ? AND stock &gt;= qty</code>),
-                  registrando cada movimiento en <code>stock_movements</code>. El admin puede hacer ajustes manuales de entrada/salida.
-                </p>
-                <h3>Órdenes</h3>
-                <p>
-                  Las órdenes pasan por estados: <code>pending → paid → preparing → shipped → delivered</code> (o <code>cancelled</code>/<code>refunded</code>).
-                  Cada cambio de estado se registra en <code>order_status_history</code>. La factura electrónica se enlaza vía <code>invoice_id</code>.
-                </p>
-              </Prose>
-            </Section>
-
-            <Section id="api" index={9} title="Catálogo de API (resumen)">
-              <Prose>
-                <p>
-                  Todas las rutas usan <code>/api</code> con body JSON. La autenticación usa cookie HttpOnly (cookie HttpOnly) o header <code>Authorization: Bearer</code>.
-                </p>
-              </Prose>
-              <EndpointsTable endpoints={ENDPOINTS} />
-            </Section>
-
-            <Section id="frontend-state" index={10} title="Estado del frontend">
-              <Prose>
-                <h3>AuthContext</h3>
-                <p>
-                  Estado: <code>{'{user, loading, login, logout, register, updateProfile, isAuthenticated, isAdmin, isCashier}'}</code>. Token y usuario en localStorage.
-                  <code>login</code> guarda la sesión y <code>logout</code> llama al API y borra el storage.
-                  Al montar, <code>fetchUser</code> verifica la sesión activa.
-                </p>
-                <h3>CartContext</h3>
-                <p>
-                  Estado: carrito + helpers (<code>addItem</code>, <code>updateQuantity</code>, <code>clearCart</code>, <code>getTotal</code>, <code>getItemCount</code>).
-                  Persistencia en localStorage para invitados y en BD para usuarios; <code>syncCart</code> fusiona el carrito anónimo al iniciar sesión.
-                </p>
-                <h3>WishlistContext</h3>
-                <p>
-                  Lista de IDs de producto en localStorage (cliente). No requiere endpoints de API.
-                </p>
-                <h3>POS (estado local)</h3>
-                <p>
-                  El módulo POS usa estado local dentro del componente <code>POS.jsx</code>: carrito, caja abierta,
-                  búsqueda de productos y escáner de código de barras. La caja se carga al iniciar y se mantiene en estado.
-                </p>
-              </Prose>
-            </Section>
-
-            <Section id="services" index={11} title="Servicios y utilidades">
-              <Prose>
-                <h3>Servicios (frontend/src/services/)</h3>
-                <ul>
-                  <li><b>api.js:</b> axios (<code>baseURL: '/api'</code>, <code>withCredentials</code>), interceptor de respuesta (401 → redirige a <code>/login</code>).</li>
-                  <li><b>products.js:</b> <code>fetchProducts</code>, <code>fetchProductBySlug</code>, <code>fetchCategories</code>, <code>fetchBrands</code>, <code>fetchProductById</code>.</li>
-                  <li><b>admin.js:</b> CRUD de productos/categorías/órdenes/usuarios, estadísticas, configuración, carga de logo y servicios POS (<code>adminPosService</code>).</li>
-                  <li><b>pos.js:</b> búsqueda de productos, ventas POS, apertura/cierre de caja, reportes y recibos.</li>
-                </ul>
-                <h3>Utilidades</h3>
-                <ul>
-                  <li><b>utils/helpers.js:</b> <code>formatPrice</code>, <code>formatDate</code>, <code>calculateDiscount</code>, <code>getStockStatus</code>, <code>getImageUrl</code>, <code>getProductImage</code>, <code>debounce</code>, <code>throttle</code>, <code>classNames</code>.</li>
-                </ul>
-              </Prose>
-            </Section>
-
-            <Section id="env" index={12} title="Variables de entorno">
-              <CodeBlock code={ENV_VARS} />
-            </Section>
-
-            <Section id="errors" index={13} title="Manejo de errores">
-              <Prose>
-                <h3>Backend</h3>
-                <p>
-                  <code>middleware/errorHandler.js</code> formatea errores (success, message, errors, statusCode), distingue errores operacionales
-                  (401/403/404/ValidationError) de errores de programación (500) y suprime el stack en producción. La validación de express-validator
-                  retorna <code>{'{ errors: [...] }'}</code> en 400 para peticiones inválidas.
-                </p>
-                <p>
-                  Las rutas async usan try/catch para que los errores lleguen al manejador centralizado. Las validaciones retornan
-                  <code>&nbsp;400</code> con el detalle de los campos inválidos.
-                </p>
-                <h3>Frontend</h3>
-                <ul>
-                  <li><b>ErrorBoundary.jsx:</b> componente de clase con fallback UI y botón de recarga.</li>
-                  <li><b>api.js:</b> 401 → redirige a <code>/login</code>; otros errores disparan toast vía react-hot-toast.</li>
-                </ul>
-              </Prose>
-            </Section>
+          <div className="lg:col-span-3 min-w-0">
+            <div className="bg-white border border-dark-border rounded-2xl shadow-card p-5 sm:p-8 min-w-0">
+              {activeContent && (
+                <div className="prose prose-sm max-w-none min-w-0">
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-charcoal-600">{sectionIcon(activeContent.id)}</span>
+                    <h3 className="font-display text-2xl text-primary-900 m-0">
+                      {activeContent.title}
+                    </h3>
+                  </div>
+                  <div className="text-sm">
+                    {renderMarkdown(activeContent.content)}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -711,4 +449,22 @@ export default function AdminHelp() {
   )
 }
 
-export { DOC_SECTIONS, ENDPOINTS, SCHEMA_TABLES, ENV_VARS }
+function sectionIcon(id) {
+  const icons = {
+    overview: <Package className="h-8 w-8" />,
+    roles: <Users className="h-8 w-8" />,
+    dashboard: <BarChart3 className="h-8 w-8" />,
+    pos: <Store className="h-8 w-8" />,
+    'online-store': <Globe className="h-8 w-8" />,
+    products: <Package className="h-8 w-8" />,
+    categories: <Tag className="h-8 w-8" />,
+    orders: <ShoppingCart className="h-8 w-8" />,
+    users: <Users className="h-8 w-8" />,
+    payments: <DollarSign className="h-8 w-8" />,
+    settings: <Settings className="h-8 w-8" />,
+    faq: <HelpCircle className="h-8 w-8" />,
+  }
+  return icons[id] || <BookOpen className="h-8 w-8" />
+}
+
+export default Help

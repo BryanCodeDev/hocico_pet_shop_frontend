@@ -78,13 +78,13 @@ function App() {
                 <Route path="configuracion" element={<AdminSettings />} />
                 <Route path="ayuda" element={<AdminHelp />} />
               </Route>
+
+              <Route path="caja" element={<CashierRoute />}>
+                <Route index element={<POS />} />
+              </Route>
             </Route>
 
-             <Route path="/pos/*" element={<CashierRoute />}>
-               <Route index element={<POS />} />
-             </Route>
-
-             <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </WishlistProvider>
       </CartProvider>

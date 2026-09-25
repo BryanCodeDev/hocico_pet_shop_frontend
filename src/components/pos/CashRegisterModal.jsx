@@ -39,9 +39,9 @@ export default function CashRegisterModal({
         onClosed()
         onCurrentChange()
       } else {
-        const initialAmount = parseFloat(formData.get('initialAmount') || 0)
+        const openingAmount = parseFloat(formData.get('openingAmount') || 0)
         const notes = formData.get('notes') || undefined
-        const data = await posService.openCashRegister({ initialAmount, notes })
+        const data = await posService.openCashRegister({ openingAmount, notes })
         if (data.cashRegister) {
           onOpened(data.cashRegister)
         }
@@ -156,7 +156,7 @@ export default function CashRegisterModal({
                   </label>
                   <input
                     type="number"
-                    name="initialAmount"
+                    name="openingAmount"
                     step="1000"
                     min="0"
                     defaultValue="0"

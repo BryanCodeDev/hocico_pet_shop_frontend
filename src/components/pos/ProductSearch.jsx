@@ -31,7 +31,16 @@ export default function ProductSearch({
   return (
     <div className="space-y-4">
       {/* Barcode scanner input */}
-      <form onSubmit={handleBarcodeSubmit} className="relative">
+       <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (barcodeInput.trim()) {
+            onBarcodeSubmit(barcodeInput.trim())
+            setBarcodeInput('')
+          }
+        }}
+        className="relative"
+      >
         <input
           ref={inputRef}
           type="text"

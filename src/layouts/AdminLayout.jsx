@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { LayoutDashboard, Package, Tag, ShoppingCart, Users, Settings, HelpCircle, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, Tag, ShoppingCart, Users, Settings, HelpCircle, LogOut, Store } from 'lucide-react'
 import { Outlet } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -23,6 +23,12 @@ const navSections = [
     items: [
       { path: '/admin/pedidos', label: 'Pedidos', icon: ShoppingCart },
       { path: '/admin/usuarios', label: 'Usuarios', icon: Users },
+    ],
+  },
+  {
+    label: 'Punto de venta',
+    items: [
+      { path: '/admin/caja', label: 'Caja', icon: Store },
     ],
   },
   {
