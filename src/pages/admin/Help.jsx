@@ -130,7 +130,7 @@ const ENV_VARS = `
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
-DB_NAME=techstore
+DB_NAME=hocico_pet_shop
 DB_PORT=3306
 
 JWT_SECRET=<requerido>        # firma y verificación de JWT
