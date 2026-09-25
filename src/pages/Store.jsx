@@ -78,10 +78,10 @@ export default function Store() {
         ...(brand && { brand }),
         ...(searchQuery && { search: searchQuery }),
       }
-      const data = await productService.getAll(params)
-      setProducts(data.products || [])
-      setTotalProducts(data.total || 0)
-      setTotalPages(data.totalPages || 1)
+       const data = await productService.getAll(params)
+       setProducts(data.products || [])
+       setTotalProducts(data.pagination?.total || 0)
+       setTotalPages(data.pagination?.totalPages || 1)
     } catch (error) {
       console.error('Error fetching products:', error)
       setProducts([])
@@ -113,7 +113,6 @@ export default function Store() {
         params.set(key, value)
       }
     })
-    if (key !== 'page') params.delete('page')
     setSearchParams(params, { replace })
   }
 
