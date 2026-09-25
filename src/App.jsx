@@ -30,7 +30,8 @@ import AdminOrders from './pages/admin/Orders'
 import AdminUsers from './pages/admin/Users'
 import AdminSettings from './pages/admin/Settings'
 import AdminHelp from './pages/admin/Help'
-import { ProtectedRoute, AdminRoute } from './components/auth/RouteGuards'
+import POS from './pages/pos/POS'
+import { ProtectedRoute, AdminRoute, CashierRoute } from './components/auth/RouteGuards'
 
 function App() {
   return (
@@ -79,7 +80,11 @@ function App() {
               </Route>
             </Route>
 
-            <Route path="*" element={<NotFound />} />
+             <Route path="/pos/*" element={<CashierRoute />}>
+               <Route index element={<POS />} />
+             </Route>
+
+             <Route path="*" element={<NotFound />} />
           </Routes>
         </WishlistProvider>
       </CartProvider>

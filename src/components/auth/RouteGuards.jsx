@@ -41,3 +41,17 @@ export function AdminRoute() {
 
   return <Outlet />
 }
+
+export function CashierRoute() {
+  const { isAuthenticated, isCashier, loading } = useAuth()
+
+  if (loading) {
+    return <LoadingScreen />
+  }
+
+  if (!isAuthenticated || !isCashier) {
+    return <Navigate to="/" replace />
+  }
+
+  return <Outlet />
+}

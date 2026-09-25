@@ -54,6 +54,7 @@ export function AuthProvider({ children }) {
     updateProfile,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
+    isCashier: user?.role === 'admin' || user?.role === 'cashier',
     refetch: fetchUser,
   }
 
